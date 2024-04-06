@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Page
+    x:Class="YT_Downloader.NavigationViewPages.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:CommunityToolkit.WinUI.Controls"
+    xmlns:local1="using:CommunityToolkit.WinUI.Controls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="using:CommunityToolkit.WinUI"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <Style
+            x:Key="SettingsSectionHeaderTextBlockStyle"
+            BasedOn="{StaticResource BodyStrongTextBlockStyle}"
+            TargetType="TextBlock">
+            <Style.Setters>
+                <Setter Property="Margin" Value="1,30,0,6" />
+            </Style.Setters>
+        </Style>
+    </Page.Resources>
+
+    <ScrollViewer>
+        <Grid Margin="30,30,30,30">
+            <StackPanel HorizontalAlignment="Stretch" Spacing="4">
+                <TextBlock Margin="1,0,0,6" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}">
+                    <Span><Bold>Appearance</Bold></Span>
+                </TextBlock>
+                <local:SettingsExpander
+                    Grid.Row="1"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Left"
+                    Description="Select the application theme"
+                    Header="Application Theme"
+                    HeaderIcon="{ui:FontIcon Glyph=}">
+                    <local:SettingsExpander.Items>
+                        <local:SettingsCard>
+                            <local:SettingsCard.Header>
+                                <RadioButtons>
+                                    <RadioButton Content="Light" />
+                                    <RadioButton Content="Dark" />
+                                    <RadioButton Content="System Theme" />
+                                </RadioButtons>
+                            </local:SettingsCard.Header>
+                        </local:SettingsCard>
+                    </local:SettingsExpander.Items>
+                </local:SettingsExpander>
+                <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}">
+                    <Span><Bold>Files</Bold></Span>
+                </TextBlock>
+                <local:SettingsExpander
+                    Grid.Row="3"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch"
+                    Description="Manage your downloads"
+                    Header="Downloads"
+                    HeaderIcon="{ui:FontIcon Glyph=}">
+                    <local:SettingsExpander.Items>
+                        <local:SettingsCard x:Name="showDefaultPath" Header="Default Downloads Folder">
+                            <Button Grid.Column="1" Content="Select Folder" />
+                        </local:SettingsCard>
+                        <local:SettingsCard Description="The program will always ask where to save the downloaded files" Header="Always ask where to save files">
+                            <ToggleSwitch
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                OffContent="Off"
+                                OnContent="On" />
+                        </local:SettingsCard>
+                    </local:SettingsExpander.Items>
+                </local:SettingsExpander>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Page>

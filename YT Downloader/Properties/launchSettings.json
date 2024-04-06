@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "YT Downloader (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "YT Downloader (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
