@@ -19,6 +19,7 @@ namespace YT_Downloader.NavigationViewPages.Video
         public static Frame view;
         public static string url;
         public static YoutubeExplode.Videos.Video video;
+        public static StreamManifest streamManifest;
 
         public NextVideoPage()
         {
@@ -37,8 +38,7 @@ namespace YT_Downloader.NavigationViewPages.Video
             {
                 var youtube = new YoutubeClient();
                 video = await youtube.Videos.GetAsync(url);
-                var streamManifest = await youtube.Videos.Streams.GetManifestAsync(url);
-
+                streamManifest = await youtube.Videos.Streams.GetManifestAsync(url);
                 videoTitle.Text = video.Title.Length > 68 ? $"{video.Title[..68]}..." : video.Title;
 
                 foreach (var rel in streamManifest.GetVideoOnlyStreams().Where(s => s.Container == Container.Mp4))
@@ -49,23 +49,19 @@ namespace YT_Downloader.NavigationViewPages.Video
                     }
                 }
 
-                Run run = new();
-                run.Text = $"{Math.Round(float.Parse(streamManifest.GetVideoOnlyStreams().Where(s => s.Container == Container.Mp4).First(s => s.VideoQuality.Label == videoResolution.SelectedValue.ToString()).Size.MegaBytes.ToString().Split(" ")[0]) + float.Parse(streamManifest.GetAudioOnlyStreams().Where(s => s.Container == Container.Mp4).GetWithHighestBitrate().Size.MegaBytes.ToString().Split(" ")[0]), 2)}MB";
-                videoSize.Inlines.Add(run);
-
                 var thumbnailUrl = $"https://img.youtube.com/vi/{video.Id}/mqdefault.jpg";
                 using var httpClient = new HttpClient();
                 var response = await httpClient.GetAsync(thumbnailUrl);
                 var content = await response.Content.ReadAsByteArrayAsync();
-                File.WriteAllBytes($"{Path.GetTempPath()}\\{video.Title[..10]}.jpg", content);
-                videoPicture.Source = new BitmapImage(new Uri($"{Path.GetTempPath()}\\{video.Title[..10]}.jpg"));
+                File.WriteAllBytes($"{Path.GetTempPath()}\\tempvideothumbmqres.jpg", content);
+                videoPicture.Source = new BitmapImage(new Uri($"{Path.GetTempPath()}\\tempvideothumbmqres.jpg"));
 
                 loading.IsActive = false;
                 loadingBorder.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
                 pictureBorder.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
 
                 await Task.Delay(50);
-                File.Delete($"{Path.GetTempPath()}\\{video.Title[..10]}.jpg");
+                File.Delete($"{Path.GetTempPath()}\\tempvideothumbmqres.jpg");
                 downloadButton.IsEnabled = true;  
             }
             catch (Exception ex)
@@ -82,6 +78,14 @@ namespace YT_Downloader.NavigationViewPages.Video
                 var result = await dialog.ShowAsync();
                 view.Navigate(typeof(NavigationViewPages.Video.VideoPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
             }
+        }
+
+        private void videoResolution_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Run run = new();
+            run.Text = $"{Math.Round(float.Parse(streamManifest.GetVideoOnlyStreams().Where(s => s.Container == Container.Mp4).First(s => s.VideoQuality.Label == videoResolution.SelectedValue.ToString()).Size.MegaBytes.ToString().Split(" ")[0]) + float.Parse(streamManifest.GetAudioOnlyStreams().Where(s => s.Container == Container.Mp4).GetWithHighestBitrate().Size.MegaBytes.ToString().Split(" ")[0]), 2)}MB";
+            videoSize.Inlines.Clear();
+            videoSize.Inlines.Add(run);
         }
     }
 }

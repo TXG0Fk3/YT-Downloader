@@ -47,7 +47,8 @@
                     Width="130"
                     Margin="0,0,0,80"
                     Header="Resolution"
-                    SelectedIndex="0" />
+                    SelectedIndex="0"
+                    SelectionChanged="videoResolution_SelectionChanged"/>
                 <TextBlock>
                     <Run>Video Size:</Run>
                     <LineBreak />
