@@ -7,6 +7,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using YoutubeExplode;
 using YoutubeExplode.Videos.Streams;
@@ -18,8 +19,10 @@ namespace YT_Downloader.NavigationViewPages.Video
     {
         public static Frame view;
         public static string url;
-        public static YoutubeExplode.Videos.Video video;
-        public static StreamManifest streamManifest;
+        public YoutubeClient youtube;
+        public YoutubeExplode.Videos.Video video;
+        public StreamManifest streamManifest;
+        private CancellationTokenSource cts;
 
         public NextVideoPage()
         {
@@ -29,16 +32,19 @@ namespace YT_Downloader.NavigationViewPages.Video
 
         private void NextVideoPage_Loaded(object sender, RoutedEventArgs e)
         {
-            GetAndShowVideoInfo();
+            cts = new CancellationTokenSource();
+            GetAndShowVideoInfo(cts.Token);
         }
 
-        async private void GetAndShowVideoInfo()
+        async private void GetAndShowVideoInfo(CancellationToken token)
         {
             try
             {
-                var youtube = new YoutubeClient();
+                youtube = new YoutubeClient();
                 video = await youtube.Videos.GetAsync(url);
+                if (token.IsCancellationRequested) return;
                 streamManifest = await youtube.Videos.Streams.GetManifestAsync(url);
+                if (token.IsCancellationRequested) return;
                 videoTitle.Text = video.Title.Length > 68 ? $"{video.Title[..68]}..." : video.Title;
 
                 foreach (var rel in streamManifest.GetVideoOnlyStreams().Where(s => s.Container == Container.Mp4))
@@ -53,15 +59,15 @@ namespace YT_Downloader.NavigationViewPages.Video
                 using var httpClient = new HttpClient();
                 var response = await httpClient.GetAsync(thumbnailUrl);
                 var content = await response.Content.ReadAsByteArrayAsync();
-                File.WriteAllBytes($"{Path.GetTempPath()}\\tempvideothumbmqres.jpg", content);
-                videoPicture.Source = new BitmapImage(new Uri($"{Path.GetTempPath()}\\tempvideothumbmqres.jpg"));
+                File.WriteAllBytes($"{Path.GetTempPath()}\\{video.Id}.jpg", content);
+                videoPicture.Source = new BitmapImage(new Uri($"{Path.GetTempPath()}\\{video.Id}.jpg"));
 
                 loading.IsActive = false;
                 loadingBorder.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
                 pictureBorder.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
 
-                await Task.Delay(50);
-                File.Delete($"{Path.GetTempPath()}\\tempvideothumbmqres.jpg");
+                await Task.Delay(40);
+                File.Delete($"{Path.GetTempPath()}\\{video.Id}.jpg");
                 downloadButton.IsEnabled = true;  
             }
             catch (Exception ex)
@@ -80,12 +86,35 @@ namespace YT_Downloader.NavigationViewPages.Video
             }
         }
 
-        private void videoResolution_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void VideoResolution_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Run run = new();
-            run.Text = $"{Math.Round(float.Parse(streamManifest.GetVideoOnlyStreams().Where(s => s.Container == Container.Mp4).First(s => s.VideoQuality.Label == videoResolution.SelectedValue.ToString()).Size.MegaBytes.ToString().Split(" ")[0]) + float.Parse(streamManifest.GetAudioOnlyStreams().Where(s => s.Container == Container.Mp4).GetWithHighestBitrate().Size.MegaBytes.ToString().Split(" ")[0]), 2)}MB";
+            run.Text = $"{Math.Round(float.Parse(streamManifest.GetVideoOnlyStreams().Where(s => s.Container == Container.Mp4).First(s => s.VideoQuality.Label == videoResolution.SelectedValue.ToString()).Size.MegaBytes.ToString().Split(" ")[0]) + float.Parse(streamManifest.GetAudioOnlyStreams().Where(s => s.Container == Container.Mp4).GetWithHighestBitrate().Size.MegaBytes.ToString().Split(" ")[0]), 2)} MB";
             videoSize.Inlines.Clear();
             videoSize.Inlines.Add(run);
+        }
+
+        private void DownloadButton_Click(object sender, RoutedEventArgs e)
+        {
+            NavigationViewPages.DownloadPage.view = view;
+            NavigationViewPages.DownloadPage.youtube = youtube;
+            NavigationViewPages.DownloadPage.video = video;
+            NavigationViewPages.DownloadPage.downloadType = "V";
+            NavigationViewPages.DownloadPage.videoStreamInfo = streamManifest
+                                                .GetVideoOnlyStreams()
+                                                .Where(s => s.Container == Container.Mp4)
+                                                .First(s => s.VideoQuality.Label == videoResolution.SelectedValue.ToString());
+            NavigationViewPages.DownloadPage.audioStreamInfo = streamManifest
+                                                .GetAudioOnlyStreams()
+                                                .Where(s => s.Container == Container.Mp4 && s.AudioCodec.ToString() == "mp4a.40.2")
+                                                .GetWithHighestBitrate();
+            view.Navigate(typeof(NavigationViewPages.DownloadPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
+        }
+
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            cts.Cancel();
+            view.Navigate(typeof(NavigationViewPages.Video.VideoPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
         }
     }
 }

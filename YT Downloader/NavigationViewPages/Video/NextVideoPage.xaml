@@ -48,19 +48,23 @@
                     Margin="0,0,0,80"
                     Header="Resolution"
                     SelectedIndex="0"
-                    SelectionChanged="videoResolution_SelectionChanged"/>
+                    SelectionChanged="VideoResolution_SelectionChanged" />
                 <TextBlock>
                     <Run>Video Size:</Run>
                     <LineBreak />
-                    <Span x:Name="videoSize" Foreground="DarkGray"/>
+                    <Span x:Name="videoSize" Foreground="DarkGray" />
                 </TextBlock>
                 <Button
                     x:Name="downloadButton"
                     Width="130"
+                    Click="DownloadButton_Click"
                     Content="Download"
-                    Style="{StaticResource AccentButtonStyle}" 
-                    IsEnabled="False"/>
-                <Button Width="130" Content="Cancel"/>
+                    IsEnabled="False"
+                    Style="{StaticResource AccentButtonStyle}" />
+                <Button
+                    Width="130"
+                    Click="CancelButton_Click"
+                    Content="Cancel" />
             </StackPanel>
         </StackPanel>
     </StackPanel>
