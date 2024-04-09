@@ -19,6 +19,7 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using System.Threading.Tasks;
 using System.Threading;
 using Windows.Media.Protection.PlayReady;
+using Microsoft.UI.Xaml.Media.Animation;
 
 
 namespace YT_Downloader.NavigationViewPages
@@ -31,7 +32,6 @@ namespace YT_Downloader.NavigationViewPages
         public static string downloadType;
         public static VideoOnlyStreamInfo videoStreamInfo;
         public static IStreamInfo audioStreamInfo;
-        private CancellationTokenSource cts;
 
         public DownloadPage()
         {
@@ -39,8 +39,7 @@ namespace YT_Downloader.NavigationViewPages
             videoTitle.Text = video.Title.Length > 68 ? $"{video.Title[..68]}..." : video.Title;
             videoPicture.Source = new BitmapImage(new Uri($"{Path.GetTempPath()}\\{video.Id}.jpg"));
 
-            cts = new CancellationTokenSource();
-            DownloadVideo(cts.Token);
+            DownloadVideo(App.cts.Token);
         }
 
         async void DownloadVideo(CancellationToken token)
@@ -50,23 +49,39 @@ namespace YT_Downloader.NavigationViewPages
             var totalSizeMb = totalSize / (1024 * 1024);
             var startTime = DateTime.Now;
 
-            await youtube.Videos.DownloadAsync(streamInfos, new ConversionRequestBuilder($"D:\\YoutubeVideo\\{video.Title.Replace("\\", "").Replace("<", "").Replace(">", "").Replace(":", "").Replace("*", "").Replace("?", "").Replace("\"", "").Replace("/", "").Replace("|", "")}.mp4").Build(), new Progress<double>(p =>
+            switch(downloadType)
             {
-                var downloadedSize = totalSize * p;
-                var downloadedSizeMb = downloadedSize / (1024 * 1024);
-                var elapsedTime = DateTime.Now - startTime;
-                var remainingTimeInSeconds = elapsedTime.TotalSeconds / p;
-                var hours = (int)remainingTimeInSeconds / 3600;
-                var minutes = ((int)remainingTimeInSeconds % 3600) / 60;
-                var seconds = (int)remainingTimeInSeconds % 60;
-                var formatted_remaining_time = $"{hours}:{minutes}:{seconds}";
+                case "V":
+                    await youtube.Videos.DownloadAsync(streamInfos, new ConversionRequestBuilder($"D:\\YoutubeVideo\\{video.Title.Replace("\\", "").Replace("<", "").Replace(">", "").Replace(":", "").Replace("*", "").Replace("?", "").Replace("\"", "").Replace("/", "").Replace("|", "")}.mp4").Build(), new Progress<double>(p =>
+                    {
+                        var downloadedSize = totalSize * p;
+                        var downloadedSizeMb = downloadedSize / (1024 * 1024);
+                        var elapsedTime = DateTime.Now - startTime;
+                        var remainingTimeInSeconds = elapsedTime.TotalSeconds / p;
+                        var hours = (int)remainingTimeInSeconds / 3600;
+                        var minutes = ((int)remainingTimeInSeconds % 3600) / 60;
+                        var seconds = (int)remainingTimeInSeconds % 60;
+                        var formatted_remaining_time = $"{hours}:{minutes}:{seconds}";
 
-                var downloadSpeed = downloadedSize / elapsedTime.TotalSeconds;
+                        var downloadSpeed = downloadedSize / elapsedTime.TotalSeconds;
 
-                progressBar.Value = p * 100;
-                progress.Text = $"{formatted_remaining_time} - {downloadedSizeMb:F2} MB of {totalSizeMb:F2} MB ({downloadSpeed / (1024 * 1024):F2} MB/s)";
-            }), token);
+                        progressBar.Value = p * 100;
+                        progress.Text = $"{formatted_remaining_time} - {downloadedSizeMb:F2} MB of {totalSizeMb:F2} MB ({downloadSpeed / (1024 * 1024):F2} MB/s)";
+                    }), App.cts.Token);
+                    break;
 
+                case "M":
+                    break;
+
+                case "P":
+                    break;
+            }
+        }
+
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            App.cts.Cancel();
+            view.Navigate(typeof(NavigationViewPages.Video.VideoPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
         }
     }
 }

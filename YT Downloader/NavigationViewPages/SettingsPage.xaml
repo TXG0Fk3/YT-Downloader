@@ -37,10 +37,12 @@
                     <local:SettingsExpander.Items>
                         <local:SettingsCard>
                             <local:SettingsCard.Header>
-                                <RadioButtons>
+                                <RadioButtons
+                                    SelectedIndex="2"
+                                    SelectionChanged="Theme_SelectionChanged">
                                     <RadioButton Content="Light" />
                                     <RadioButton Content="Dark" />
-                                    <RadioButton Content="System Theme" />
+                                    <RadioButton Content="System" />
                                 </RadioButtons>
                             </local:SettingsCard.Header>
                         </local:SettingsCard>

@@ -12,7 +12,7 @@
         <MicaBackdrop />
     </Window.SystemBackdrop>
 
-    <Grid>
+    <Grid x:Name="rootElement">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -21,7 +21,7 @@
         <StackPanel Grid.Row="0" Orientation="Horizontal">
             <BitmapIcon
                 Width="20"
-                Margin="10,10,0,0"
+                Margin="15,10,0,0"
                 ShowAsMonochrome="False"
                 UriSource="ms-appx:///Assets/Square44x44Logo.altform-lightunplated_targetsize-24.png" />
             <TextBlock Margin="10,10,0,0" Text="YT  Downloader" />

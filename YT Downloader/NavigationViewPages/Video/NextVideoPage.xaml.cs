@@ -22,7 +22,6 @@ namespace YT_Downloader.NavigationViewPages.Video
         public YoutubeClient youtube;
         public YoutubeExplode.Videos.Video video;
         public StreamManifest streamManifest;
-        private CancellationTokenSource cts;
 
         public NextVideoPage()
         {
@@ -32,8 +31,8 @@ namespace YT_Downloader.NavigationViewPages.Video
 
         private void NextVideoPage_Loaded(object sender, RoutedEventArgs e)
         {
-            cts = new CancellationTokenSource();
-            GetAndShowVideoInfo(cts.Token);
+            App.cts = new CancellationTokenSource();
+            GetAndShowVideoInfo(App.cts.Token);
         }
 
         async private void GetAndShowVideoInfo(CancellationToken token)
@@ -54,6 +53,8 @@ namespace YT_Downloader.NavigationViewPages.Video
                         videoResolution.Items.Add(new ComboBoxItem().Content = rel.VideoQuality.Label);
                     }
                 }
+
+                if (token.IsCancellationRequested) return;
 
                 var thumbnailUrl = $"https://img.youtube.com/vi/{video.Id}/mqdefault.jpg";
                 using var httpClient = new HttpClient();
@@ -113,7 +114,7 @@ namespace YT_Downloader.NavigationViewPages.Video
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
-            cts.Cancel();
+            App.cts.Cancel();
             view.Navigate(typeof(NavigationViewPages.Video.VideoPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
         }
     }

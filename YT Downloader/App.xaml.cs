@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
@@ -21,6 +22,7 @@ namespace YT_Downloader
 {
     public partial class App : Application
     {
+        public static CancellationTokenSource cts = new CancellationTokenSource();
         public static MainWindow m_window;
 
         public App()

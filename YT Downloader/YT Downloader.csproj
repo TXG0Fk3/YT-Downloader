@@ -17,6 +17,7 @@
     <None Remove="MusicPage.xaml" />
     <None Remove="NavigationViewPages\DownloadPage.xaml" />
     <None Remove="NavigationViewPages\ErrorPage.xaml" />
+    <None Remove="NavigationViewPages\SettingsPage.xaml" />
     <None Remove="NavigationViewPages\Video\NextVideoPage.xaml" />
     <None Remove="VideoPage.xaml" />
   </ItemGroup>
@@ -49,11 +50,6 @@
     <ProjectCapability Include="Msix" />
   </ItemGroup>
   <ItemGroup>
-    <Page Update="NavigationViewPages\SettingsPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
     <Page Update="MusicPage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
@@ -73,6 +69,9 @@
     <None Update="ffmpeg.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="NavigationViewPages\SettingsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="NavigationViewPages\DownloadPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

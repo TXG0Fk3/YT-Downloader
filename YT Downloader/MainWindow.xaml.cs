@@ -18,6 +18,8 @@ using Microsoft.UI;
 using System.Formats.Asn1;
 using Microsoft.UI.Xaml.Media.Animation;
 using System.Runtime.CompilerServices;
+using AngleSharp.Dom;
+using System.Threading;
 
 
 namespace YT_Downloader
@@ -38,11 +40,13 @@ namespace YT_Downloader
             NavigationViewPages.Video.VideoPage.view = view;
             NavigationViewPages.Music.MusicPage.view = view;
             NavigationViewPages.Picture.PicturePage.view = view;
+            NavigationViewPages.SettingsPage.rootElement = rootElement;
             view.Navigate(typeof(NavigationViewPages.Video.VideoPage), null);
         }
 
         public void NavigationViewSwitch(NavigationView sender, NavigationViewItemInvokedEventArgs args)
         {
+            App.cts.Cancel();
             if (args.IsSettingsInvoked)
             {
                 view.Navigate(typeof(NavigationViewPages.SettingsPage), null);
