@@ -30,6 +30,22 @@ namespace YT_Downloader
         {
             this.InitializeComponent();
 
+            // Config
+            switch (App.appConfig.AppTheme)
+            {
+                case 0:
+                    rootElement.RequestedTheme = ElementTheme.Light;
+                    break;
+
+                case 1:
+                    rootElement.RequestedTheme = ElementTheme.Dark;
+                    break;
+
+                case 2:
+                    rootElement.RequestedTheme = ElementTheme.Default;
+                    break;
+            }
+
             // Window
             this.AppWindow.Resize(new Windows.Graphics.SizeInt32(660, 410));
 

@@ -41,6 +41,9 @@
             HorizontalAlignment="Center"
             FontSize="14"
             Foreground="DarkGray" />
-        <Button HorizontalAlignment="Center" Content="Cancel" Click="CancelButton_Click" />
+        <Button
+            HorizontalAlignment="Center"
+            Click="CancelButton_Click"
+            Content="Cancel" />
     </StackPanel>
 </Page>

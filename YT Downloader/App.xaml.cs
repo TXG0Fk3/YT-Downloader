@@ -1,21 +1,9 @@
 ﻿using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using Microsoft.UI.Xaml.Shapes;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
-using Windows.ApplicationModel;
-using Windows.ApplicationModel.Activation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+using System.Text.Json;
+using System.IO;
+using YT_Downloader.NavigationViewPages;
 
 
 namespace YT_Downloader
@@ -24,6 +12,7 @@ namespace YT_Downloader
     {
         public static CancellationTokenSource cts = new CancellationTokenSource();
         public static MainWindow m_window;
+        public static NavigationViewPages.ConfigFile appConfig;
 
         public App()
         {
@@ -32,6 +21,22 @@ namespace YT_Downloader
 
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
+            if (File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.json")))
+            {
+                string jsonString = File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.json"));
+                appConfig = JsonSerializer.Deserialize<NavigationViewPages.ConfigFile>(jsonString);
+            }
+            else
+            {
+                appConfig = new ConfigFile
+                {
+                    AppTheme = 2,
+                    DefaultDownloadsPath = $"{System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads")}\\YT Downloader",
+                    AlwaysAskWhereSave = true
+                };
+                File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.json"), JsonSerializer.Serialize(appConfig));
+            }
+
             m_window = new MainWindow();
             m_window.Activate();
         }

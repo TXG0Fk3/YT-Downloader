@@ -9,6 +9,8 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.Storage.Pickers;
+using Windows.Storage;
 using YoutubeExplode;
 using YoutubeExplode.Videos.Streams;
 
@@ -75,7 +77,7 @@ namespace YT_Downloader.NavigationViewPages.Video
             {
                 ContentDialog dialog = new()
                 {
-                    XamlRoot = this.XamlRoot,
+                    XamlRoot = XamlRoot,
                     Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
                     Title = "An error has occurred",
                     CloseButtonText = "Close",
@@ -95,9 +97,25 @@ namespace YT_Downloader.NavigationViewPages.Video
             videoSize.Inlines.Add(run);
         }
 
-        private void DownloadButton_Click(object sender, RoutedEventArgs e)
+        async private void DownloadButton_Click(object sender, RoutedEventArgs e)
         {
+            string downloadPath = App.appConfig.DefaultDownloadsPath;
+            if (App.appConfig.AlwaysAskWhereSave)
+            {
+                FolderPicker openPicker = new();
+                var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(App.m_window);
+                WinRT.Interop.InitializeWithWindow.Initialize(openPicker, hWnd);
+
+                openPicker.SuggestedStartLocation = PickerLocationId.Desktop;
+
+                StorageFolder folder = await openPicker.PickSingleFolderAsync();
+
+                if (folder != null) downloadPath = folder.Path;
+                else return;
+            }
+
             NavigationViewPages.DownloadPage.view = view;
+            NavigationViewPages.DownloadPage.downloadPath = downloadPath;
             NavigationViewPages.DownloadPage.youtube = youtube;
             NavigationViewPages.DownloadPage.video = video;
             NavigationViewPages.DownloadPage.downloadType = "V";

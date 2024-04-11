@@ -37,9 +37,7 @@
                     <local:SettingsExpander.Items>
                         <local:SettingsCard>
                             <local:SettingsCard.Header>
-                                <RadioButtons
-                                    SelectedIndex="2"
-                                    SelectionChanged="Theme_SelectionChanged">
+                                <RadioButtons x:Name="appThemeRadioBt" SelectionChanged="Theme_SelectionChanged">
                                     <RadioButton Content="Light" />
                                     <RadioButton Content="Dark" />
                                     <RadioButton Content="System" />
@@ -60,14 +58,16 @@
                     HeaderIcon="{ui:FontIcon Glyph=}">
                     <local:SettingsExpander.Items>
                         <local:SettingsCard x:Name="showDefaultPath" Header="Default Downloads Folder">
-                            <Button Grid.Column="1" Content="Select Folder" />
+                            <Button Grid.Column="1" Content="Select Folder" Click="SelectFolderButton_click"/>
                         </local:SettingsCard>
                         <local:SettingsCard Description="The program will always ask where to save the downloaded files" Header="Always ask where to save files">
                             <ToggleSwitch
+                                x:Name="askWhereSaveTS"
                                 Grid.Row="1"
                                 Grid.Column="1"
                                 OffContent="Off"
-                                OnContent="On" />
+                                OnContent="On"
+                                Toggled="AlwaysAskTB_toggled" />
                         </local:SettingsCard>
                     </local:SettingsExpander.Items>
                 </local:SettingsExpander>
