@@ -26,6 +26,7 @@ namespace YT_Downloader.NavigationViewPages
 {
     public sealed partial class DownloadPage : Page
     {
+        // Variávies estáticas que serão acessadas por outras classes
         public static Frame view;
         public static string downloadPath;
         public static YoutubeClient youtube;
@@ -33,14 +34,14 @@ namespace YT_Downloader.NavigationViewPages
         public static string downloadType;
         public static VideoOnlyStreamInfo videoStreamInfo;
         public static IStreamInfo audioStreamInfo;
-        private XamlRoot xamlRoot;
 
         public DownloadPage()
         {
             this.InitializeComponent();
+
+            // Mostra o nome do vídeo e a imagem.
             videoTitle.Text = video.Title.Length > 68 ? $"{video.Title[..68]}..." : video.Title;
             videoPicture.Source = new BitmapImage(new Uri($"{Path.GetTempPath()}\\{video.Id}.jpg"));
-            xamlRoot = this.XamlRoot;
 
             DownloadVideo(App.cts.Token);
         }
@@ -49,16 +50,22 @@ namespace YT_Downloader.NavigationViewPages
         {
             try
             {
+                // Carrega os dados para inciar o download
                 var streamInfos = new IStreamInfo[] { audioStreamInfo, videoStreamInfo };
+
+                // dados para exibir ao usuário
                 var totalSize = streamInfos.Sum(s => float.Parse(s.Size.Bytes.ToString().Split(" ")[0]));
                 var totalSizeMb = totalSize / (1024 * 1024);
                 var startTime = DateTime.Now;
 
+                // Decide qual será o tipo de download
                 switch (downloadType)
                 {
-                    case "V":
+                    case "V": // Video
+                        // Faz o Download
                         await youtube.Videos.DownloadAsync(streamInfos, new ConversionRequestBuilder($"{downloadPath}\\{video.Title.Replace("\\", "").Replace("<", "").Replace(">", "").Replace(":", "").Replace("*", "").Replace("?", "").Replace("\"", "").Replace("/", "").Replace("|", "")}.mp4").Build(), new Progress<double>(p =>
                         {
+                            // Mostra o progresso do Download
                             var downloadedSize = totalSize * p;
                             var downloadedSizeMb = downloadedSize / (1024 * 1024);
                             var elapsedTime = DateTime.Now - startTime;
@@ -75,16 +82,19 @@ namespace YT_Downloader.NavigationViewPages
                         }), App.cts.Token);
                         break;
 
-                    case "M":
+                    case "M": // Music
                         break;
 
-                    case "P":
+                    case "P": // Picture
                         break;
                 }
             }
             catch (Exception ex)
             {
+                // Para que a page seja carregada antes de tentar mostrar a mensagem de erro
                 await Task.Delay(5);
+
+                // Mostra para o usuário uma mensagem de erro caso algo de errado aconteça
                 ContentDialog dialog = new()
                 {
                     XamlRoot = this.XamlRoot,
@@ -99,6 +109,7 @@ namespace YT_Downloader.NavigationViewPages
             }
         }
 
+        // Cancela a operação
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             App.cts.Cancel();

@@ -58,7 +58,10 @@
                     HeaderIcon="{ui:FontIcon Glyph=}">
                     <local:SettingsExpander.Items>
                         <local:SettingsCard x:Name="showDefaultPath" Header="Default Downloads Folder">
-                            <Button Grid.Column="1" Content="Select Folder" Click="SelectFolderButton_click"/>
+                            <Button
+                                Grid.Column="1"
+                                Click="SelectFolderButton_click"
+                                Content="Select Folder" />
                         </local:SettingsCard>
                         <local:SettingsCard Description="The program will always ask where to save the downloaded files" Header="Always ask where to save files">
                             <ToggleSwitch
