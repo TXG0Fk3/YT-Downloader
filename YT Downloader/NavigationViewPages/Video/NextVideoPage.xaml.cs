@@ -143,7 +143,7 @@ namespace YT_Downloader.NavigationViewPages.Video
                                                 .First(s => s.VideoQuality.Label == videoResolution.SelectedValue.ToString());
             NavigationViewPages.DownloadPage.audioStreamInfo = streamManifest
                                                 .GetAudioOnlyStreams()
-                                                .Where(s => s.Container == Container.Mp4 && s.AudioCodec.ToString() == "mp4a.40.2")
+                                                .Where(s => s.Container == Container.Mp4)
                                                 .GetWithHighestBitrate();
 
             view.Navigate(typeof(NavigationViewPages.DownloadPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });

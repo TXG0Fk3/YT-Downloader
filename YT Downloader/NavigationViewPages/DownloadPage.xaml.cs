@@ -1,24 +1,14 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using YoutubeExplode;
 using YoutubeExplode.Videos.Streams;
 using YoutubeExplode.Converter;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System.Threading.Tasks;
 using System.Threading;
-using Windows.Media.Protection.PlayReady;
 using Microsoft.UI.Xaml.Media.Animation;
 
 
@@ -88,6 +78,12 @@ namespace YT_Downloader.NavigationViewPages
                     case "P": // Picture
                         break;
                 }
+
+                // Envia informações para o DownloadFinishedPage e inicializa ele
+                NavigationViewPages.DownloadFinishedPage.view = view;
+                NavigationViewPages.DownloadFinishedPage.downloadPath = downloadPath;
+                NavigationViewPages.DownloadFinishedPage.vidTitle = video.Title;
+                view.Navigate(typeof(NavigationViewPages.DownloadFinishedPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
             }
             catch (Exception ex)
             {
@@ -101,7 +97,7 @@ namespace YT_Downloader.NavigationViewPages
                     Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
                     Title = "An error has occurred",
                     CloseButtonText = "Close",
-                    Content = new ErrorPage(ex.Message)
+                    Content = new ErrorPage("This type of error can hardly happen, but we are trying to correct it. Try downloading the video with another resolution.\n" + ex.Message)
                 };
 
                     var result = await dialog.ShowAsync();

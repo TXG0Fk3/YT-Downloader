@@ -15,6 +15,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="MusicPage.xaml" />
+    <None Remove="NavigationViewPages\DownloadFinishedPage.xaml" />
     <None Remove="NavigationViewPages\DownloadPage.xaml" />
     <None Remove="NavigationViewPages\ErrorPage.xaml" />
     <None Remove="NavigationViewPages\SettingsPage.xaml" />
@@ -69,6 +70,9 @@
     <None Update="ffmpeg.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="NavigationViewPages\DownloadFinishedPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="NavigationViewPages\SettingsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

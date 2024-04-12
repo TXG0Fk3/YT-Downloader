@@ -8,7 +8,9 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <StackPanel>
-        <TextBlock x:Name="errorTextBlock" TextWrapping="Wrap" />
-    </StackPanel>
+    <ScrollViewer>
+        <StackPanel>
+            <TextBlock x:Name="errorTextBlock" TextWrapping="Wrap" />
+        </StackPanel>
+    </ScrollViewer>
 </Page>
