@@ -9,8 +9,8 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.Storage.Pickers;
 using Windows.Storage;
+using Windows.Storage.Pickers;
 using YoutubeExplode;
 using YoutubeExplode.Videos.Streams;
 
@@ -83,7 +83,7 @@ namespace YT_Downloader.NavigationViewPages.Video
                 File.Delete($"{Path.GetTempPath()}\\{video.Id}.jpg");
 
                 // Habilita o botão de download
-                downloadButton.IsEnabled = true;  
+                downloadButton.IsEnabled = true;
             }
             catch (Exception ex)
             {

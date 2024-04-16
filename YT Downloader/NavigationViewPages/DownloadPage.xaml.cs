@@ -1,15 +1,15 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media.Animation;
+using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.IO;
 using System.Linq;
-using YoutubeExplode;
-using YoutubeExplode.Videos.Streams;
-using YoutubeExplode.Converter;
-using Microsoft.UI.Xaml.Media.Imaging;
-using System.Threading.Tasks;
 using System.Threading;
-using Microsoft.UI.Xaml.Media.Animation;
+using System.Threading.Tasks;
+using YoutubeExplode;
+using YoutubeExplode.Converter;
+using YoutubeExplode.Videos.Streams;
 
 
 namespace YT_Downloader.NavigationViewPages
@@ -100,8 +100,8 @@ namespace YT_Downloader.NavigationViewPages
                     Content = new ErrorPage("This type of error can hardly happen, but we are trying to correct it. Try downloading the video with another resolution.\n" + ex.Message)
                 };
 
-                    var result = await dialog.ShowAsync();
-                    view.Navigate(typeof(NavigationViewPages.Video.VideoPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+                var result = await dialog.ShowAsync();
+                view.Navigate(typeof(NavigationViewPages.Video.VideoPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
             }
         }
 
