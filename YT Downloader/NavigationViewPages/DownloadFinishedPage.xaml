@@ -24,7 +24,10 @@
             x:Name="videoTitle"
             Margin="0,0,0,20"
             HorizontalAlignment="Center" />
-        <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+        <StackPanel
+            HorizontalAlignment="Center"
+            Orientation="Horizontal"
+            Spacing="6">
             <Button
                 Height="32"
                 HorizontalAlignment="Center"
