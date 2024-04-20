@@ -53,7 +53,7 @@ namespace YT_Downloader.NavigationViewPages.Video
                 streamManifest = await youtube.Videos.Streams.GetManifestAsync(url);
                 if (token.IsCancellationRequested) return;
 
-                // Título a ser mostrado pode ter no máximo 68 caracteres
+                // Título a ser mostrado pode ter no máximo 60 caracteres
                 videoTitle.Text = video.Title.Length > 60 ? $"{video.Title[..60]}..." : video.Title;
 
                 // Mostra ao Usuário todas as resolução disponíveis
@@ -84,6 +84,7 @@ namespace YT_Downloader.NavigationViewPages.Video
 
                 // Habilita o botão de download
                 downloadButton.IsEnabled = true;
+                videoResolution.IsEnabled = true;
             }
             catch (Exception ex)
             {
@@ -97,7 +98,7 @@ namespace YT_Downloader.NavigationViewPages.Video
                     Content = new NavigationViewPages.ErrorPage(ex.Message)
                 };
 
-                var result = await dialog.ShowAsync();
+                _ = await dialog.ShowAsync();
                 view.Navigate(typeof(NavigationViewPages.Video.VideoPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
             }
         }

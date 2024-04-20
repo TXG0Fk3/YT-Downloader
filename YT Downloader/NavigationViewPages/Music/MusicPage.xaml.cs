@@ -17,7 +17,7 @@ namespace YT_Downloader.NavigationViewPages.Music
         // Coleta o URL do usuário e envia para a próxima página (NextVideoPage)
         private void NextButtonClicked(object sender, RoutedEventArgs e)
         {
-            NavigationViewPages.Music.NextMusicPage.url = urlbox.Text;
+            NavigationViewPages.Music.NextMusicPage.url = urlBox.Text;
             NavigationViewPages.Music.NextMusicPage.view = view;
             view.Navigate(typeof(NavigationViewPages.Music.NextMusicPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
         }

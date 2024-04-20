@@ -5,7 +5,6 @@ using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,9 +14,9 @@ using YoutubeExplode;
 using YoutubeExplode.Videos.Streams;
 
 
-namespace YT_Downloader.NavigationViewPages.Music
+namespace YT_Downloader.NavigationViewPages.Picture
 {
-    public sealed partial class NextMusicPage : Page
+    public sealed partial class NextPicturePage : Page
     {
         // Variáveis estáticas para serem acessadas por outras classes
         public static Frame view;
@@ -25,9 +24,8 @@ namespace YT_Downloader.NavigationViewPages.Music
 
         public YoutubeClient youtube;
         public YoutubeExplode.Videos.Video video;
-        public StreamManifest streamManifest;
 
-        public NextMusicPage()
+        public NextPicturePage()
         {
             this.InitializeComponent();
             this.Loaded += NextMusicPage_Loaded;
@@ -50,20 +48,8 @@ namespace YT_Downloader.NavigationViewPages.Music
                 video = await youtube.Videos.GetAsync(url);
                 if (token.IsCancellationRequested) return;
 
-                streamManifest = await youtube.Videos.Streams.GetManifestAsync(url);
-                if (token.IsCancellationRequested) return;
-
-                // Título a ser mostrado pode ter no máximo 60 caracteres
+                // Título a ser mostrado pode ter no máximo 68 caracteres
                 videoTitle.Text = video.Title.Length > 60 ? $"{video.Title[..60]}..." : video.Title;
-
-                // Mostra ao Usuário todas as resolução disponíveis
-                foreach (var rel in streamManifest.GetAudioOnlyStreams().Where(s => s.Container == Container.Mp4).OrderByDescending(s => s.Bitrate))
-                {
-                    if (!audioBitrate.Items.Contains($"{rel.Bitrate} {rel.AudioCodec}"))
-                    {
-                        audioBitrate.Items.Add(new ComboBoxItem().Content = $"{rel.Bitrate} {rel.AudioCodec}");
-                    }
-                }
 
                 if (token.IsCancellationRequested) return;
 
@@ -75,6 +61,12 @@ namespace YT_Downloader.NavigationViewPages.Music
                 File.WriteAllBytes($"{Path.GetTempPath()}\\{video.Id}.jpg", content);
                 videoPicture.Source = new BitmapImage(new Uri($"{Path.GetTempPath()}\\{video.Id}.jpg"));
 
+                // Mostra o tamanho da imagem
+                Run run = new();
+                run.Text = $"{Math.Round(new FileInfo($"{Path.GetTempPath()}\\{video.Id}.jpg").Length / 1024.0 / 1024.0, 2)} MB";
+                pictureSize.Inlines.Clear();
+                pictureSize.Inlines.Add(run);
+
                 loading.IsActive = false;
                 loadingBorder.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
                 pictureBorder.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
@@ -84,7 +76,7 @@ namespace YT_Downloader.NavigationViewPages.Music
 
                 // Habilita o botão de download
                 downloadButton.IsEnabled = true;
-                audioBitrate.IsEnabled = true;
+                pictureResolution.IsEnabled = true;
             }
             catch (Exception ex)
             {
@@ -99,24 +91,43 @@ namespace YT_Downloader.NavigationViewPages.Music
                 };
 
                 _ = await dialog.ShowAsync();
-                view.Navigate(typeof(NavigationViewPages.Music.MusicPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+                view.Navigate(typeof(NavigationViewPages.Picture.PicturePage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
             }
-        }
+        }    
 
-        // Caso o usuário altere o bitrate, também altera o tamanho do áudio
-        private void AudioBitrate_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        // Caso o usuário altere a Resolução, também altera o tamanho do áudio
+        async private void PictureResolution_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            loading.IsActive = true;
+            loadingBorder.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
+            pictureBorder.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+
+            // Carrega a Thumbnail do vídeo e mostra ao usuário.
+            var thumbnailUrl = $"https://img.youtube.com/vi/{video.Id}/{pictureResolution.SelectedValue}.jpg";
+            using var httpClient = new HttpClient();
+            var response = await httpClient.GetAsync(thumbnailUrl);
+            var content = await response.Content.ReadAsByteArrayAsync();
+            File.WriteAllBytes($"{Path.GetTempPath()}\\{video.Id}{pictureResolution.SelectedValue}.jpg", content);
+            videoPicture.Source = new BitmapImage(new Uri($"{Path.GetTempPath()}\\{video.Id}{pictureResolution.SelectedValue}.jpg"));
+
+            loading.IsActive = false;
+            loadingBorder.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+            pictureBorder.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
+
+            // Atualiza o tamanho do arquivo
             Run run = new();
-            run.Text = $"{Math.Round(float.Parse(streamManifest.GetAudioOnlyStreams().Where(s => s.Container == Container.Mp4).First(s => s.Bitrate.ToString() == $"{audioBitrate.SelectedValue.ToString().Split()[0]} {audioBitrate.SelectedValue.ToString().Split()[1]}" && s.AudioCodec == audioBitrate.SelectedValue.ToString().Split()[2]).Size.MegaBytes.ToString().Split(" ")[0]), 2)} MB";
-            audioSize.Inlines.Clear();
-            audioSize.Inlines.Add(run);
+            run.Text = $"{Math.Round(new FileInfo($"{Path.GetTempPath()}\\{video.Id}{pictureResolution.SelectedValue}.jpg").Length / 1024.0 / 1024.0, 2)} MB";
+            pictureSize.Inlines.Clear();
+            pictureSize.Inlines.Add(run);
+
+            await Task.Delay(40);
+            File.Delete($"{Path.GetTempPath()}\\{video.Id}{pictureResolution.SelectedValue}.jpg");
         }
 
-        // Baixa o áudio
+        // Baixa a imagem
         async private void DownloadButton_Click(object sender, RoutedEventArgs e)
         {
-
-            // Caminho onde será baixado o áudio
+            // Caminho onde será baixado a imagem
             string downloadPath = App.appConfig.DefaultDownloadsPath;
             if (App.appConfig.AlwaysAskWhereSave)
             {
@@ -132,26 +143,30 @@ namespace YT_Downloader.NavigationViewPages.Music
                 // Caso o usuário cancele a escolha da pasta
                 else return;
             }
+            
+            // Nome do arquivo
+            var downloadName = video.Title.Replace("\\", "").Replace("<", "").Replace(">", "").Replace(":", "").Replace("*", "").Replace("?", "").Replace("\"", "").Replace("/", "").Replace("|", "");
+            
+            // Baixa a thumbnail
+            var thumbnailUrl = $"https://img.youtube.com/vi/{video.Id}/{pictureResolution.SelectedValue}.jpg";
+            using var httpClient = new HttpClient();
+            var response = await httpClient.GetAsync(thumbnailUrl);
+            var content = await response.Content.ReadAsByteArrayAsync();
+            File.WriteAllBytes($"{downloadPath}\\{downloadName}.jpg", content);
 
-            // Envia os dados para DownloadPage.
-            NavigationViewPages.DownloadPage.view = view;
-            NavigationViewPages.DownloadPage.downloadPath = downloadPath;
-            NavigationViewPages.DownloadPage.youtube = youtube;
-            NavigationViewPages.DownloadPage.video = video;
-            NavigationViewPages.DownloadPage.downloadType = "M";
-            NavigationViewPages.DownloadPage.audioStreamInfo = streamManifest
-                                                .GetAudioOnlyStreams()
-                                                .Where(s => s.Container == Container.Mp4)
-                                                .First(s => s.Bitrate.ToString() == $"{audioBitrate.SelectedValue.ToString().Split()[0]} {audioBitrate.SelectedValue.ToString().Split()[1]}" && s.AudioCodec == audioBitrate.SelectedValue.ToString().Split()[2]);
-
-            view.Navigate(typeof(NavigationViewPages.DownloadPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
+            // Envia os dados para DownloadFinishedPage.
+            NavigationViewPages.DownloadFinishedPage.view = view;
+            NavigationViewPages.DownloadFinishedPage.downloadPath = downloadPath;
+            NavigationViewPages.DownloadFinishedPage.vidTitle = video.Title;
+            NavigationViewPages.DownloadFinishedPage.downloadType = "P";
+            view.Navigate(typeof(NavigationViewPages.DownloadFinishedPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
         }
 
         // Cancela a operação
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             App.cts.Cancel();
-            view.Navigate(typeof(NavigationViewPages.Music.MusicPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+            view.Navigate(typeof(NavigationViewPages.Picture.PicturePage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
         }
     }
 }

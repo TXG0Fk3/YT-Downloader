@@ -40,7 +40,7 @@ namespace YT_Downloader.NavigationViewPages
         }
 
         async void DownloadVideo(CancellationToken token)
-        {
+        {      
             try
             {
                 // Declarando variáveis que guardará status do download
@@ -51,7 +51,6 @@ namespace YT_Downloader.NavigationViewPages
                 switch (downloadType)
                 {
                     case "V": // Video
-                        // Faz o Download
                         // Carrega os dados para inciar o download
                         var streamInfos = new IStreamInfo[] { audioStreamInfo, videoStreamInfo };
 
@@ -59,6 +58,7 @@ namespace YT_Downloader.NavigationViewPages
                         totalSize = streamInfos.Sum(s => float.Parse(s.Size.Bytes.ToString().Split(" ")[0]));
                         totalSizeMb = totalSize / (1024 * 1024);
 
+                        // Faz o Download
                         await youtube.Videos.DownloadAsync(streamInfos, new ConversionRequestBuilder($"{downloadPath}\\{downloadName}.mp4").Build(), new Progress<double>(p =>
                         {
                             // Mostra o progresso do Download
@@ -83,6 +83,7 @@ namespace YT_Downloader.NavigationViewPages
                         totalSize = float.Parse(audioStreamInfo.Size.Bytes.ToString().Split()[0]);
                         totalSizeMb = totalSize / (1024 * 1024);
 
+                        // Faz o Download
                         await youtube.Videos.Streams.DownloadAsync(audioStreamInfo, $"{downloadPath}\\{downloadName}.mp3", new Progress<double>(p =>
                         {
                             // Mostra o progresso do Download
@@ -101,15 +102,13 @@ namespace YT_Downloader.NavigationViewPages
                             progress.Text = $"{formatted_remaining_time} - {downloadedSizeMb:F2} MB of {totalSizeMb:F2} MB ({downloadSpeed / (1024 * 1024):F2} MB/s)";
                         }), App.cts.Token);
                         break;
-
-                    case "P": // Picture
-                        break;
                 }
 
                 // Envia informações para o DownloadFinishedPage e inicializa ele
                 NavigationViewPages.DownloadFinishedPage.view = view;
                 NavigationViewPages.DownloadFinishedPage.downloadPath = downloadPath;
                 NavigationViewPages.DownloadFinishedPage.vidTitle = video.Title;
+                NavigationViewPages.DownloadFinishedPage.downloadType = downloadType;
                 view.Navigate(typeof(NavigationViewPages.DownloadFinishedPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
             }
             catch (Exception ex)
@@ -126,11 +125,19 @@ namespace YT_Downloader.NavigationViewPages
                         Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
                         Title = "An error has occurred",
                         CloseButtonText = "Close",
-                        Content = new ErrorPage("This type of error can hardly happen, but we are trying to correct it. Try downloading the video with another resolution.\n" + ex.Message)
+                        Content = new ErrorPage(ex.Message)
                     };
 
-                    var result = await dialog.ShowAsync();
-                    view.Navigate(typeof(NavigationViewPages.Video.VideoPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+                    _ = await dialog.ShowAsync();
+                    switch (downloadType)
+                    {
+                        case "V":
+                            view.Navigate(typeof(NavigationViewPages.Video.VideoPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+                            break;
+                        case "M":
+                            view.Navigate(typeof(NavigationViewPages.Music.MusicPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+                            break;
+                    }
                 }
 
                 if (downloadType == "M") File.Delete($"{downloadPath}\\{downloadName}.mp3");
@@ -141,7 +148,16 @@ namespace YT_Downloader.NavigationViewPages
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             App.cts.Cancel();
-            view.Navigate(typeof(NavigationViewPages.Video.VideoPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+
+            switch (downloadType)
+            {
+                case "V":
+                    view.Navigate(typeof(NavigationViewPages.Video.VideoPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+                    break;
+                case "M":
+                    view.Navigate(typeof(NavigationViewPages.Music.MusicPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+                    break;
+            }
         }
     }
 }

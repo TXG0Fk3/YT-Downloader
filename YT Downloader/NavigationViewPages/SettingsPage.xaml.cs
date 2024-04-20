@@ -17,7 +17,7 @@ namespace YT_Downloader.NavigationViewPages
         {
             this.InitializeComponent();
 
-            // Carrega as configurações já salvas
+            // Mostra as configurações já salvas
             appThemeRadioBt.SelectedIndex = App.appConfig.AppTheme;
             showDefaultPath.Description = App.appConfig.DefaultDownloadsPath;
             askWhereSaveTS.IsOn = App.appConfig.AlwaysAskWhereSave;

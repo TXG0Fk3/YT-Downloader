@@ -17,7 +17,7 @@ namespace YT_Downloader.NavigationViewPages.Video
         // Coleta o URL do usuário e envia para a próxima página (NextVideoPage)
         private void NextButtonClicked(object sender, RoutedEventArgs e)
         {
-            NavigationViewPages.Video.NextVideoPage.url = urlbox.Text;
+            NavigationViewPages.Video.NextVideoPage.url = urlBox.Text;
             NavigationViewPages.Video.NextVideoPage.view = view;
             view.Navigate(typeof(NavigationViewPages.Video.NextVideoPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
         }

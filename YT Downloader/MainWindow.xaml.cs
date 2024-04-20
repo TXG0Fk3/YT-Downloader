@@ -43,8 +43,8 @@ namespace YT_Downloader
         {
             App.cts.Cancel(); // Para cancelar operações que podem estar sendo executadas
             if (args.IsSettingsInvoked)
-            {
-                view.Navigate(typeof(NavigationViewPages.SettingsPage), null); // Settings
+            {   // Settings
+                view.Navigate(typeof(NavigationViewPages.SettingsPage), null); 
             }
             else
             {

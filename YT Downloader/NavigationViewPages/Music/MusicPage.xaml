@@ -10,7 +10,7 @@
 
     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
         <TextBox
-            x:Name="urlbox"
+            x:Name="urlBox"
             MinWidth="400"
             Header="Enter your Youtube video ID or URL:"
             PlaceholderText="ID or URL" />

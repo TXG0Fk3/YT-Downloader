@@ -12,6 +12,7 @@ namespace YT_Downloader.NavigationViewPages
         public static Frame view;
         public static string downloadPath;
         public static string vidTitle;
+        public static string downloadType;
 
         public DownloadFinishedPage()
         {
@@ -29,7 +30,18 @@ namespace YT_Downloader.NavigationViewPages
         // Volta para a Page inicial
         private void BackButton_clicked(object sender, RoutedEventArgs e)
         {
-            view.Navigate(typeof(NavigationViewPages.Video.VideoPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+            switch (downloadType)
+            {
+                case "V": // Vídeo
+                    view.Navigate(typeof(NavigationViewPages.Video.VideoPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+                    break;
+                case "M": // Música
+                    view.Navigate(typeof(NavigationViewPages.Music.MusicPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+                    break;
+                case "P": // Imagem
+                    view.Navigate(typeof(NavigationViewPages.Picture.PicturePage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+                    break;
+            }
         }
     }
 }

@@ -28,6 +28,7 @@
     <None Remove="NavigationViewPages\DownloadPage.xaml" />
     <None Remove="NavigationViewPages\ErrorPage.xaml" />
     <None Remove="NavigationViewPages\Music\NextMusicPage.xaml" />
+    <None Remove="NavigationViewPages\Picture\NextPicturePage.xaml" />
     <None Remove="NavigationViewPages\SettingsPage.xaml" />
     <None Remove="NavigationViewPages\Video\NextVideoPage.xaml" />
     <None Remove="VideoPage.xaml" />
@@ -73,12 +74,12 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="NavigationViewPages\Picture\" />
-  </ItemGroup>
-  <ItemGroup>
     <None Update="ffmpeg.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="NavigationViewPages\Picture\NextPicturePage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="NavigationViewPages\Music\NextMusicPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
