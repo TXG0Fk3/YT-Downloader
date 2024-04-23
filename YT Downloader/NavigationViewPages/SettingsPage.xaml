@@ -81,7 +81,7 @@
                     Grid.Row="3"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Stretch"
-                    Description="© 2023 TXG0Fk3. All rights reserved."
+                    Description="© 2024 TXG0Fk3. All rights reserved."
                     Header="YT Downloader"
                     HeaderIcon="{ui:BitmapIcon Source=ms-appx:///Assets/Square44x44Logo.altform-lightunplated_targetsize-32.png}">
                     <TextBlock

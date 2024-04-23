@@ -12,7 +12,6 @@ using Windows.Storage;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
 using YoutubeExplode;
-using YoutubeExplode.Videos.Streams;
 
 
 namespace YT_Downloader.NavigationViewPages.Picture
