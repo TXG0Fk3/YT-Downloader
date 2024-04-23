@@ -58,6 +58,8 @@ namespace YT_Downloader.NavigationViewPages
         async private void SelectFolderButton_click(object sender, RoutedEventArgs e)
         {
             FolderPicker openPicker = new();
+            openPicker.FileTypeFilter.Add("*");
+
             nint windowHandle = WindowNative.GetWindowHandle(App.m_window);
             WinRT.Interop.InitializeWithWindow.Initialize(openPicker, windowHandle);
 

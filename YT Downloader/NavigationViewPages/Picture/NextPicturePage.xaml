@@ -49,7 +49,7 @@
                     Header="Resolution"
                     IsEnabled="False"
                     SelectedIndex="2"
-                    SelectionChanged="PictureResolution_SelectionChanged"/>
+                    SelectionChanged="PictureResolution_SelectionChanged" />
                 <TextBlock>
                     <Run>Picture Size:</Run>
                     <LineBreak />

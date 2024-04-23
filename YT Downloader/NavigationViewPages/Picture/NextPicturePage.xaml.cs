@@ -120,6 +120,8 @@ namespace YT_Downloader.NavigationViewPages.Picture
             if (App.appConfig.AlwaysAskWhereSave)
             {
                 FolderPicker openPicker = new();
+                openPicker.FileTypeFilter.Add("*");
+
                 nint windowHandle = WindowNative.GetWindowHandle(App.m_window);
                 WinRT.Interop.InitializeWithWindow.Initialize(openPicker, windowHandle);
 

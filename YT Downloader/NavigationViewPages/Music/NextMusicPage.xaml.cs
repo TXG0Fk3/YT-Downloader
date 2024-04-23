@@ -122,6 +122,8 @@ namespace YT_Downloader.NavigationViewPages.Music
             if (App.appConfig.AlwaysAskWhereSave)
             {
                 FolderPicker openPicker = new();
+                openPicker.FileTypeFilter.Add("*");
+
                 nint windowHandle = WindowNative.GetWindowHandle(App.m_window);
                 WinRT.Interop.InitializeWithWindow.Initialize(openPicker, windowHandle);
 
