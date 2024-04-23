@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Pickers;
+using WinRT.Interop;
 using YoutubeExplode;
 using YoutubeExplode.Videos.Streams;
 
@@ -21,18 +22,18 @@ namespace YT_Downloader.NavigationViewPages.Picture
         // Variáveis estáticas para serem acessadas por outras classes
         public static Frame view;
         public static string url;
-
-        public YoutubeClient youtube;
-        public YoutubeExplode.Videos.Video video;
+        
+        public string videoID;
+        public string downloadName;
 
         public NextPicturePage()
         {
             this.InitializeComponent();
-            this.Loaded += NextMusicPage_Loaded;
+            this.Loaded += NextPicturePage_Loaded;
         }
 
         // Método que é chamado somente quando a page estiver completamente carregada
-        private void NextMusicPage_Loaded(object sender, RoutedEventArgs e)
+        private void NextPicturePage_Loaded(object sender, RoutedEventArgs e)
         {
             App.cts = new CancellationTokenSource();
             GetAndShowVideoInfo(App.cts.Token);
@@ -43,36 +44,23 @@ namespace YT_Downloader.NavigationViewPages.Picture
         {
             try
             {
-                youtube = new YoutubeClient();
+                var youtube = new YoutubeClient();
 
-                video = await youtube.Videos.GetAsync(url);
+                var video = await youtube.Videos.GetAsync(url);
                 if (token.IsCancellationRequested) return;
 
-                // Título a ser mostrado pode ter no máximo 68 caracteres
+                videoID = video.Id;
+                downloadName = video.Title.Replace("\\", "").Replace("<", "").Replace(">", "").Replace(":", "").Replace("*", "").Replace("?", "").Replace("\"", "").Replace("/", "").Replace("|", "");
+
+                pictureResolution.Items.Add(new ComboBoxItem().Content = "maxresdefault");
+                pictureResolution.Items.Add(new ComboBoxItem().Content = "hqdefault");
+                pictureResolution.Items.Add(new ComboBoxItem().Content = "mqdefault");
+                pictureResolution.Items.Add(new ComboBoxItem().Content = "default");
+
+                // Título a ser mostrado pode ter no máximo 60 caracteres
                 videoTitle.Text = video.Title.Length > 60 ? $"{video.Title[..60]}..." : video.Title;
 
                 if (token.IsCancellationRequested) return;
-
-                // Carrega a Thumbnail do vídeo e mostra ao usuário.
-                var thumbnailUrl = $"https://img.youtube.com/vi/{video.Id}/maxresdefault.jpg";
-                using var httpClient = new HttpClient();
-                var response = await httpClient.GetAsync(thumbnailUrl);
-                var content = await response.Content.ReadAsByteArrayAsync();
-                File.WriteAllBytes($"{Path.GetTempPath()}\\{video.Id}.jpg", content);
-                videoPicture.Source = new BitmapImage(new Uri($"{Path.GetTempPath()}\\{video.Id}.jpg"));
-
-                // Mostra o tamanho da imagem
-                Run run = new();
-                run.Text = $"{Math.Round(new FileInfo($"{Path.GetTempPath()}\\{video.Id}.jpg").Length / 1024.0 / 1024.0, 2)} MB";
-                pictureSize.Inlines.Clear();
-                pictureSize.Inlines.Add(run);
-
-                loading.IsActive = false;
-                loadingBorder.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
-                pictureBorder.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
-
-                await Task.Delay(40);
-                File.Delete($"{Path.GetTempPath()}\\{video.Id}.jpg");
 
                 // Habilita o botão de download
                 downloadButton.IsEnabled = true;
@@ -103,12 +91,12 @@ namespace YT_Downloader.NavigationViewPages.Picture
             pictureBorder.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
 
             // Carrega a Thumbnail do vídeo e mostra ao usuário.
-            var thumbnailUrl = $"https://img.youtube.com/vi/{video.Id}/{pictureResolution.SelectedValue}.jpg";
+            var thumbnailUrl = $"https://img.youtube.com/vi/{videoID}/{pictureResolution.SelectedValue}.jpg";
             using var httpClient = new HttpClient();
             var response = await httpClient.GetAsync(thumbnailUrl);
             var content = await response.Content.ReadAsByteArrayAsync();
-            File.WriteAllBytes($"{Path.GetTempPath()}\\{video.Id}{pictureResolution.SelectedValue}.jpg", content);
-            videoPicture.Source = new BitmapImage(new Uri($"{Path.GetTempPath()}\\{video.Id}{pictureResolution.SelectedValue}.jpg"));
+            File.WriteAllBytes($"{Path.GetTempPath()}\\{videoID}{pictureResolution.SelectedValue}.jpg", content);
+            videoPicture.Source = new BitmapImage(new Uri($"{Path.GetTempPath()}\\{videoID}{pictureResolution.SelectedValue}.jpg"));
 
             loading.IsActive = false;
             loadingBorder.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
@@ -116,12 +104,12 @@ namespace YT_Downloader.NavigationViewPages.Picture
 
             // Atualiza o tamanho do arquivo
             Run run = new();
-            run.Text = $"{Math.Round(new FileInfo($"{Path.GetTempPath()}\\{video.Id}{pictureResolution.SelectedValue}.jpg").Length / 1024.0 / 1024.0, 2)} MB";
+            run.Text = $"{Math.Round(new FileInfo($"{Path.GetTempPath()}\\{videoID}{pictureResolution.SelectedValue}.jpg").Length / 1024.0 / 1024.0, 2)} MB";
             pictureSize.Inlines.Clear();
             pictureSize.Inlines.Add(run);
 
             await Task.Delay(40);
-            File.Delete($"{Path.GetTempPath()}\\{video.Id}{pictureResolution.SelectedValue}.jpg");
+            File.Delete($"{Path.GetTempPath()}\\{videoID}{pictureResolution.SelectedValue}.jpg");
         }
 
         // Baixa a imagem
@@ -132,10 +120,8 @@ namespace YT_Downloader.NavigationViewPages.Picture
             if (App.appConfig.AlwaysAskWhereSave)
             {
                 FolderPicker openPicker = new();
-                var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(App.m_window);
-                WinRT.Interop.InitializeWithWindow.Initialize(openPicker, hWnd);
-
-                openPicker.SuggestedStartLocation = PickerLocationId.Desktop;
+                nint windowHandle = WindowNative.GetWindowHandle(App.m_window);
+                WinRT.Interop.InitializeWithWindow.Initialize(openPicker, windowHandle);
 
                 StorageFolder folder = await openPicker.PickSingleFolderAsync();
 
@@ -144,11 +130,8 @@ namespace YT_Downloader.NavigationViewPages.Picture
                 else return;
             }
             
-            // Nome do arquivo
-            var downloadName = video.Title.Replace("\\", "").Replace("<", "").Replace(">", "").Replace(":", "").Replace("*", "").Replace("?", "").Replace("\"", "").Replace("/", "").Replace("|", "");
-            
             // Baixa a thumbnail
-            var thumbnailUrl = $"https://img.youtube.com/vi/{video.Id}/{pictureResolution.SelectedValue}.jpg";
+            var thumbnailUrl = $"https://img.youtube.com/vi/{videoID}/{pictureResolution.SelectedValue}.jpg";
             using var httpClient = new HttpClient();
             var response = await httpClient.GetAsync(thumbnailUrl);
             var content = await response.Content.ReadAsByteArrayAsync();
@@ -157,7 +140,7 @@ namespace YT_Downloader.NavigationViewPages.Picture
             // Envia os dados para DownloadFinishedPage.
             NavigationViewPages.DownloadFinishedPage.view = view;
             NavigationViewPages.DownloadFinishedPage.downloadPath = downloadPath;
-            NavigationViewPages.DownloadFinishedPage.vidTitle = video.Title;
+            NavigationViewPages.DownloadFinishedPage.vidTitle = videoTitle.Text;
             NavigationViewPages.DownloadFinishedPage.downloadType = "P";
             view.Navigate(typeof(NavigationViewPages.DownloadFinishedPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
         }

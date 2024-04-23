@@ -9,8 +9,8 @@
 
   <Identity
     Name="27b44013-2d51-4dd3-8d14-3c80d455fd2e"
-    Publisher="CN=Contoso Software, O=Contoso Corporation, C=US"
-    Version="1.0.1.0" />
+    Publisher="CN=leove"
+    Version="1.0.2.0" />
 
   <mp:PhoneIdentity PhoneProductId="27b44013-2d51-4dd3-8d14-3c80d455fd2e" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 

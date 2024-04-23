@@ -107,7 +107,7 @@ namespace YT_Downloader.NavigationViewPages
                 // Envia informações para o DownloadFinishedPage e inicializa ele
                 NavigationViewPages.DownloadFinishedPage.view = view;
                 NavigationViewPages.DownloadFinishedPage.downloadPath = downloadPath;
-                NavigationViewPages.DownloadFinishedPage.vidTitle = video.Title;
+                NavigationViewPages.DownloadFinishedPage.vidTitle = videoTitle.Text;
                 NavigationViewPages.DownloadFinishedPage.downloadType = downloadType;
                 view.Navigate(typeof(NavigationViewPages.DownloadFinishedPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
             }

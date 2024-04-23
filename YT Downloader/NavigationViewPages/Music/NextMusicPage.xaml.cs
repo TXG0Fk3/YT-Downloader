@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Pickers;
+using WinRT.Interop;
 using YoutubeExplode;
 using YoutubeExplode.Videos.Streams;
 
@@ -68,7 +69,7 @@ namespace YT_Downloader.NavigationViewPages.Music
                 if (token.IsCancellationRequested) return;
 
                 // Carrega a Thumbnail do vídeo e mostra ao usuário.
-                var thumbnailUrl = $"https://img.youtube.com/vi/{video.Id}/maxresdefault.jpg";
+                var thumbnailUrl = $"https://img.youtube.com/vi/{video.Id}/mqdefault.jpg";
                 using var httpClient = new HttpClient();
                 var response = await httpClient.GetAsync(thumbnailUrl);
                 var content = await response.Content.ReadAsByteArrayAsync();
@@ -121,10 +122,8 @@ namespace YT_Downloader.NavigationViewPages.Music
             if (App.appConfig.AlwaysAskWhereSave)
             {
                 FolderPicker openPicker = new();
-                var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(App.m_window);
-                WinRT.Interop.InitializeWithWindow.Initialize(openPicker, hWnd);
-
-                openPicker.SuggestedStartLocation = PickerLocationId.Desktop;
+                nint windowHandle = WindowNative.GetWindowHandle(App.m_window);
+                WinRT.Interop.InitializeWithWindow.Initialize(openPicker, windowHandle);
 
                 StorageFolder folder = await openPicker.PickSingleFolderAsync();
 

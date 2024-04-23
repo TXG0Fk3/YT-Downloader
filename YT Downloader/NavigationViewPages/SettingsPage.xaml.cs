@@ -5,6 +5,7 @@ using System.IO;
 using System.Text.Json;
 using Windows.Storage;
 using Windows.Storage.Pickers;
+using WinRT.Interop;
 
 
 namespace YT_Downloader.NavigationViewPages
@@ -57,10 +58,8 @@ namespace YT_Downloader.NavigationViewPages
         async private void SelectFolderButton_click(object sender, RoutedEventArgs e)
         {
             FolderPicker openPicker = new();
-            var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(App.m_window);
-            WinRT.Interop.InitializeWithWindow.Initialize(openPicker, hWnd);
-
-            openPicker.SuggestedStartLocation = PickerLocationId.Desktop;
+            nint windowHandle = WindowNative.GetWindowHandle(App.m_window);
+            WinRT.Interop.InitializeWithWindow.Initialize(openPicker, windowHandle);
 
             StorageFolder folder = await openPicker.PickSingleFolderAsync();
             if (folder != null)

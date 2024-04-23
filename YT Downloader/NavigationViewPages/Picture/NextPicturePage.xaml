@@ -48,14 +48,8 @@
                     Margin="0,0,0,80"
                     Header="Resolution"
                     IsEnabled="False"
-                    SelectedIndex="0"
-                    SelectionChanged="PictureResolution_SelectionChanged">
-                    <x:String>maxresdefault</x:String>
-                    <x:String>hqdefault</x:String>
-                    <x:String>mqdefault</x:String>
-                    <x:String>default</x:String>
-                </ComboBox>
-
+                    SelectedIndex="2"
+                    SelectionChanged="PictureResolution_SelectionChanged"/>
                 <TextBlock>
                     <Run>Picture Size:</Run>
                     <LineBreak />
