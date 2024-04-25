@@ -35,7 +35,7 @@ namespace YT_Downloader
                 appConfig = new NavigationViewPages.SettingsPage.ConfigFile
                 {
                     AppTheme = 2,
-                    DefaultDownloadsPath = $"{Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads")}\\YT Downloader",
+                    DefaultDownloadsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads"),
                     AlwaysAskWhereSave = true
                 };
                 Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "YT Downloader"));
