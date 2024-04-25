@@ -18,6 +18,7 @@ using YoutubeExplode.Videos.Streams;
 
 namespace YT_Downloader.NavigationViewPages.Video
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validar a compatibilidade da plataforma", Justification = "<Pendente>")]
     public sealed partial class NextVideoPage : Page
     {
         // Variáveis estáticas para serem acessadas por outras classes

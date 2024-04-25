@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace YT_Downloader
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validar a compatibilidade da plataforma", Justification = "<Pendente>")]
     public sealed partial class MainWindow : Window
     {
         public MainWindow()
