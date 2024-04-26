@@ -30,6 +30,8 @@ namespace YT_Downloader
             // Tamanho da Janela e Título "infinito"
             this.AppWindow.Resize(new Windows.Graphics.SizeInt32(660, 410));
             this.ExtendsContentIntoTitleBar = true;
+            this.AppWindow.Title = "YT Downloader";
+            this.AppWindow.SetIcon(@"AppIcon.ico");
 
             // Passa o Frame (view) para todas as pages e incializa a VideoPage (Padrão)
             NavigationViewPages.Video.VideoPage.view = view;
