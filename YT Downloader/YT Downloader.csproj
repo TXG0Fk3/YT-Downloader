@@ -9,13 +9,13 @@
     <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
     <PublishProfile>win10-$(Platform).pubxml</PublishProfile>
     <UseWinUI>true</UseWinUI>
-       <EnableMsixTooling>false</EnableMsixTooling>
-    <ApplicationIcon>YT Downloader.ico</ApplicationIcon>
+          <EnableMsixTooling>false</EnableMsixTooling>
+    <ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
     <DefaultLanguage>pt-BR</DefaultLanguage>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
-       <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
-	   <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
-       <GenerateTestArtifacts>False</GenerateTestArtifacts>
+          <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
+	      <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
+          <GenerateTestArtifacts>False</GenerateTestArtifacts>
     <AppxBundle>Never</AppxBundle>
 	  <WindowsPackageType>None</WindowsPackageType>
 	  <WindowsAppSDKSelfContained>True</WindowsAppSDKSelfContained>
@@ -49,7 +49,6 @@
     <Content Include="Assets\Square44x44Logo.scale-200.png" />
     <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
-    <Content Include="YT Downloader.ico" />
   </ItemGroup>
 
   <ItemGroup>
