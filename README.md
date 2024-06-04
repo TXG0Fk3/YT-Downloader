@@ -9,4 +9,4 @@ It's simple to use, just have a link to a YouTube video, paste it into the TextB
 ### Picture
 ![image](https://github.com/TXG0Fk3/YT-Downloader/assets/137466333/a0eaa01e-b441-40fe-80dc-4afffca93032)
 
-Last Version: V 1.0 - 04/25/2024
+Last Version: V 1.1 - 04/26/2024
