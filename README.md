@@ -1,4 +1,4 @@
-# YT Downloader
+# YT Downloader ![image](https://github.com/TXG0Fk3/YT-Downloader/assets/137466333/25068874-9936-4bd3-9e13-27b7027a9fbe)
 
 ### Welcome to my application built with WinUi3, C# and YoutubeExplode.
 
