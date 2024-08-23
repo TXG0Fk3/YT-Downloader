@@ -1,27 +1,38 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
-    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
-    <RootNamespace>YT_Downloader</RootNamespace>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
-    <Platforms>x86;x64;ARM64</Platforms>
-    <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
-    <PublishProfile>win10-$(Platform).pubxml</PublishProfile>
-    <UseWinUI>true</UseWinUI>
-          <EnableMsixTooling>false</EnableMsixTooling>
-    <ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
-    <DefaultLanguage>pt-BR</DefaultLanguage>
-    <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
-          <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
-	      <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
-          <GenerateTestArtifacts>False</GenerateTestArtifacts>
-    <AppxBundle>Never</AppxBundle>
-	  <WindowsPackageType>None</WindowsPackageType>
-	  <WindowsAppSDKSelfContained>True</WindowsAppSDKSelfContained>
-    <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
-  </PropertyGroup>
-	
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net8.0-windows10.0.26100.0</TargetFramework>
+		<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+		<RootNamespace>YT_Downloader</RootNamespace>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<Platforms>x86;x64;ARM64</Platforms>
+		<RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+		<PublishProfile>win10-$(Platform).pubxml</PublishProfile>
+		<UseWinUI>true</UseWinUI>
+		   <EnableMsixTooling>false</EnableMsixTooling>
+		<ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
+		<DefaultLanguage>en-US</DefaultLanguage>
+		<GenerateAppInstallerFile>False</GenerateAppInstallerFile>
+		   <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
+		   <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
+		   <GenerateTestArtifacts>False</GenerateTestArtifacts>
+		<AppxBundle>Never</AppxBundle>
+		   <WindowsPackageType>None</WindowsPackageType>
+		   <WindowsAppSDKSelfContained>True</WindowsAppSDKSelfContained>
+		<HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
+		<Authors>TXG0Fk3</Authors>
+		<Company>TXG0fk3</Company>
+		<Version>1.1</Version>
+		<Title>YT Downloader</Title>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<!-- Common build propertys -->
+		<GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+		<DebugType>none</DebugType>
+		<SupportedOSPlatformVersion>10.0.26100.0</SupportedOSPlatformVersion>
+	</PropertyGroup>
+
 	<Target Name="RemoveFoldersWithMuiFiles" AfterTargets="Build">
 		<ItemGroup>
 			<RemovingFiles Include="$(OutDir)*\*.mui" Exclude="$(OutDir)en-us\*.mui" />
@@ -29,116 +40,65 @@
 		</ItemGroup>
 		<RemoveDir Directories="@(RemovingFolders)" />
 	</Target>
-	
-  <ItemGroup>
-    <None Remove="MusicPage.xaml" />
-    <None Remove="NavigationViewPages\DownloadFinishedPage.xaml" />
-    <None Remove="NavigationViewPages\DownloadPage.xaml" />
-    <None Remove="NavigationViewPages\ErrorPage.xaml" />
-    <None Remove="NavigationViewPages\Music\NextMusicPage.xaml" />
-    <None Remove="NavigationViewPages\Picture\NextPicturePage.xaml" />
-    <None Remove="NavigationViewPages\SettingsPage.xaml" />
-    <None Remove="NavigationViewPages\Video\NextVideoPage.xaml" />
-    <None Remove="VideoPage.xaml" />
-  </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="Assets\SplashScreen.scale-200.png" />
-    <Content Include="Assets\LockScreenLogo.scale-200.png" />
-    <Content Include="Assets\Square150x150Logo.scale-200.png" />
-    <Content Include="Assets\Square44x44Logo.scale-200.png" />
-    <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
-    <Content Include="Assets\Wide310x150Logo.scale-200.png" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Remove="MusicPage.xaml" />
+		<None Remove="NavigationViewPages\DownloadFinishedPage.xaml" />
+		<None Remove="NavigationViewPages\DownloadPage.xaml" />
+		<None Remove="NavigationViewPages\ErrorPage.xaml" />
+		<None Remove="NavigationViewPages\Music\NextMusicPage.xaml" />
+		<None Remove="NavigationViewPages\Picture\NextPicturePage.xaml" />
+		<None Remove="NavigationViewPages\SettingsPage.xaml" />
+		<None Remove="NavigationViewPages\Video\NextVideoPage.xaml" />
+		<None Remove="VideoPage.xaml" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.0.240109" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240404000" />
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.3233" />
-    <PackageReference Include="YoutubeExplode" Version="6.3.13" />
-    <PackageReference Include="YoutubeExplode.Converter" Version="6.3.13" />
-    <Manifest Include="$(ApplicationManifest)" />
-  </ItemGroup>
+	<ItemGroup>
+		<!-- Visuals Assets -->
+		<Content Include="Assets\SplashScreen.scale-200.png" />
+		<Content Include="Assets\LockScreenLogo.scale-200.png" />
+		<Content Include="Assets\Square150x150Logo.scale-200.png" />
+		<Content Include="Assets\Square44x44Logo.scale-200.png" />
+		<Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
+		<Content Include="Assets\Wide310x150Logo.scale-200.png" />
+	</ItemGroup>
 
-	<!-- 
-  Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
-  Tools extension to be activated for this project even if the Windows App SDK Nuget
-  package has not yet been restored.
-    -->
-    <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
-      <ProjectCapability Include="Msix" />
-    </ItemGroup>
-    <ItemGroup>
-      <Page Update="MusicPage.xaml">
-        <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-        <SubType>Designer</SubType>
-      </Page>
-      <Page Update="NavigationViewPages\PicturePage.xaml">
-        <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-      </Page>
-      <Page Update="VideoPage.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </Page>
-    </ItemGroup>
-    <ItemGroup>
-      <None Update="ffmpeg.exe">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <Page Update="NavigationViewPages\Picture\NextPicturePage.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </Page>
-      <Page Update="NavigationViewPages\Music\NextMusicPage.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </Page>
-      <Page Update="NavigationViewPages\DownloadFinishedPage.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </Page>
-      <Page Update="NavigationViewPages\SettingsPage.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </Page>
-      <Page Update="NavigationViewPages\DownloadPage.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </Page>
-      <Page Update="NavigationViewPages\ErrorPage.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </Page>
-    </ItemGroup>
-    <ItemGroup>
-      <Page Update="NavigationViewPages\Video\NextVideoPage.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </Page>
-    </ItemGroup>
+	<ItemGroup>
+		<!-- NuGet Packages -->
+		<PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.1.240821" />
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240802000" />
+		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1" />
+		<PackageReference Include="YoutubeExplode" Version="6.4.0" />
+		<PackageReference Include="YoutubeExplode.Converter" Version="6.4.0" />
+		<Manifest Include="$(ApplicationManifest)" />
+	</ItemGroup>
 
-	    <!-- 
-      Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution 
-      Explorer "Package and Publish" context menu entry to be enabled for this project even if 
-      the Windows App SDK Nuget package has not yet been restored.
-        -->
-    <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
-      <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
-      <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-      <DebugType>none</DebugType>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-      <DebugType>none</DebugType>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
-      <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-      <DebugType>none</DebugType>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
-      <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-      <DebugType>none</DebugType>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-      <DebugType>none</DebugType>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
-      <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-      <DebugType>none</DebugType>
-    </PropertyGroup>
+	<ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+		<ProjectCapability Include="Msix" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<!-- Updating XAML pages -->
+		<Page Update="MusicPage.xaml">
+			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+			<SubType>Designer</SubType>
+		</Page>
+		<Page Update="NavigationViewPages\PicturePage.xaml">
+			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+		</Page>
+		<Page Update="VideoPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</Page>
+	</ItemGroup>
+
+	<ItemGroup>
+		<!-- Copy ffmpeg.exe to output directory -->
+		<None Update="ffmpeg.exe">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+		<HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
+	</PropertyGroup>
 </Project>
