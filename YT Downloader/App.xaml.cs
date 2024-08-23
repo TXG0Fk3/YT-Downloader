@@ -7,7 +7,6 @@ using System.Threading;
 
 namespace YT_Downloader
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validar a compatibilidade da plataforma", Justification = "<Pendente>")]
     public partial class App : Application
     {
         // Variáveis estáticas pq vão ser acessadas de outras classes
