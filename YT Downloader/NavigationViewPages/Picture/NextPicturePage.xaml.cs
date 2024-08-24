@@ -115,13 +115,13 @@ namespace YT_Downloader.NavigationViewPages.Picture
         async private void DownloadButton_Click(object sender, RoutedEventArgs e)
         {
             // Caminho onde será baixado a imagem
-            string downloadPath = App.appConfig.DefaultDownloadsPath;
-            if (App.appConfig.AlwaysAskWhereSave)
+            string downloadPath = App.appSettings.DefaultDownloadsPath;
+            if (App.appSettings.AlwaysAskWhereSave)
             {
                 FolderPicker openPicker = new();
                 openPicker.FileTypeFilter.Add("*");
 
-                nint windowHandle = WindowNative.GetWindowHandle(App.m_window);
+                nint windowHandle = WindowNative.GetWindowHandle(App.mainWindow);
                 WinRT.Interop.InitializeWithWindow.Initialize(openPicker, windowHandle);
 
                 StorageFolder folder = await openPicker.PickSingleFolderAsync();

@@ -11,7 +11,7 @@ namespace YT_Downloader
             this.InitializeComponent();
 
             // Carrega o tema escolhido pelo usuário
-            switch (App.appConfig.AppTheme)
+            switch (App.appSettings.Theme)
             {
                 case 0:
                     rootElement.RequestedTheme = ElementTheme.Light; // Claro

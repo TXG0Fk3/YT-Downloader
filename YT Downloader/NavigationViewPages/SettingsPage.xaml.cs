@@ -19,9 +19,9 @@ namespace YT_Downloader.NavigationViewPages
             this.InitializeComponent();
 
             // Mostra as configurações já salvas
-            appThemeRadioBt.SelectedIndex = App.appConfig.AppTheme;
-            showDefaultPath.Description = App.appConfig.DefaultDownloadsPath;
-            askWhereSaveTS.IsOn = App.appConfig.AlwaysAskWhereSave;
+            appThemeRadioBt.SelectedIndex = App.appSettings.Theme;
+            showDefaultPath.Description = App.appSettings.DefaultDownloadsPath;
+            askWhereSaveTS.IsOn = App.appSettings.AlwaysAskWhereSave;
         }
 
         // Altera o tema do aplicativo
@@ -35,22 +35,22 @@ namespace YT_Downloader.NavigationViewPages
                 {
                     case "Light": // Claro
                         rootElement.RequestedTheme = ElementTheme.Light;
-                        App.appConfig.AppTheme = 0;
+                        App.appSettings.Theme = 0;
                         break;
 
                     case "Dark": // Escuro
                         rootElement.RequestedTheme = ElementTheme.Dark;
-                        App.appConfig.AppTheme = 1;
+                        App.appSettings.Theme = 1;
                         break;
 
                     case "System": // Padrão do Sistema
                         rootElement.RequestedTheme = ElementTheme.Default;
-                        App.appConfig.AppTheme = 2;
+                        App.appSettings.Theme = 2;
                         break;
                 }
 
                 // Salva as alterações
-                SaveNewConfig();
+                SaveNewSettings();
             }
         }
 
@@ -60,17 +60,17 @@ namespace YT_Downloader.NavigationViewPages
             FolderPicker openPicker = new();
             openPicker.FileTypeFilter.Add("*");
 
-            nint windowHandle = WindowNative.GetWindowHandle(App.m_window);
+            nint windowHandle = WindowNative.GetWindowHandle(App.mainWindow);
             WinRT.Interop.InitializeWithWindow.Initialize(openPicker, windowHandle);
 
             StorageFolder folder = await openPicker.PickSingleFolderAsync();
             if (folder != null)
             {
-                App.appConfig.DefaultDownloadsPath = folder.Path;
+                App.appSettings.DefaultDownloadsPath = folder.Path;
                 showDefaultPath.Description = folder.Path;
 
                 // Salva as alterações
-                SaveNewConfig();
+                SaveNewSettings();
             }
         }
 
@@ -80,25 +80,16 @@ namespace YT_Downloader.NavigationViewPages
         {
             ToggleSwitch toggleSwitch = sender as ToggleSwitch;
 
-            App.appConfig.AlwaysAskWhereSave = toggleSwitch.IsOn;
+            App.appSettings.AlwaysAskWhereSave = toggleSwitch.IsOn;
 
             // Salva as alterações
-            SaveNewConfig();
+            SaveNewSettings();
         }
 
         // Salva as alterações
-        private void SaveNewConfig()
+        private void SaveNewSettings()
         {
-            File.WriteAllText(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "YT Downloader\\config.json"), JsonSerializer.Serialize(App.appConfig));
-        }
-
-
-        // Classe que armazena configurações do programa
-        public class ConfigFile
-        {
-            public int AppTheme { get; set; }
-            public string DefaultDownloadsPath { get; set; }
-            public bool AlwaysAskWhereSave { get; set; }
+            File.WriteAllText(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "YT Downloader\\config.json"), JsonSerializer.Serialize(App.appSettings));
         }
     }
 }

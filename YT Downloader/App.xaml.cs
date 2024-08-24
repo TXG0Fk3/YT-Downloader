@@ -11,8 +11,8 @@ namespace YT_Downloader
     {
         // Variáveis estáticas pq vão ser acessadas de outras classes
         public static CancellationTokenSource cts = new();
-        public static MainWindow m_window;
-        public static NavigationViewPages.SettingsPage.ConfigFile appConfig;
+        public static MainWindow mainWindow;
+        public static Settings.AppSettings appSettings;
 
         public App()
         {
@@ -26,24 +26,24 @@ namespace YT_Downloader
             if (File.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "YT Downloader\\config.json")))
             {
                 string jsonString = File.ReadAllText(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "YT Downloader\\config.json"));
-                appConfig = JsonSerializer.Deserialize<NavigationViewPages.SettingsPage.ConfigFile>(jsonString);
+                appSettings = JsonSerializer.Deserialize<Settings.AppSettings>(jsonString);
             }
             // Se não, cria um com configurações padrão
             else
             {
-                appConfig = new NavigationViewPages.SettingsPage.ConfigFile
+                appSettings = new Settings.AppSettings
                 {
-                    AppTheme = 2,
+                    Theme = 2,
                     DefaultDownloadsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads"),
                     AlwaysAskWhereSave = true
                 };
                 Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "YT Downloader"));
-                File.WriteAllText(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "YT Downloader\\config.json"), JsonSerializer.Serialize(appConfig));
+                File.WriteAllText(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "YT Downloader\\config.json"), JsonSerializer.Serialize(appSettings));
             }
 
             // Carrega a janela principal
-            m_window = new MainWindow();
-            m_window.Activate();
+            mainWindow = new MainWindow();
+            mainWindow.Activate();
         }
     }
 }
