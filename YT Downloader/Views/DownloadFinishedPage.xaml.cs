@@ -9,7 +9,6 @@ namespace YT_Downloader.Views
     public sealed partial class DownloadFinishedPage : Page
     {
         // Variáveis estáticas que serão acessadas por outras classes
-        public static Frame view;
         public static string downloadPath;
         public static string vidTitle;
         public static string downloadType;
@@ -33,13 +32,13 @@ namespace YT_Downloader.Views
             switch (downloadType)
             {
                 case "V": // Vídeo
-                    view.Navigate(typeof(Views.Video.VideoPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+                    App.mainWindow.view.Navigate(typeof(Views.Video.VideoPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
                     break;
                 case "M": // Música
-                    view.Navigate(typeof(Views.Music.MusicPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+                    App.mainWindow.view.Navigate(typeof(Views.Music.MusicPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
                     break;
                 case "P": // Imagem
-                    view.Navigate(typeof(Views.Picture.PicturePage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+                    App.mainWindow.view.Navigate(typeof(Views.Picture.PicturePage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
                     break;
             }
         }

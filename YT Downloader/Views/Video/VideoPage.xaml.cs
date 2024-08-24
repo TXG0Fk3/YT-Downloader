@@ -7,8 +7,6 @@ namespace YT_Downloader.Views.Video
 {
     public sealed partial class VideoPage : Page
     {
-        public static Frame view;
-
         public VideoPage()
         {
             this.InitializeComponent();
@@ -18,8 +16,7 @@ namespace YT_Downloader.Views.Video
         private void NextButtonClicked(object sender, RoutedEventArgs e)
         {
             Views.Video.NextVideoPage.url = urlBox.Text;
-            Views.Video.NextVideoPage.view = view;
-            view.Navigate(typeof(Views.Video.NextVideoPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
+            App.mainWindow.view.Navigate(typeof(Views.Video.NextVideoPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
         }
     }
 }

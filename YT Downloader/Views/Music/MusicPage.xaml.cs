@@ -7,8 +7,6 @@ namespace YT_Downloader.Views.Music
 {
     public sealed partial class MusicPage : Page
     {
-        public static Frame view;
-
         public MusicPage()
         {
             this.InitializeComponent();
@@ -18,8 +16,7 @@ namespace YT_Downloader.Views.Music
         private void NextButtonClicked(object sender, RoutedEventArgs e)
         {
             Views.Music.NextMusicPage.url = urlBox.Text;
-            Views.Music.NextMusicPage.view = view;
-            view.Navigate(typeof(Views.Music.NextMusicPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
+            App.mainWindow.view.Navigate(typeof(Views.Music.NextMusicPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
         }
     }
 }

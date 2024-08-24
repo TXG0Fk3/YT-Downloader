@@ -20,9 +20,6 @@ namespace YT_Downloader
             this.AppWindow.SetIcon(@"Assets\AppIcon.ico");
 
             // Passa o Frame (view) para todas as pages e incializa a VideoPage (Padrão)
-            Views.Video.VideoPage.view = view;
-            Views.Music.MusicPage.view = view;
-            Views.Picture.PicturePage.view = view;
             view.Navigate(typeof(Views.Video.VideoPage), null);
         }
 

@@ -19,7 +19,6 @@ namespace YT_Downloader.Views.Picture
     public sealed partial class NextPicturePage : Page
     {
         // Variáveis estáticas para serem acessadas por outras classes
-        public static Frame view;
         public static string url;
         
         public string videoID;
@@ -78,7 +77,7 @@ namespace YT_Downloader.Views.Picture
                 };
 
                 _ = await dialog.ShowAsync();
-                view.Navigate(typeof(Views.Picture.PicturePage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+                App.mainWindow.view.Navigate(typeof(Views.Picture.PicturePage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
             }
         }    
 
@@ -139,18 +138,17 @@ namespace YT_Downloader.Views.Picture
             File.WriteAllBytes($"{downloadPath}\\{downloadName}.jpg", content);
 
             // Envia os dados para DownloadFinishedPage.
-            Views.DownloadFinishedPage.view = view;
             Views.DownloadFinishedPage.downloadPath = downloadPath;
             Views.DownloadFinishedPage.vidTitle = videoTitle.Text;
             Views.DownloadFinishedPage.downloadType = "P";
-            view.Navigate(typeof(Views.DownloadFinishedPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
+            App.mainWindow.view.Navigate(typeof(Views.DownloadFinishedPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
         }
 
         // Cancela a operação
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             App.cts.Cancel();
-            view.Navigate(typeof(Views.Picture.PicturePage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+            App.mainWindow.view.Navigate(typeof(Views.Picture.PicturePage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
         }
     }
 }

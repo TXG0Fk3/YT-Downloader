@@ -21,7 +21,6 @@ namespace YT_Downloader.Views.Music
     public sealed partial class NextMusicPage : Page
     {
         // Variáveis estáticas para serem acessadas por outras classes
-        public static Frame view;
         public static string url;
 
         public YoutubeClient youtube;
@@ -100,7 +99,7 @@ namespace YT_Downloader.Views.Music
                 };
 
                 _ = await dialog.ShowAsync();
-                view.Navigate(typeof(Views.Music.MusicPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+                App.mainWindow.view.Navigate(typeof(Views.Music.MusicPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
             }
         }
 
@@ -135,7 +134,6 @@ namespace YT_Downloader.Views.Music
             }
 
             // Envia os dados para DownloadPage.
-            Views.DownloadPage.view = view;
             Views.DownloadPage.downloadPath = downloadPath;
             Views.DownloadPage.youtube = youtube;
             Views.DownloadPage.video = video;
@@ -145,14 +143,14 @@ namespace YT_Downloader.Views.Music
                                                 .Where(s => s.Container == Container.Mp4)
                                                 .First(s => s.Bitrate.ToString() == $"{audioBitrate.SelectedValue.ToString().Split()[0]} {audioBitrate.SelectedValue.ToString().Split()[1]}" && s.AudioCodec == audioBitrate.SelectedValue.ToString().Split()[2]);
 
-            view.Navigate(typeof(Views.DownloadPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
+            App.mainWindow.view.Navigate(typeof(Views.DownloadPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
         }
 
         // Cancela a operação
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             App.cts.Cancel();
-            view.Navigate(typeof(Views.Music.MusicPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+            App.mainWindow.view.Navigate(typeof(Views.Music.MusicPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
         }
     }
 }
