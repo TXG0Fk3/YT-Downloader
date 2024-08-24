@@ -16,9 +16,9 @@ using YoutubeExplode;
 using YoutubeExplode.Videos.Streams;
 
 
-namespace YT_Downloader.NavigationViewPages.Video
+namespace YT_Downloader.Views.Music
 {
-    public sealed partial class NextVideoPage : Page
+    public sealed partial class NextMusicPage : Page
     {
         // Variáveis estáticas para serem acessadas por outras classes
         public static Frame view;
@@ -28,14 +28,14 @@ namespace YT_Downloader.NavigationViewPages.Video
         public YoutubeExplode.Videos.Video video;
         public StreamManifest streamManifest;
 
-        public NextVideoPage()
+        public NextMusicPage()
         {
             this.InitializeComponent();
-            this.Loaded += NextVideoPage_Loaded;
+            this.Loaded += NextMusicPage_Loaded;
         }
 
         // Método que é chamado somente quando a page estiver completamente carregada
-        private void NextVideoPage_Loaded(object sender, RoutedEventArgs e)
+        private void NextMusicPage_Loaded(object sender, RoutedEventArgs e)
         {
             App.cts = new CancellationTokenSource();
             GetAndShowVideoInfo(App.cts.Token);
@@ -58,11 +58,11 @@ namespace YT_Downloader.NavigationViewPages.Video
                 videoTitle.Text = video.Title.Length > 60 ? $"{video.Title[..60]}..." : video.Title;
 
                 // Mostra ao Usuário todas as resolução disponíveis
-                foreach (var rel in streamManifest.GetVideoOnlyStreams().Where(s => s.Container == Container.Mp4))
+                foreach (var rel in streamManifest.GetAudioOnlyStreams().Where(s => s.Container == Container.Mp4).OrderByDescending(s => s.Bitrate))
                 {
-                    if (!videoResolution.Items.Contains(rel.VideoQuality.Label))
+                    if (!audioBitrate.Items.Contains($"{rel.Bitrate} {rel.AudioCodec}"))
                     {
-                        videoResolution.Items.Add(new ComboBoxItem().Content = rel.VideoQuality.Label);
+                        audioBitrate.Items.Add(new ComboBoxItem().Content = $"{rel.Bitrate} {rel.AudioCodec}");
                     }
                 }
 
@@ -85,7 +85,7 @@ namespace YT_Downloader.NavigationViewPages.Video
 
                 // Habilita o botão de download
                 downloadButton.IsEnabled = true;
-                videoResolution.IsEnabled = true;
+                audioBitrate.IsEnabled = true;
             }
             catch (Exception ex)
             {
@@ -96,27 +96,28 @@ namespace YT_Downloader.NavigationViewPages.Video
                     Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
                     Title = "An error has occurred",
                     CloseButtonText = "Close",
-                    Content = new NavigationViewPages.ErrorPage(ex.Message)
+                    Content = new Views.ErrorPage(ex.Message)
                 };
 
                 _ = await dialog.ShowAsync();
-                view.Navigate(typeof(NavigationViewPages.Video.VideoPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+                view.Navigate(typeof(Views.Music.MusicPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
             }
         }
 
-        // Caso o usuário altere a resolução, também altera o tamanho do vídeo
-        private void VideoResolution_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        // Caso o usuário altere o bitrate, também altera o tamanho do áudio
+        private void AudioBitrate_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Run run = new();
-            run.Text = $"{Math.Round(float.Parse(streamManifest.GetVideoOnlyStreams().Where(s => s.Container == Container.Mp4).First(s => s.VideoQuality.Label == videoResolution.SelectedValue.ToString()).Size.MegaBytes.ToString().Split(" ")[0]) + float.Parse(streamManifest.GetAudioOnlyStreams().Where(s => s.Container == Container.Mp4).GetWithHighestBitrate().Size.MegaBytes.ToString().Split(" ")[0]), 2)} MB";
-            videoSize.Inlines.Clear();
-            videoSize.Inlines.Add(run);
+            run.Text = $"{Math.Round(float.Parse(streamManifest.GetAudioOnlyStreams().Where(s => s.Container == Container.Mp4).First(s => s.Bitrate.ToString() == $"{audioBitrate.SelectedValue.ToString().Split()[0]} {audioBitrate.SelectedValue.ToString().Split()[1]}" && s.AudioCodec == audioBitrate.SelectedValue.ToString().Split()[2]).Size.MegaBytes.ToString().Split(" ")[0]), 2)} MB";
+            audioSize.Inlines.Clear();
+            audioSize.Inlines.Add(run);
         }
 
-        // Baixa o vídeo
+        // Baixa o áudio
         async private void DownloadButton_Click(object sender, RoutedEventArgs e)
         {
-            // Caminho onde será baixado o vídeo
+
+            // Caminho onde será baixado o áudio
             string downloadPath = App.appSettings.DefaultDownloadsPath;
             if (App.appSettings.AlwaysAskWhereSave)
             {
@@ -134,28 +135,24 @@ namespace YT_Downloader.NavigationViewPages.Video
             }
 
             // Envia os dados para DownloadPage.
-            NavigationViewPages.DownloadPage.view = view;
-            NavigationViewPages.DownloadPage.downloadPath = downloadPath;
-            NavigationViewPages.DownloadPage.youtube = youtube;
-            NavigationViewPages.DownloadPage.video = video;
-            NavigationViewPages.DownloadPage.downloadType = "V";
-            NavigationViewPages.DownloadPage.videoStreamInfo = streamManifest
-                                                .GetVideoOnlyStreams()
-                                                .Where(s => s.Container == Container.Mp4)
-                                                .First(s => s.VideoQuality.Label == videoResolution.SelectedValue.ToString());
-            NavigationViewPages.DownloadPage.audioStreamInfo = streamManifest
+            Views.DownloadPage.view = view;
+            Views.DownloadPage.downloadPath = downloadPath;
+            Views.DownloadPage.youtube = youtube;
+            Views.DownloadPage.video = video;
+            Views.DownloadPage.downloadType = "M";
+            Views.DownloadPage.audioStreamInfo = streamManifest
                                                 .GetAudioOnlyStreams()
                                                 .Where(s => s.Container == Container.Mp4)
-                                                .GetWithHighestBitrate();
+                                                .First(s => s.Bitrate.ToString() == $"{audioBitrate.SelectedValue.ToString().Split()[0]} {audioBitrate.SelectedValue.ToString().Split()[1]}" && s.AudioCodec == audioBitrate.SelectedValue.ToString().Split()[2]);
 
-            view.Navigate(typeof(NavigationViewPages.DownloadPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
+            view.Navigate(typeof(Views.DownloadPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
         }
 
         // Cancela a operação
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             App.cts.Cancel();
-            view.Navigate(typeof(NavigationViewPages.Video.VideoPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+            view.Navigate(typeof(Views.Music.MusicPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
         }
     }
 }

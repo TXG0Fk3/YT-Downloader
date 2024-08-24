@@ -3,7 +3,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 
 
-namespace YT_Downloader.NavigationViewPages.Video
+namespace YT_Downloader.Views.Video
 {
     public sealed partial class VideoPage : Page
     {
@@ -17,9 +17,9 @@ namespace YT_Downloader.NavigationViewPages.Video
         // Coleta o URL do usuário e envia para a próxima página (NextVideoPage)
         private void NextButtonClicked(object sender, RoutedEventArgs e)
         {
-            NavigationViewPages.Video.NextVideoPage.url = urlBox.Text;
-            NavigationViewPages.Video.NextVideoPage.view = view;
-            view.Navigate(typeof(NavigationViewPages.Video.NextVideoPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
+            Views.Video.NextVideoPage.url = urlBox.Text;
+            Views.Video.NextVideoPage.view = view;
+            view.Navigate(typeof(Views.Video.NextVideoPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
         }
     }
 }

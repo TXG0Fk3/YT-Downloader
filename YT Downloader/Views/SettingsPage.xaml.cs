@@ -1,19 +1,15 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
-using System.IO;
-using System.Text.Json;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
 
 
-namespace YT_Downloader.NavigationViewPages
+namespace YT_Downloader.Views
 {
     public sealed partial class SettingsPage : Page
     {
-        public static Grid rootElement;
-
         public SettingsPage()
         {
             this.InitializeComponent();
@@ -30,27 +26,13 @@ namespace YT_Downloader.NavigationViewPages
             RadioButton radioButton = (sender as RadioButtons).SelectedItem as RadioButton;
             if (radioButton != null)
             {
-                string theme = radioButton.Content.ToString();
-                switch (theme)
-                {
-                    case "Light": // Claro
-                        rootElement.RequestedTheme = ElementTheme.Light;
-                        App.appSettings.Theme = 0;
-                        break;
+                // Altera o tema atual
+                byte theme = byte.Parse(radioButton.Tag.ToString());
+                App.mainWindow.ApplyTheme(theme);
+                App.appSettings.Theme = theme;
 
-                    case "Dark": // Escuro
-                        rootElement.RequestedTheme = ElementTheme.Dark;
-                        App.appSettings.Theme = 1;
-                        break;
-
-                    case "System": // Padrão do Sistema
-                        rootElement.RequestedTheme = ElementTheme.Default;
-                        App.appSettings.Theme = 2;
-                        break;
-                }
-
-                // Salva as alterações
-                SaveNewSettings();
+                // Salva as alterações no arquivo 
+                App.appSettings.SaveNewSettings();
             }
         }
 
@@ -70,26 +52,18 @@ namespace YT_Downloader.NavigationViewPages
                 showDefaultPath.Description = folder.Path;
 
                 // Salva as alterações
-                SaveNewSettings();
+                App.appSettings.SaveNewSettings();
             }
         }
 
         // Define se o programa sempre deve perguntar ao usuário onde salvar os downloads,
         // Se estiver desativado, o programa utilizará o diretório padrão
-        private void AlwaysAskTB_toggled(object sender, RoutedEventArgs e)
+        private void AlwaysAskTS_toggled(object sender, RoutedEventArgs e)
         {
-            ToggleSwitch toggleSwitch = sender as ToggleSwitch;
-
-            App.appSettings.AlwaysAskWhereSave = toggleSwitch.IsOn;
+            App.appSettings.AlwaysAskWhereSave = (sender as ToggleSwitch).IsOn;
 
             // Salva as alterações
-            SaveNewSettings();
-        }
-
-        // Salva as alterações
-        private void SaveNewSettings()
-        {
-            File.WriteAllText(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "YT Downloader\\config.json"), JsonSerializer.Serialize(App.appSettings));
+            App.appSettings.SaveNewSettings();
         }
     }
 }

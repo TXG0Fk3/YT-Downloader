@@ -4,7 +4,7 @@ using Microsoft.UI.Xaml.Media.Animation;
 using System.Diagnostics;
 
 
-namespace YT_Downloader.NavigationViewPages
+namespace YT_Downloader.Views
 {
     public sealed partial class DownloadFinishedPage : Page
     {
@@ -33,13 +33,13 @@ namespace YT_Downloader.NavigationViewPages
             switch (downloadType)
             {
                 case "V": // Vídeo
-                    view.Navigate(typeof(NavigationViewPages.Video.VideoPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+                    view.Navigate(typeof(Views.Video.VideoPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
                     break;
                 case "M": // Música
-                    view.Navigate(typeof(NavigationViewPages.Music.MusicPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+                    view.Navigate(typeof(Views.Music.MusicPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
                     break;
                 case "P": // Imagem
-                    view.Navigate(typeof(NavigationViewPages.Picture.PicturePage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+                    view.Navigate(typeof(Views.Picture.PicturePage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
                     break;
             }
         }

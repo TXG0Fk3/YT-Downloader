@@ -14,7 +14,7 @@ using WinRT.Interop;
 using YoutubeExplode;
 
 
-namespace YT_Downloader.NavigationViewPages.Picture
+namespace YT_Downloader.Views.Picture
 {
     public sealed partial class NextPicturePage : Page
     {
@@ -74,11 +74,11 @@ namespace YT_Downloader.NavigationViewPages.Picture
                     Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
                     Title = "An error has occurred",
                     CloseButtonText = "Close",
-                    Content = new NavigationViewPages.ErrorPage(ex.Message)
+                    Content = new Views.ErrorPage(ex.Message)
                 };
 
                 _ = await dialog.ShowAsync();
-                view.Navigate(typeof(NavigationViewPages.Picture.PicturePage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+                view.Navigate(typeof(Views.Picture.PicturePage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
             }
         }    
 
@@ -139,18 +139,18 @@ namespace YT_Downloader.NavigationViewPages.Picture
             File.WriteAllBytes($"{downloadPath}\\{downloadName}.jpg", content);
 
             // Envia os dados para DownloadFinishedPage.
-            NavigationViewPages.DownloadFinishedPage.view = view;
-            NavigationViewPages.DownloadFinishedPage.downloadPath = downloadPath;
-            NavigationViewPages.DownloadFinishedPage.vidTitle = videoTitle.Text;
-            NavigationViewPages.DownloadFinishedPage.downloadType = "P";
-            view.Navigate(typeof(NavigationViewPages.DownloadFinishedPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
+            Views.DownloadFinishedPage.view = view;
+            Views.DownloadFinishedPage.downloadPath = downloadPath;
+            Views.DownloadFinishedPage.vidTitle = videoTitle.Text;
+            Views.DownloadFinishedPage.downloadType = "P";
+            view.Navigate(typeof(Views.DownloadFinishedPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
         }
 
         // Cancela a operação
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             App.cts.Cancel();
-            view.Navigate(typeof(NavigationViewPages.Picture.PicturePage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+            view.Navigate(typeof(Views.Picture.PicturePage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
         }
     }
 }

@@ -12,7 +12,7 @@ using YoutubeExplode.Converter;
 using YoutubeExplode.Videos.Streams;
 
 
-namespace YT_Downloader.NavigationViewPages
+namespace YT_Downloader.Views
 {
     public sealed partial class DownloadPage : Page
     {
@@ -105,11 +105,11 @@ namespace YT_Downloader.NavigationViewPages
                 }
 
                 // Envia informações para o DownloadFinishedPage e inicializa ele
-                NavigationViewPages.DownloadFinishedPage.view = view;
-                NavigationViewPages.DownloadFinishedPage.downloadPath = downloadPath;
-                NavigationViewPages.DownloadFinishedPage.vidTitle = videoTitle.Text;
-                NavigationViewPages.DownloadFinishedPage.downloadType = downloadType;
-                view.Navigate(typeof(NavigationViewPages.DownloadFinishedPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
+                Views.DownloadFinishedPage.view = view;
+                Views.DownloadFinishedPage.downloadPath = downloadPath;
+                Views.DownloadFinishedPage.vidTitle = videoTitle.Text;
+                Views.DownloadFinishedPage.downloadType = downloadType;
+                view.Navigate(typeof(Views.DownloadFinishedPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
             }
             catch (Exception ex)
             {
@@ -132,10 +132,10 @@ namespace YT_Downloader.NavigationViewPages
                     switch (downloadType)
                     {
                         case "V":
-                            view.Navigate(typeof(NavigationViewPages.Video.VideoPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+                            view.Navigate(typeof(Views.Video.VideoPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
                             break;
                         case "M":
-                            view.Navigate(typeof(NavigationViewPages.Music.MusicPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+                            view.Navigate(typeof(Views.Music.MusicPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
                             break;
                     }
                 }
@@ -152,10 +152,10 @@ namespace YT_Downloader.NavigationViewPages
             switch (downloadType)
             {
                 case "V":
-                    view.Navigate(typeof(NavigationViewPages.Video.VideoPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+                    view.Navigate(typeof(Views.Video.VideoPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
                     break;
                 case "M":
-                    view.Navigate(typeof(NavigationViewPages.Music.MusicPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+                    view.Navigate(typeof(Views.Music.MusicPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
                     break;
             }
         }

@@ -1,7 +1,7 @@
 using Microsoft.UI.Xaml.Controls;
 
 
-namespace YT_Downloader.NavigationViewPages
+namespace YT_Downloader.Views
 {
     // Serve só pra mostrar os erros na tela
     public sealed partial class ErrorPage : Page

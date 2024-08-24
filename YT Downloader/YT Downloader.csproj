@@ -43,13 +43,13 @@
 
 	<ItemGroup>
 		<None Remove="MusicPage.xaml" />
-		<None Remove="NavigationViewPages\DownloadFinishedPage.xaml" />
-		<None Remove="NavigationViewPages\DownloadPage.xaml" />
-		<None Remove="NavigationViewPages\ErrorPage.xaml" />
-		<None Remove="NavigationViewPages\Music\NextMusicPage.xaml" />
-		<None Remove="NavigationViewPages\Picture\NextPicturePage.xaml" />
-		<None Remove="NavigationViewPages\SettingsPage.xaml" />
-		<None Remove="NavigationViewPages\Video\NextVideoPage.xaml" />
+		<None Remove="Views\DownloadFinishedPage.xaml" />
+		<None Remove="Views\DownloadPage.xaml" />
+		<None Remove="Views\ErrorPage.xaml" />
+		<None Remove="Views\Music\NextMusicPage.xaml" />
+		<None Remove="Views\Picture\NextPicturePage.xaml" />
+		<None Remove="Views\SettingsPage.xaml" />
+		<None Remove="Views\Video\NextVideoPage.xaml" />
 		<None Remove="VideoPage.xaml" />
 	</ItemGroup>
 
@@ -83,7 +83,7 @@
 			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
 			<SubType>Designer</SubType>
 		</Page>
-		<Page Update="NavigationViewPages\PicturePage.xaml">
+		<Page Update="Views\PicturePage.xaml">
 			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
 		</Page>
 		<Page Update="VideoPage.xaml">
