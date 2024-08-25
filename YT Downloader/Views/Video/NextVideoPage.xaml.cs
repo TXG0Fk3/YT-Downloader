@@ -36,7 +36,7 @@ namespace YT_Downloader.Views.Video
         // Método que é chamado somente quando a page estiver completamente carregada
         private void NextVideoPage_Loaded(object sender, RoutedEventArgs e)
         {
-            App.cts = new CancellationTokenSource();
+            App.cts = new();
             GetAndShowVideoInfo(App.cts.Token);
         }
 
@@ -76,8 +76,8 @@ namespace YT_Downloader.Views.Video
                 videoPicture.Source = new BitmapImage(new Uri($"{Path.GetTempPath()}\\{video.Id}.jpg"));
 
                 loading.IsActive = false;
-                loadingBorder.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
-                pictureBorder.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
+                loadingBorder.Visibility = Visibility.Collapsed;
+                pictureBorder.Visibility = Visibility.Visible;
 
                 await Task.Delay(40);
                 File.Delete($"{Path.GetTempPath()}\\{video.Id}.jpg");

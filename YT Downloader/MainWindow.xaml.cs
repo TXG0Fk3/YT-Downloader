@@ -1,5 +1,7 @@
+using System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Windows.UI.ViewManagement;
 
 
 namespace YT_Downloader
@@ -20,7 +22,7 @@ namespace YT_Downloader
             this.AppWindow.SetIcon(@"Assets\AppIcon.ico");
 
             // Passa o Frame (view) para todas as pages e incializa a VideoPage (Padrão)
-            view.Navigate(typeof(Views.Video.VideoPage), null);
+            view.Navigate(typeof(Views.Video.VideoPage), null); 
         }
 
         // Método que altera a page sendo mostrada
@@ -28,26 +30,15 @@ namespace YT_Downloader
         {
             App.cts.Cancel(); // Para cancelar operações que podem estar sendo executadas
             if (args.IsSettingsInvoked)
-            {   // Settings
+            {   
+                // Settings
                 view.Navigate(typeof(Views.SettingsPage), null); 
             }
             else
             {
-                var tag = args.InvokedItemContainer.Tag.ToString();
-                switch (tag)
-                {
-                    case "vid": // Video
-                        view.Navigate(typeof(Views.Video.VideoPage), null);
-                        break;
-
-                    case "mus": // Music
-                        view.Navigate(typeof(Views.Music.MusicPage), null);
-                        break;
-
-                    case "pic": // Picture
-                        view.Navigate(typeof(Views.Picture.PicturePage), null);
-                        break;
-                }
+                // Views
+                Type newPage = Type.GetType(args.InvokedItemContainer.Tag.ToString());
+                view.Navigate(newPage, null);
             }
         }
 

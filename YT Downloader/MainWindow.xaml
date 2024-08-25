@@ -39,15 +39,15 @@
                     Content="Video"
                     Icon="Play"
                     IsSelected="True"
-                    Tag="vid" />
+                    Tag="YT_Downloader.Views.Video.VideoPage" />
                 <NavigationViewItem
                     Content="Music"
                     Icon="Audio"
-                    Tag="mus" />
+                    Tag="YT_Downloader.Views.Music.MusicPage" />
                 <NavigationViewItem
                     Content="Picture"
                     Icon="Pictures"
-                    Tag="pic" />
+                    Tag="YT_Downloader.Views.Picture.PicturePage" />
             </NavigationView.MenuItems>
             <Frame x:Name="view" x:FieldModifier="public">
                 <Frame.ContentTransitions>
