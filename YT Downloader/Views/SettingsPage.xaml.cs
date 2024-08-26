@@ -1,9 +1,11 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
+using System.Linq;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
+using static System.Net.Mime.MediaTypeNames;
 
 
 namespace YT_Downloader.Views
@@ -15,7 +17,7 @@ namespace YT_Downloader.Views
             this.InitializeComponent();
 
             // Mostra as configurações já salvas
-            appThemeRadioBt.SelectedIndex = App.appSettings.Theme;
+            appThemeRadioBt.Items.Cast<RadioButton>().FirstOrDefault(c => c?.Tag?.ToString() == App.appSettings.Theme.ToString()).IsChecked = true;
             showDefaultPath.Description = App.appSettings.DefaultDownloadsPath;
             askWhereSaveTS.IsOn = App.appSettings.AlwaysAskWhereSave;
         }
@@ -23,17 +25,13 @@ namespace YT_Downloader.Views
         // Altera o tema do aplicativo
         private void Theme_SelectionChanged(object sender, RoutedEventArgs e)
         {
-            RadioButton radioButton = (sender as RadioButtons).SelectedItem as RadioButton;
-            if (radioButton != null)
-            {
-                // Altera o tema atual
-                byte theme = byte.Parse(radioButton.Tag.ToString());
-                App.mainWindow.ApplyTheme(theme);
-                App.appSettings.Theme = theme;
+            // Altera o tema atual
+            ElementTheme theme = (ElementTheme)Enum.Parse(typeof(ElementTheme), ((sender as RadioButtons).SelectedItem as RadioButton).Tag.ToString());
+            App.mainWindow.ApplyTheme(theme);
+            App.appSettings.Theme = theme.ToString();
 
-                // Salva as alterações no arquivo 
-                App.appSettings.SaveNewSettings();
-            }
+            // Salva as alterações no arquivo 
+            App.appSettings.SaveNewSettings();
         }
 
         // Seleciona a pasta onde serão salvos os downlods

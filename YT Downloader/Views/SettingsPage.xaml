@@ -38,9 +38,9 @@
                         <toolkit:SettingsCard>
                             <toolkit:SettingsCard.Header>
                                 <RadioButtons x:Name="appThemeRadioBt" SelectionChanged="Theme_SelectionChanged">
-                                    <RadioButton Content="Light" Tag="0" />
-                                    <RadioButton Content="Dark" Tag="1" />
-                                    <RadioButton Content="System" Tag="2" />
+                                    <RadioButton Content="Light" Tag="Light" />
+                                    <RadioButton Content="Dark" Tag="Dark" />
+                                    <RadioButton Content="System" Tag="Default" />
                                 </RadioButtons>
                             </toolkit:SettingsCard.Header>
                         </toolkit:SettingsCard>

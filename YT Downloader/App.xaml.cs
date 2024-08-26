@@ -33,7 +33,7 @@ namespace YT_Downloader
             {
                 appSettings = new Settings.AppSettings
                 {
-                    Theme = 2,
+                    Theme = "Default",
                     DefaultDownloadsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads"),
                     AlwaysAskWhereSave = true
                 };

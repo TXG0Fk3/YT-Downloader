@@ -1,7 +1,6 @@
 using System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Windows.UI.ViewManagement;
 
 
 namespace YT_Downloader
@@ -10,16 +9,16 @@ namespace YT_Downloader
     {
         public MainWindow()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
             // Carrega o tema escolhido pelo usuário
-            ApplyTheme(App.appSettings.Theme);
+            ApplyTheme((ElementTheme)Enum.Parse(typeof(ElementTheme), App.appSettings.Theme));
 
             // Tamanho da Janela e Título "infinito"
-            this.AppWindow.Resize(new Windows.Graphics.SizeInt32(660, 410));
-            this.ExtendsContentIntoTitleBar = true;
-            this.AppWindow.Title = "YT Downloader";
-            this.AppWindow.SetIcon(@"Assets\AppIcon.ico");
+            AppWindow.Resize(new Windows.Graphics.SizeInt32(660, 410));
+            ExtendsContentIntoTitleBar = true;
+            AppWindow.Title = "YT Downloader";
+            AppWindow.SetIcon(@"Assets\AppIcon.ico");
 
             // Passa o Frame (view) para todas as pages e incializa a VideoPage (Padrão)
             view.Navigate(typeof(Views.Video.VideoPage), null); 
@@ -42,22 +41,7 @@ namespace YT_Downloader
             }
         }
 
-        public void ApplyTheme(byte theme)
-        {
-            switch (theme)
-            {
-                case 0: // Claro
-                    rootElement.RequestedTheme = ElementTheme.Light;
-                    break;
-
-                case 1: // Escuro
-                    rootElement.RequestedTheme = ElementTheme.Dark;
-                    break;
-
-                case 2: // Padrão do Sistema
-                    rootElement.RequestedTheme = ElementTheme.Default;
-                    break;
-            }
-        }
+        // Aplica o tema
+        public void ApplyTheme(ElementTheme theme) { rootElement.RequestedTheme = theme; }
     }
 }
