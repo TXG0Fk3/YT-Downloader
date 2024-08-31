@@ -1,7 +1,7 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Animation;
-
 
 namespace YT_Downloader.Views.Video
 {
@@ -12,11 +12,29 @@ namespace YT_Downloader.Views.Video
             this.InitializeComponent();
         }
 
-        // Coleta o URL do usuário e envia para a próxima página (NextVideoPage)
-        private void NextButtonClicked(object sender, RoutedEventArgs e)
+        // Método que é chamado quando o botão é clicado ou Enter é pressionado
+        private void NavigateToNextPage()
         {
-            Views.Video.NextVideoPage.url = urlBox.Text;
-            App.mainWindow.view.Navigate(typeof(Views.Video.NextVideoPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
+            App.mainWindow.view.Navigate(
+                typeof(Views.Video.NextVideoPage),
+                urlBox.Text,
+                new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight }
+            );
+        }
+
+        // Manipulador de eventos para o botão
+        private void NextButton_Clicked(object sender, RoutedEventArgs e)
+        {
+            NavigateToNextPage();
+        }
+
+        // Manipulador de eventos para a tecla pressionada no TextBox
+        private void UrlBox_KeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            if (e.Key == Windows.System.VirtualKey.Enter)
+            {
+                NavigateToNextPage();
+            }
         }
     }
 }

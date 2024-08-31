@@ -2,11 +2,8 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Linq;
-using Windows.Storage;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
-using static System.Net.Mime.MediaTypeNames;
-
 
 namespace YT_Downloader.Views
 {
@@ -14,54 +11,84 @@ namespace YT_Downloader.Views
     {
         public SettingsPage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
+            LoadSettings();
+        }
 
-            // Mostra as configurações já salvas
-            appThemeRadioBt.Items.Cast<RadioButton>().FirstOrDefault(c => c?.Tag?.ToString() == App.appSettings.Theme.ToString()).IsChecked = true;
+        // Carrega as configurações salvas na inicialização da página
+        private void LoadSettings()
+        {
+            SetSelectedThemeRadioButton();
             showDefaultPath.Description = App.appSettings.DefaultDownloadsPath;
             askWhereSaveTS.IsOn = App.appSettings.AlwaysAskWhereSave;
+        }
+
+        // Define o botão de rádio selecionado com base no tema atual
+        private void SetSelectedThemeRadioButton()
+        {
+            var selectedTheme = App.appSettings.Theme.ToString();
+            var themeRadioButton = appThemeRadioBt.Items
+                .Cast<RadioButton>()
+                .FirstOrDefault(rb => rb.Tag?.ToString() == selectedTheme);
+
+            if (themeRadioButton != null)
+            {
+                themeRadioButton.IsChecked = true;
+            }
         }
 
         // Altera o tema do aplicativo
         private void Theme_SelectionChanged(object sender, RoutedEventArgs e)
         {
-            // Altera o tema atual
-            ElementTheme theme = (ElementTheme)Enum.Parse(typeof(ElementTheme), ((sender as RadioButtons).SelectedItem as RadioButton).Tag.ToString());
-            App.mainWindow.ApplyTheme(theme);
-            App.appSettings.Theme = theme.ToString();
-
-            // Salva as alterações no arquivo 
-            App.appSettings.SaveNewSettings();
-        }
-
-        // Seleciona a pasta onde serão salvos os downlods
-        async private void SelectFolderButton_click(object sender, RoutedEventArgs e)
-        {
-            FolderPicker openPicker = new();
-            openPicker.FileTypeFilter.Add("*");
-
-            nint windowHandle = WindowNative.GetWindowHandle(App.mainWindow);
-            WinRT.Interop.InitializeWithWindow.Initialize(openPicker, windowHandle);
-
-            StorageFolder folder = await openPicker.PickSingleFolderAsync();
-            if (folder != null)
+            if (sender is RadioButtons radioButtons &&
+                radioButtons.SelectedItem is RadioButton selectedRadioButton)
             {
-                App.appSettings.DefaultDownloadsPath = folder.Path;
-                showDefaultPath.Description = folder.Path;
-
-                // Salva as alterações
-                App.appSettings.SaveNewSettings();
+                var selectedTheme = (ElementTheme)Enum.Parse(typeof(ElementTheme), selectedRadioButton.Tag.ToString());
+                ApplyThemeAndSaveSettings(selectedTheme);
             }
         }
 
-        // Define se o programa sempre deve perguntar ao usuário onde salvar os downloads,
-        // Se estiver desativado, o programa utilizará o diretório padrão
-        private void AlwaysAskTS_toggled(object sender, RoutedEventArgs e)
+        // Aplica o tema e salva as configurações
+        private void ApplyThemeAndSaveSettings(ElementTheme theme)
         {
-            App.appSettings.AlwaysAskWhereSave = (sender as ToggleSwitch).IsOn;
-
-            // Salva as alterações
+            App.mainWindow.ApplyTheme(theme);
+            App.appSettings.Theme = theme.ToString();
             App.appSettings.SaveNewSettings();
+        }
+
+        // Seleciona a pasta onde serão salvos os downloads
+        private async void SelectFolderButton_Click(object sender, RoutedEventArgs e)
+        {
+            var folderPicker = new FolderPicker
+            {
+                FileTypeFilter = { "*" }
+            };
+
+            InitializeWithWindow.Initialize(folderPicker, WindowNative.GetWindowHandle(App.mainWindow));
+            var selectedFolder = await folderPicker.PickSingleFolderAsync();
+
+            if (selectedFolder != null)
+            {
+                UpdateDownloadPath(selectedFolder.Path);
+            }
+        }
+
+        // Atualiza o caminho de download e salva as configurações
+        private void UpdateDownloadPath(string path)
+        {
+            App.appSettings.DefaultDownloadsPath = path;
+            showDefaultPath.Description = path;
+            App.appSettings.SaveNewSettings();
+        }
+
+        // Define se o programa sempre deve perguntar ao usuário onde salvar os downloads
+        private void AlwaysAskTS_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (sender is ToggleSwitch toggleSwitch)
+            {
+                App.appSettings.AlwaysAskWhereSave = toggleSwitch.IsOn;
+                App.appSettings.SaveNewSettings();
+            }
         }
     }
 }

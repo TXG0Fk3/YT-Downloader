@@ -19,26 +19,16 @@
             Text="Loading..." />
         <StackPanel Orientation="Horizontal" Spacing="10">
             <Border
-                x:Name="loadingBorder"
+                x:Name="pictureBorder"
                 Width="460"
-                Height="260">
+                Height="260"
+                CornerRadius="8">
                 <ProgressRing
-                    x:Name="loading"
                     Width="75"
                     Height="75"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     IsActive="True" />
-            </Border>
-            <Border
-                x:Name="pictureBorder"
-                CornerRadius="8"
-                Visibility="Collapsed">
-                <Image
-                    x:Name="videoPicture"
-                    Width="460"
-                    Height="260"
-                    Stretch="Fill" />
             </Border>
             <StackPanel Orientation="Vertical" Spacing="4">
                 <ComboBox

@@ -3,6 +3,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.IO;
 using System.Linq;
@@ -15,145 +16,179 @@ using WinRT.Interop;
 using YoutubeExplode;
 using YoutubeExplode.Videos.Streams;
 
-
 namespace YT_Downloader.Views.Video
 {
     public sealed partial class NextVideoPage : Page
     {
-        // Variáveis estáticas para serem acessadas por outras classes
-        public static string url;
-
-        public YoutubeClient youtube;
-        public YoutubeExplode.Videos.Video video;
-        public StreamManifest streamManifest;
+        private string url;
+        private YoutubeClient youtube;
+        private YoutubeExplode.Videos.Video video;
+        private StreamManifest streamManifest;
 
         public NextVideoPage()
         {
             this.InitializeComponent();
-            this.Loaded += NextVideoPage_Loaded;
+            this.Loaded += OnPageLoaded;
         }
 
-        // Método que é chamado somente quando a page estiver completamente carregada
-        private void NextVideoPage_Loaded(object sender, RoutedEventArgs e)
+        // Método chamado sempre que a navegação para esta página ocorre
+        protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            App.cts = new();
-            GetAndShowVideoInfo(App.cts.Token);
+            base.OnNavigatedTo(e);
+            url = e.Parameter as string ?? throw new ArgumentException("URL is missing");
+        }
+
+        // Método chamado quando a página é carregada
+        private async void OnPageLoaded(object sender, RoutedEventArgs e)
+        {
+            App.cts = new CancellationTokenSource();
+            await LoadVideoInfoAsync(App.cts.Token);
         }
 
         // Coleta informações da URL ou ID do vídeo e mostra ao usuário
-        async private void GetAndShowVideoInfo(CancellationToken token)
+        private async Task LoadVideoInfoAsync(CancellationToken token)
         {
             try
             {
                 youtube = new YoutubeClient();
-
                 video = await youtube.Videos.GetAsync(url);
                 if (token.IsCancellationRequested) return;
 
                 streamManifest = await youtube.Videos.Streams.GetManifestAsync(url);
                 if (token.IsCancellationRequested) return;
 
-                // Título a ser mostrado pode ter no máximo 60 caracteres
-                videoTitle.Text = video.Title.Length > 60 ? $"{video.Title[..60]}..." : video.Title;
-
-                // Mostra ao Usuário todas as resolução disponíveis
-                foreach (var rel in streamManifest.GetVideoOnlyStreams().Where(s => s.Container == Container.Mp4))
-                {
-                    if (!videoResolution.Items.Contains(rel.VideoQuality.Label))
-                    {
-                        videoResolution.Items.Add(new ComboBoxItem().Content = rel.VideoQuality.Label);
-                    }
-                }
-
-                if (token.IsCancellationRequested) return;
-
-                // Carrega a Thumbnail do vídeo e mostra ao usuário.
-                var thumbnailUrl = $"https://img.youtube.com/vi/{video.Id}/mqdefault.jpg";
-                using var httpClient = new HttpClient();
-                var response = await httpClient.GetAsync(thumbnailUrl);
-                var content = await response.Content.ReadAsByteArrayAsync();
-                File.WriteAllBytes($"{Path.GetTempPath()}\\{video.Id}.jpg", content);
-                videoPicture.Source = new BitmapImage(new Uri($"{Path.GetTempPath()}\\{video.Id}.jpg"));
-
-                loading.IsActive = false;
-                loadingBorder.Visibility = Visibility.Collapsed;
-                pictureBorder.Visibility = Visibility.Visible;
-
-                await Task.Delay(40);
-                File.Delete($"{Path.GetTempPath()}\\{video.Id}.jpg");
-
-                // Habilita o botão de download
-                downloadButton.IsEnabled = true;
-                videoResolution.IsEnabled = true;
+                DisplayVideoInfo();
+                EnableDownloadButton();
             }
             catch (Exception ex)
             {
-                // Caso o programa tiver algum problema, uma mensagem de erro será mostrada
-                ContentDialog dialog = new()
-                {
-                    XamlRoot = XamlRoot,
-                    Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
-                    Title = "An error has occurred",
-                    CloseButtonText = "Close",
-                    Content = new Views.ErrorPage(ex.Message)
-                };
-
-                _ = await dialog.ShowAsync();
-                App.mainWindow.view.Navigate(typeof(Views.Video.VideoPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+                await ShowErrorDialogAsync("An error occurred while loading the video.", ex);
+                NavigateBackToVideoPage();
             }
         }
 
-        // Caso o usuário altere a resolução, também altera o tamanho do vídeo
-        private void VideoResolution_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        // Exibe as informações do vídeo na UI
+        private void DisplayVideoInfo()
         {
-            Run run = new();
-            run.Text = $"{Math.Round(float.Parse(streamManifest.GetVideoOnlyStreams().Where(s => s.Container == Container.Mp4).First(s => s.VideoQuality.Label == videoResolution.SelectedValue.ToString()).Size.MegaBytes.ToString().Split(" ")[0]) + float.Parse(streamManifest.GetAudioOnlyStreams().Where(s => s.Container == Container.Mp4).GetWithHighestBitrate().Size.MegaBytes.ToString().Split(" ")[0]), 2)} MB";
-            videoSize.Inlines.Clear();
-            videoSize.Inlines.Add(run);
+            videoTitle.Text = video.Title.Length > 60 ? $"{video.Title[..60]}..." : video.Title;
+            videoResolution.Items.Clear();
+
+            foreach (var rel in streamManifest.GetVideoOnlyStreams().Where(s => s.Container == Container.Mp4))
+            {
+                if (!videoResolution.Items.Contains(rel.VideoQuality.Label))
+                {
+                    videoResolution.Items.Add(new ComboBoxItem().Content = rel.VideoQuality.Label);
+                }
+            }
+
+            LoadVideoThumbnail();
         }
 
-        // Baixa o vídeo
-        async private void DownloadButton_Click(object sender, RoutedEventArgs e)
+        // Carrega e exibe a miniatura do vídeo
+        private async void LoadVideoThumbnail()
         {
-            // Caminho onde será baixado o vídeo
-            string downloadPath = App.appSettings.DefaultDownloadsPath;
+            string thumbnailUrl = $"https://img.youtube.com/vi/{video.Id}/mqdefault.jpg";
+            string tempFilePath = $"{Path.GetTempPath()}\\{video.Id}.jpg";
+
+            using (var httpClient = new HttpClient())
+            {
+                var content = await httpClient.GetByteArrayAsync(thumbnailUrl);
+                await File.WriteAllBytesAsync(tempFilePath, content);
+            }
+
+            pictureBorder.Child = new Image
+            {
+                Source = new BitmapImage(new Uri(tempFilePath)),
+                Width = 460,
+                Height = 260,
+                Stretch = Microsoft.UI.Xaml.Media.Stretch.Fill
+            };
+
+            await Task.Delay(20);
+            File.Delete(tempFilePath);
+        }
+
+        // Habilita o botão de download
+        private void EnableDownloadButton()
+        {
+            downloadButton.IsEnabled = true;
+            videoResolution.IsEnabled = true;
+        }
+
+        // Atualiza o tamanho do vídeo baseado na resolução escolhida
+        private void VideoResolution_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var selectedStream = streamManifest
+                .GetVideoOnlyStreams()
+                .First(s => s.VideoQuality.Label == videoResolution.SelectedValue.ToString());
+
+            var audioStream = streamManifest.GetAudioOnlyStreams().GetWithHighestBitrate();
+
+            double totalSize = selectedStream.Size.MegaBytes + audioStream.Size.MegaBytes;
+            videoSize.Inlines.Clear();
+            videoSize.Inlines.Add(new Run { Text = $"{Math.Round(totalSize, 2)} MB" });
+        }
+
+        // Inicia o download do vídeo
+        private async void DownloadButton_Click(object sender, RoutedEventArgs e)
+        {
+            string downloadPath = await GetDownloadPathAsync();
+            if (string.IsNullOrEmpty(downloadPath)) return;
+
+            var parameters = new
+            {
+                DownloadPath = downloadPath,
+                YoutubeClient = youtube,
+                Video = video,
+                VideoStreamInfo = streamManifest.GetVideoOnlyStreams().First(s => s.VideoQuality.Label == videoResolution.SelectedValue.ToString()),
+                AudioStreamInfo = streamManifest.GetAudioOnlyStreams().GetWithHighestBitrate()
+            };
+
+            App.mainWindow.view.Navigate(typeof(Views.DownloadPage), parameters, new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight });
+        }
+
+        // Obtém o caminho de download escolhido pelo usuário
+        private async Task<string> GetDownloadPathAsync()
+        {
             if (App.appSettings.AlwaysAskWhereSave)
             {
                 FolderPicker openPicker = new();
                 openPicker.FileTypeFilter.Add("*");
-
-                nint windowHandle = WindowNative.GetWindowHandle(App.mainWindow);
-                WinRT.Interop.InitializeWithWindow.Initialize(openPicker, windowHandle);
+                InitializeWithWindow.Initialize(openPicker, WindowNative.GetWindowHandle(App.mainWindow));
 
                 StorageFolder folder = await openPicker.PickSingleFolderAsync();
-
-                if (folder != null) downloadPath = folder.Path;
-                // Caso o usuário cancele a escolha da pasta
-                else return;
+                return folder?.Path;
             }
 
-            // Envia os dados para DownloadPage.
-            Views.DownloadPage.downloadPath = downloadPath;
-            Views.DownloadPage.youtube = youtube;
-            Views.DownloadPage.video = video;
-            Views.DownloadPage.downloadType = "V";
-            Views.DownloadPage.videoStreamInfo = streamManifest
-                                                .GetVideoOnlyStreams()
-                                                .Where(s => s.Container == Container.Mp4)
-                                                .First(s => s.VideoQuality.Label == videoResolution.SelectedValue.ToString());
-            Views.DownloadPage.audioStreamInfo = streamManifest
-                                                .GetAudioOnlyStreams()
-                                                .Where(s => s.Container == Container.Mp4)
-                                                .GetWithHighestBitrate();
-
-            App.mainWindow.view.Navigate(typeof(Views.DownloadPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
+            return App.appSettings.DefaultDownloadsPath;
         }
 
-        // Cancela a operação
+        // Exibe um diálogo de erro
+        private async Task ShowErrorDialogAsync(string title, Exception ex)
+        {
+            ContentDialog dialog = new()
+            {
+                XamlRoot = XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Title = title,
+                Content = new Views.ErrorPage(ex.Message),
+                CloseButtonText = "Close"
+            };
+
+            await dialog.ShowAsync();
+        }
+
+        // Navega de volta para a página anterior
+        private void NavigateBackToVideoPage()
+        {
+            App.mainWindow.view.Navigate(typeof(Views.Video.VideoPage), null, new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromLeft });
+        }
+
+        // Cancela a operação de carregamento ou download
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             App.cts.Cancel();
-            App.mainWindow.view.Navigate(typeof(Views.Video.VideoPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+            NavigateBackToVideoPage();
         }
     }
 }

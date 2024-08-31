@@ -134,15 +134,15 @@ namespace YT_Downloader.Views.Music
             }
 
             // Envia os dados para DownloadPage.
-            Views.DownloadPage.downloadPath = downloadPath;
-            Views.DownloadPage.youtube = youtube;
-            Views.DownloadPage.video = video;
-            Views.DownloadPage.downloadType = "M";
-            Views.DownloadPage.audioStreamInfo = streamManifest
+            Views.DownloadPage.DownloadPath = downloadPath;
+            Views.DownloadPage.Youtube = youtube;
+            Views.DownloadPage.Video = video;
+            Views.DownloadPage.DownloadType = "M";
+            Views.DownloadPage.AudioStreamInfo = streamManifest
                                                 .GetAudioOnlyStreams()
                                                 .Where(s => s.Container == Container.Mp4)
                                                 .First(s => s.Bitrate.ToString() == $"{audioBitrate.SelectedValue.ToString().Split()[0]} {audioBitrate.SelectedValue.ToString().Split()[1]}" && s.AudioCodec == audioBitrate.SelectedValue.ToString().Split()[2]);
-
+           
             App.mainWindow.view.Navigate(typeof(Views.DownloadPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
         }
 

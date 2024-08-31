@@ -10,14 +10,16 @@
     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
         <TextBox
             x:Name="urlBox"
-            MinWidth="400"
+            Width="400"
+            MaxWidth="400"
             Header="Enter your Youtube video ID or URL:"
+            KeyDown="UrlBox_KeyDown"
             PlaceholderText="ID or URL" />
         <Button
             MinWidth="170"
             Margin="0,30,0,0"
             HorizontalAlignment="Center"
-            Click="NextButtonClicked"
+            Click="NextButton_Clicked"
             Content="Next"
             Style="{StaticResource AccentButtonStyle}" />
     </StackPanel>
