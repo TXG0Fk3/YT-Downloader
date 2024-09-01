@@ -2,6 +2,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.IO;
 using System.Linq;
@@ -15,29 +16,39 @@ namespace YT_Downloader.Views
 {
     public sealed partial class DownloadPage : Page
     {
-        // Variáveis estáticas acessíveis por outras classes
         public static string DownloadPath;
-        public static YoutubeClient Youtube;
+        private string FileName;
+        public static YoutubeClient YoutubeClient;
         public static YoutubeExplode.Videos.Video Video;
-        public static string DownloadType;
         public static VideoOnlyStreamInfo VideoStreamInfo;
-        public static IStreamInfo AudioStreamInfo;
-
-        private readonly string _downloadName;
+        public static IStreamInfo AudioStreamInfo;        
 
         public DownloadPage()
         {
             InitializeComponent();
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            var parameters = e.Parameter as dynamic;
+            DownloadPath = parameters.DownloadPath;
+            YoutubeClient = parameters.YoutubeClient;
+            Video = parameters.Video;
+            VideoStreamInfo = parameters.VideoStreamInfo;
+            AudioStreamInfo = parameters.AudioStreamInfo;
 
             // Define título e imagem do vídeo
             videoTitle.Text = Video.Title.Length > 60 ? $"{Video.Title[..60]}..." : Video.Title;
             videoPicture.Source = new BitmapImage(new Uri($"{Path.GetTempPath()}\\{Video.Id}.jpg"));
-            _downloadName = SanitizeFileName(Video.Title);
+            FileName = SanitizeFileName(Video.Title);
+
 
             DownloadVideo(App.cts.Token);
         }
 
-        private static string SanitizeFileName(string fileName) =>
+        private static string SanitizeFileName(string fileName) => 
             Path.GetInvalidFileNameChars().Aggregate(fileName, (current, c) => current.Replace(c.ToString(), string.Empty));
 
         private async void DownloadVideo(CancellationToken token)
@@ -46,15 +57,9 @@ namespace YT_Downloader.Views
             {
                 var startTime = DateTime.Now;
 
-                switch (DownloadType)
-                {
-                    case "V":
-                        await DownloadVideoFile(startTime, token);
-                        break;
-                    case "M":
-                        await DownloadAudioFile(startTime, token);
-                        break;
-                }
+                await (VideoStreamInfo != null
+                    ? DownloadVideoFile(startTime, token)
+                    : DownloadAudioFile(startTime, token));
 
                 NavigateToDownloadFinishedPage();
             }
@@ -67,18 +72,18 @@ namespace YT_Downloader.Views
         private async Task DownloadVideoFile(DateTime startTime, CancellationToken token)
         {
             var streamInfos = new IStreamInfo[] { AudioStreamInfo, VideoStreamInfo };
-            var totalSizeMb = streamInfos.Sum(s => s.Size.Bytes / (1024 * 1024f));
+            var totalSizeMb = streamInfos.Sum(s => s.Size.Bytes / (1024 * 1024));
 
-            await Youtube.Videos.DownloadAsync(streamInfos, new ConversionRequestBuilder($"{DownloadPath}\\{_downloadName}.mp4").Build(),
-                new Progress<double>(p => UpdateProgress(p, totalSizeMb, startTime)), token);
+            await YoutubeClient.Videos.DownloadAsync(streamInfos, new ConversionRequestBuilder($"{DownloadPath}\\{FileName}.mp4").Build(),
+                new Progress<double>(p => { if (p % 0.005 < 0.0001) { UpdateProgress(p, totalSizeMb, startTime); } }), token);
         }
 
         private async Task DownloadAudioFile(DateTime startTime, CancellationToken token)
         {
             var totalSizeMb = AudioStreamInfo.Size.Bytes / (1024 * 1024f);
 
-            await Youtube.Videos.Streams.DownloadAsync(AudioStreamInfo, $"{DownloadPath}\\{_downloadName}.mp3",
-                new Progress<double>(p => UpdateProgress(p, totalSizeMb, startTime)), token);
+            await YoutubeClient.Videos.Streams.DownloadAsync(AudioStreamInfo, $"{DownloadPath}\\{FileName}.mp3",
+                new Progress<double>(p => { if (p % 0.005 < 0.0001) { UpdateProgress(p, totalSizeMb, startTime); } }), token);
         }
 
         private void UpdateProgress(double progressPercentage, float totalSizeMb, DateTime startTime)
@@ -116,20 +121,20 @@ namespace YT_Downloader.Views
                 NavigateToPreviousPage();
             }
 
-            if (DownloadType == "M") File.Delete($"{DownloadPath}\\{_downloadName}.mp3");
+            if (VideoStreamInfo == null) File.Delete($"{DownloadPath}\\{FileName}.mp3");
         }
 
         private void NavigateToDownloadFinishedPage()
         {
             Views.DownloadFinishedPage.downloadPath = DownloadPath;
             Views.DownloadFinishedPage.vidTitle = videoTitle.Text;
-            Views.DownloadFinishedPage.downloadType = DownloadType;
+            Views.DownloadFinishedPage.downloadType = VideoStreamInfo != null ? "V" : "M";
             App.mainWindow.view.Navigate(typeof(Views.DownloadFinishedPage), null, new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight });
         }
 
         private void NavigateToPreviousPage()
         {
-            var pageType = DownloadType == "V" ? typeof(Views.Video.VideoPage) : typeof(Views.Music.MusicPage);
+            var pageType = VideoStreamInfo != null ? typeof(Views.Video.VideoPage) : typeof(Views.Music.MusicPage);
             App.mainWindow.view.Navigate(pageType, null, new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromLeft });
         }
 

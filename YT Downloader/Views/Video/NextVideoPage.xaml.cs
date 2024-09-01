@@ -20,22 +20,22 @@ namespace YT_Downloader.Views.Video
 {
     public sealed partial class NextVideoPage : Page
     {
-        private string url;
-        private YoutubeClient youtube;
-        private YoutubeExplode.Videos.Video video;
-        private StreamManifest streamManifest;
+        private string Url;
+        private YoutubeClient YoutubeClient;
+        private YoutubeExplode.Videos.Video Video;
+        private StreamManifest StreamManifest;
 
         public NextVideoPage()
         {
-            this.InitializeComponent();
-            this.Loaded += OnPageLoaded;
+            InitializeComponent();
+            Loaded += OnPageLoaded;
         }
 
         // Método chamado sempre que a navegação para esta página ocorre
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            url = e.Parameter as string ?? throw new ArgumentException("URL is missing");
+            Url = e.Parameter as string;
         }
 
         // Método chamado quando a página é carregada
@@ -50,11 +50,11 @@ namespace YT_Downloader.Views.Video
         {
             try
             {
-                youtube = new YoutubeClient();
-                video = await youtube.Videos.GetAsync(url);
+                YoutubeClient = new YoutubeClient();
+                Video = await YoutubeClient.Videos.GetAsync(Url);
                 if (token.IsCancellationRequested) return;
 
-                streamManifest = await youtube.Videos.Streams.GetManifestAsync(url);
+                StreamManifest = await YoutubeClient.Videos.Streams.GetManifestAsync(Url);
                 if (token.IsCancellationRequested) return;
 
                 DisplayVideoInfo();
@@ -70,10 +70,10 @@ namespace YT_Downloader.Views.Video
         // Exibe as informações do vídeo na UI
         private void DisplayVideoInfo()
         {
-            videoTitle.Text = video.Title.Length > 60 ? $"{video.Title[..60]}..." : video.Title;
+            videoTitle.Text = Video.Title.Length > 60 ? $"{Video.Title[..60]}..." : Video.Title;
             videoResolution.Items.Clear();
 
-            foreach (var rel in streamManifest.GetVideoOnlyStreams().Where(s => s.Container == Container.Mp4))
+            foreach (var rel in StreamManifest.GetVideoOnlyStreams().Where(s => s.Container == Container.Mp4))
             {
                 if (!videoResolution.Items.Contains(rel.VideoQuality.Label))
                 {
@@ -87,8 +87,8 @@ namespace YT_Downloader.Views.Video
         // Carrega e exibe a miniatura do vídeo
         private async void LoadVideoThumbnail()
         {
-            string thumbnailUrl = $"https://img.youtube.com/vi/{video.Id}/mqdefault.jpg";
-            string tempFilePath = $"{Path.GetTempPath()}\\{video.Id}.jpg";
+            string thumbnailUrl = $"https://img.youtube.com/vi/{Video.Id}/mqdefault.jpg";
+            string tempFilePath = $"{Path.GetTempPath()}\\{Video.Id}.jpg";
 
             using (var httpClient = new HttpClient())
             {
@@ -104,7 +104,7 @@ namespace YT_Downloader.Views.Video
                 Stretch = Microsoft.UI.Xaml.Media.Stretch.Fill
             };
 
-            await Task.Delay(20);
+            await Task.Delay(30);
             File.Delete(tempFilePath);
         }
 
@@ -118,11 +118,14 @@ namespace YT_Downloader.Views.Video
         // Atualiza o tamanho do vídeo baseado na resolução escolhida
         private void VideoResolution_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var selectedStream = streamManifest
+            var selectedStream = StreamManifest
                 .GetVideoOnlyStreams()
+                .Where(s => s.Container == Container.Mp4)
                 .First(s => s.VideoQuality.Label == videoResolution.SelectedValue.ToString());
 
-            var audioStream = streamManifest.GetAudioOnlyStreams().GetWithHighestBitrate();
+            var audioStream = StreamManifest.GetAudioOnlyStreams()
+                .Where(s => s.Container == Container.Mp4)
+                .GetWithHighestBitrate();
 
             double totalSize = selectedStream.Size.MegaBytes + audioStream.Size.MegaBytes;
             videoSize.Inlines.Clear();
@@ -138,10 +141,14 @@ namespace YT_Downloader.Views.Video
             var parameters = new
             {
                 DownloadPath = downloadPath,
-                YoutubeClient = youtube,
-                Video = video,
-                VideoStreamInfo = streamManifest.GetVideoOnlyStreams().First(s => s.VideoQuality.Label == videoResolution.SelectedValue.ToString()),
-                AudioStreamInfo = streamManifest.GetAudioOnlyStreams().GetWithHighestBitrate()
+                YoutubeClient,
+                Video,
+                VideoStreamInfo = StreamManifest.GetVideoOnlyStreams()
+                    .Where(s => s.Container == Container.Mp4)
+                    .First(s => s.VideoQuality.Label == videoResolution.SelectedValue.ToString()),
+                AudioStreamInfo = StreamManifest.GetAudioOnlyStreams()
+                    .Where(s => s.Container == Container.Mp4)
+                    .GetWithHighestBitrate()
             };
 
             App.mainWindow.view.Navigate(typeof(Views.DownloadPage), parameters, new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight });
@@ -152,8 +159,11 @@ namespace YT_Downloader.Views.Video
         {
             if (App.appSettings.AlwaysAskWhereSave)
             {
-                FolderPicker openPicker = new();
-                openPicker.FileTypeFilter.Add("*");
+                var openPicker = new FolderPicker
+                {
+                    FileTypeFilter = { "*" }
+                };
+
                 InitializeWithWindow.Initialize(openPicker, WindowNative.GetWindowHandle(App.mainWindow));
 
                 StorageFolder folder = await openPicker.PickSingleFolderAsync();
@@ -179,10 +189,8 @@ namespace YT_Downloader.Views.Video
         }
 
         // Navega de volta para a página anterior
-        private void NavigateBackToVideoPage()
-        {
+        private void NavigateBackToVideoPage() =>
             App.mainWindow.view.Navigate(typeof(Views.Video.VideoPage), null, new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromLeft });
-        }
 
         // Cancela a operação de carregamento ou download
         private void CancelButton_Click(object sender, RoutedEventArgs e)

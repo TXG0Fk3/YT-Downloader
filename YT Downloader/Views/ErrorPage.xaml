@@ -10,7 +10,10 @@
 
     <ScrollViewer>
         <StackPanel>
-            <TextBlock x:Name="errorTextBlock" TextWrapping="Wrap" />
+            <TextBox
+                x:Name="errorTextBlock"
+                IsReadOnly="True"
+                TextWrapping="Wrap" />
         </StackPanel>
     </ScrollViewer>
 </Page>

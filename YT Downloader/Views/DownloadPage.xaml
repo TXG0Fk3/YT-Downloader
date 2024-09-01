@@ -12,7 +12,7 @@
         VerticalAlignment="Center"
         Orientation="Vertical">
         <TextBlock Margin="0,0,0,10" HorizontalAlignment="Center">
-            <Span FontSize="18"><Bold>Downloading</Bold></Span>
+            <Span FontSize="18"><Bold>Downloading...</Bold></Span>
         </TextBlock>
         <TextBlock
             x:Name="videoTitle"

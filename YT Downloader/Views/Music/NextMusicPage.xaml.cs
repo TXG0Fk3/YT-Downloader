@@ -135,9 +135,8 @@ namespace YT_Downloader.Views.Music
 
             // Envia os dados para DownloadPage.
             Views.DownloadPage.DownloadPath = downloadPath;
-            Views.DownloadPage.Youtube = youtube;
+            Views.DownloadPage.YoutubeClient = youtube;
             Views.DownloadPage.Video = video;
-            Views.DownloadPage.DownloadType = "M";
             Views.DownloadPage.AudioStreamInfo = streamManifest
                                                 .GetAudioOnlyStreams()
                                                 .Where(s => s.Container == Container.Mp4)

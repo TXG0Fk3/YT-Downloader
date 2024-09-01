@@ -59,13 +59,13 @@ namespace YT_Downloader.Views
         // Seleciona a pasta onde serão salvos os downloads
         private async void SelectFolderButton_Click(object sender, RoutedEventArgs e)
         {
-            var folderPicker = new FolderPicker
+            var openPicker = new FolderPicker
             {
                 FileTypeFilter = { "*" }
             };
 
-            InitializeWithWindow.Initialize(folderPicker, WindowNative.GetWindowHandle(App.mainWindow));
-            var selectedFolder = await folderPicker.PickSingleFolderAsync();
+            InitializeWithWindow.Initialize(openPicker, WindowNative.GetWindowHandle(App.mainWindow));
+            var selectedFolder = await openPicker.PickSingleFolderAsync();
 
             if (selectedFolder != null)
             {
