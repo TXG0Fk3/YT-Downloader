@@ -72,7 +72,7 @@ namespace YT_Downloader.Views
         private async Task DownloadVideoFile(DateTime startTime, CancellationToken token)
         {
             var streamInfos = new IStreamInfo[] { AudioStreamInfo, VideoStreamInfo };
-            var totalSizeMb = streamInfos.Sum(s => s.Size.Bytes / (1024 * 1024));
+            var totalSizeMb = streamInfos.Sum(s => s.Size.Bytes / (1024 * 1024f));
 
             await YoutubeClient.Videos.DownloadAsync(streamInfos, new ConversionRequestBuilder($"{DownloadPath}\\{FileName}.mp4").Build(),
                 new Progress<double>(p => { if (p % 0.005 < 0.0001) { UpdateProgress(p, totalSizeMb, startTime); } }), token);

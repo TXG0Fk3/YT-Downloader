@@ -26,7 +26,7 @@ namespace YT_Downloader.Views
         // Define o botão de rádio selecionado com base no tema atual
         private void SetSelectedThemeRadioButton()
         {
-            var selectedTheme = App.appSettings.Theme.ToString();
+            var selectedTheme = App.appSettings.Theme;
             var themeRadioButton = appThemeRadioBt.Items
                 .Cast<RadioButton>()
                 .FirstOrDefault(rb => rb.Tag?.ToString() == selectedTheme);
