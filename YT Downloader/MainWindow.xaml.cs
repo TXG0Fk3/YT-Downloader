@@ -2,6 +2,7 @@ using System;
 using System.Runtime.InteropServices;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media.Animation;
 using Windows.Graphics;
 
 namespace YT_Downloader
@@ -41,10 +42,8 @@ namespace YT_Downloader
         }
 
         // Aplica o tema
-        public void ApplyTheme(ElementTheme theme)
-        {
+        public void ApplyTheme(ElementTheme theme) =>
             rootElement.RequestedTheme = theme;
-        }
 
         // Método que altera a page sendo mostrada
         private void NavigationViewSwitch(NavigationView sender, NavigationViewItemInvokedEventArgs args)
@@ -63,6 +62,22 @@ namespace YT_Downloader
                 view.Navigate(newPage, null);
             }
         }
+
+        // Método que altera o view (Frame) com uma animação indo para direita (indo).
+        public void NavigateToNextPage<TParameter>(Type nextPage, TParameter parameter) =>
+            view.Navigate(
+                nextPage,
+                parameter,
+                new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight }
+            );
+
+        // Método que altera o view (Frame) com uma animação indo para esquerda (voltando).
+        public void NavigateToPreviousPage(Type previousPage) =>
+            view.Navigate(
+                previousPage,
+                null,
+                new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft }
+            );
 
         [DllImport("user32.dll")]
         private static extern int GetDpiForWindow(IntPtr hwnd);
