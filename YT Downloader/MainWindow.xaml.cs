@@ -65,19 +65,11 @@ namespace YT_Downloader
 
         // Método que altera o view (Frame) com uma animação indo para direita (indo).
         public void NavigateToNextPage<TParameter>(Type nextPage, TParameter parameter) =>
-            view.Navigate(
-                nextPage,
-                parameter,
-                new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight }
-            );
+            view.Navigate(nextPage, parameter, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
 
         // Método que altera o view (Frame) com uma animação indo para esquerda (voltando).
         public void NavigateToPreviousPage(Type previousPage) =>
-            view.Navigate(
-                previousPage,
-                null,
-                new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft }
-            );
+            view.Navigate(previousPage, null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
 
         [DllImport("user32.dll")]
         private static extern int GetDpiForWindow(IntPtr hwnd);
