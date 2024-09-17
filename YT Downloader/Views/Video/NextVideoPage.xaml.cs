@@ -1,7 +1,6 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
-using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Navigation;
 using System;
@@ -21,7 +20,7 @@ namespace YT_Downloader.Views.Video
     public sealed partial class NextVideoPage : Page
     {
         private string Url;
-        private YoutubeClient YoutubeClient;
+        private YoutubeClient YoutubeClient = new();
         private YoutubeExplode.Videos.Video Video;
         private StreamManifest StreamManifest;
 
@@ -50,7 +49,6 @@ namespace YT_Downloader.Views.Video
         {
             try
             {
-                YoutubeClient = new YoutubeClient();
                 Video = await YoutubeClient.Videos.GetAsync(Url);
                 if (token.IsCancellationRequested) return;
 
