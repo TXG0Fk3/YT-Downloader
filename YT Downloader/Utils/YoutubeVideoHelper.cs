@@ -5,25 +5,24 @@ using System.Linq;
 using YoutubeExplode;
 using YoutubeExplode.Videos;
 using YoutubeExplode.Videos.Streams;
+using Microsoft.UI.Xaml.Controls;
 using System;
-using AngleSharp.Dom;
+using YoutubeExplode.Converter;
+using YT_Downloader.Views;
 
 namespace YT_Downloader.Utils
 {
-    class YoutubeVideoHelper()
+    class YoutubeVideoHelper
     {
-        protected YoutubeClient _YoutubeClient = new();
-        protected string _ThumbnailPath;
-        protected Video _Video;
-        protected StreamManifest[] _StreamManifests;
-        protected YoutubeExplode.Playlists.Playlist _Playlist;
-        public bool IsPlaylist;
+        private YoutubeClient _YoutubeClient = new();
+        private string _ThumbnailPath;
+        private Video _Video;
+        private StreamManifest _StreamManifest;
 
-        public YoutubeVideoHelper(string Url)
-        {
-            _Url = Url;
-            IsPlaylist = Url.Contains("playlist");
-        }
+        private readonly string _Url;
+
+        public YoutubeVideoHelper(string url) =>
+            _Url = url;
 
         public static async Task<YoutubeVideoHelper> CreateAsync(string Url)
         {
@@ -35,37 +34,22 @@ namespace YT_Downloader.Utils
 
         public async Task LoadInfo(CancellationToken token)
         {
-            _Videos.Append(await _YoutubeClient.Videos.GetAsync(_Url));
+            _Video = await _YoutubeClient.Videos.GetAsync(_Url);
             if (token.IsCancellationRequested) return;
 
-            _StreamManifests.Append(await _YoutubeClient.Videos.Streams.GetManifestAsync(_Url));
+            _StreamManifest = await _YoutubeClient.Videos.Streams.GetManifestAsync(_Url);
         }
 
-        public string GetTitle() => (IsPlaylist) ? _Playlist.Title : _Videos[0].Title;
+        public string GetTitle() => _Video.Title;
 
-        public HashSet<string> GetStreamResolutions()
-        {
-            if (IsPlaylist)
-            {
-                return
-                [
-                    "4320p", "2160p", "1440p", "1080p", "720p", "480p", "360p", "240p", "144p"
-                ];
-            }
-            else
-            {
-                return _StreamManifests[0]
-                    .GetVideoOnlyStreams()
-                    .Where(s => s.Container == Container.Mp4)
-                    .Select(s => s.VideoQuality.Label)
-                    .ToHashSet();
-            }
-        }
+        public HashSet<string> GetResolutions() =>
+            _StreamManifest
+                .GetVideoOnlyStreams()
+                .Where(s => s.Container == Container.Mp4)
+                .Select(s => s.VideoQuality.Label)
+                .ToHashSet();
 
-        public double GetSize(string resolution) =>
-            (IsPlaylist) ? GetPlaylistSize(resolution) : GetStreamSize(resolution);
-
-        protected double GetStreamSize(Index i, string resolution)
+        public double GetSize(string resolution)
         {
             var selectedStream = _StreamManifest
                 .GetVideoOnlyStreams()
@@ -79,28 +63,23 @@ namespace YT_Downloader.Utils
             return selectedStream.Size.MegaBytes + audioStream.Size.MegaBytes;
         }
 
-        protected double GetPlaylistSize(string resolution)
+        public async void DownloadAsync(string resolution, DateTime startTime, ProgressBar progressBar = null)
         {
-            double playlistSize = 0;
+            var videoStream = _StreamManifest
+                .GetVideoOnlyStreams()
+                .Where(s => s.Container == Container.Mp4)
+                .First(s => s.VideoQuality.Label == resolution);
 
-            foreach (var video in _Videos)
+            var audioStream = _StreamManifest.GetAudioOnlyStreams()
+                .Where(s => s.Container == Container.Mp4)
+                .GetWithHighestBitrate();
 
-            return selectedStream.Size.MegaBytes + audioStream.Size.MegaBytes;
-        }
+            var streamInfos = new IStreamInfo[] { audioStream, videoStream };
+            var totalSizeMb = streamInfos.Sum(s => s.Size.Bytes / (1024 * 1024f));
 
-        public async void DownloadAsync(string resolution)
-        {
-            throw new System.NotImplementedException();
-        }
+            await _YoutubeClient.Videos.DownloadAsync(streamInfos, new ConversionRequestBuilder($"{DownloadPath}\\{FileName}.mp4").Build(),
+                new Progress<double>(p => { if (p % 0.005 < 0.0001) { UpdateProgress(p, totalSizeMb, startTime); } }), token);
 
-        protected async void DownloadStreamAsync(string resolution)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        protected async void DownloadPlaylistAsync(string resolution)
-        {
-            throw new System.NotImplementedException();
         }
     }
 }
