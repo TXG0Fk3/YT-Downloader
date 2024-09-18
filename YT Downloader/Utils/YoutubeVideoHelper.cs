@@ -5,10 +5,11 @@ using System.Linq;
 using YoutubeExplode;
 using YoutubeExplode.Videos;
 using YoutubeExplode.Videos.Streams;
+using System;
 
 namespace YT_Downloader.Utils
 {
-    internal class YoutubeVideoHelper(string Url) : YoutubeClientHelper(Url)
+    class YoutubeVideoHelper(string Url) : YoutubeClientHelper(Url)
     {
         public static async Task<YoutubeVideoHelper> CreateAsync(string Url)
         {
@@ -20,23 +21,37 @@ namespace YT_Downloader.Utils
 
         public override async Task LoadInfo(CancellationToken token)
         {
-            _Video = await _YoutubeClient.Videos.GetAsync(_Url);
+            _Videos.Append(await _YoutubeClient.Videos.GetAsync(_Url));
             if (token.IsCancellationRequested) return;
 
-            _StreamManifest = await _YoutubeClient.Videos.Streams.GetManifestAsync(_Url);
+            _StreamManifests.Append(await _YoutubeClient.Videos.Streams.GetManifestAsync(_Url));
         }
 
-        public override string GetTitle() => _Video.Title;
+        public override string GetTitle() => (IsPlaylist) ? _Playlist.Title : _Videos[0].Title;
 
-        public HashSet<string> GetVideoResolutions()
+        public HashSet<string> GetStreamResolutions()
         {
-            return _StreamManifest.GetVideoOnlyStreams()
-                .Where(s => s.Container == Container.Mp4)
-                .Select(s => s.VideoQuality.Label)
-                .ToHashSet();
+            if (IsPlaylist)
+            {
+                return
+                [
+                    "4320p", "2160p", "1440p", "1080p", "720p", "480p", "360p", "240p", "144p"
+                ];
+            }
+            else
+            {
+                return _StreamManifests[0]
+                    .GetVideoOnlyStreams()
+                    .Where(s => s.Container == Container.Mp4)
+                    .Select(s => s.VideoQuality.Label)
+                    .ToHashSet();
+            }
         }
 
-        public double GetSize(string resolution)
+        public override double GetSize(string resolution) =>
+            (IsPlaylist) ? GetPlaylistSize(resolution) : GetStreamSize(resolution);
+
+        protected override double GetStreamSize(Index i, string resolution)
         {
             var selectedStream = _StreamManifest
                 .GetVideoOnlyStreams()
@@ -50,12 +65,26 @@ namespace YT_Downloader.Utils
             return selectedStream.Size.MegaBytes + audioStream.Size.MegaBytes;
         }
 
-        public override async void DownloadAsync()
+        protected override double GetPlaylistSize(string resolution)
+        {
+            double playlistSize = 0;
+
+            foreach (var video in _Videos)
+
+            return selectedStream.Size.MegaBytes + audioStream.Size.MegaBytes;
+        }
+
+        public override async void DownloadAsync(string resolution)
         {
             throw new System.NotImplementedException();
         }
 
-        protected override async void DownloadPlaylistAsync()
+        protected override async void DownloadStreamAsync(string resolution)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        protected override async void DownloadPlaylistAsync(string resolution)
         {
             throw new System.NotImplementedException();
         }
