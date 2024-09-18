@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,11 +11,9 @@ namespace YT_Downloader.Utils
     public abstract class YoutubeClientHelper
     {
         protected YoutubeClient _YoutubeClient = new();
-        protected string _ThumbnailsDirectoryPath = $"{Path.GetTempPath()}\\TempThumbnails\\";
-        protected string[] _Thumbnails;
-        protected Video[] _Videos;
-        protected StreamManifest[] _StreamManifests;
-        protected YoutubeExplode.Playlists.Playlist _Playlist;
+        protected StreamManifest _StreamManifest;
+        protected string _ThumbnailPath;
+        protected Video _Video;
         public bool IsPlaylist;
 
         protected readonly string _Url;
@@ -30,41 +27,21 @@ namespace YT_Downloader.Utils
 
         public abstract Task LoadInfo(CancellationToken token);
 
-        public abstract double GetSize(string X);
-
-        protected abstract double GetStreamSize(Index i, string X);
-
-        protected abstract double GetPlaylistSize(string X);
-
         public async Task<string> GetThumbnailAsync()
         {
-            if (!Directory.Exists(_ThumbnailsDirectoryPath))
-                Directory.CreateDirectory(_ThumbnailsDirectoryPath);
-
-            if (IsPlaylist)
-                return await GetThumbnailAsync(0);
-            else
+            if (_ThumbnailPath == null)
             {
-                foreach (var video in _Videos)
+                _ThumbnailPath = $"{Path.GetTempPath()}\\{_Video.Id}.jpg";
+                string thumbnailUrl = $"https://img.youtube.com/vi/{_Video.Id}/mqdefault.jpg";
+
+                using (var httpClient = new HttpClient())
                 {
-                    
+                    var content = await httpClient.GetByteArrayAsync(thumbnailUrl);
+                    await File.WriteAllBytesAsync(_ThumbnailPath, content);
                 }
             }
-        }
-
-        protected async Task<string> GetThumbnailAsync(Index i)
-        {
-            if (_ThumbnailsDirectoryPath == null)
-            {
-                ThumbnailPath = $"{Path.GetTempPath()}\\{_Videos[i].Id}.jpg";
-                string thumbnailUrl = $"https://img.youtube.com/vi/{_Videos[i].Id}/mqdefault.jpg";
-
-                using var httpClient = new HttpClient();
-                var content = await httpClient.GetByteArrayAsync(thumbnailUrl);
-                await File.WriteAllBytesAsync(_ThumbnailPath, content);
-            }
             
-            return _Thumbnails;
+            return _ThumbnailPath;
         }
 
         public void DeleteThumbnail()
@@ -75,10 +52,8 @@ namespace YT_Downloader.Utils
 
         public abstract string GetTitle();
 
-        public abstract void DownloadAsync(string X);
+        public abstract void DownloadAsync();
 
-        protected abstract void DownloadStreamAsync(string X);
-
-        protected abstract void DownloadPlaylistAsync(string X);
+        protected abstract void DownloadPlaylistAsync();
     }
 }

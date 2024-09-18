@@ -47,7 +47,7 @@ namespace YT_Downloader.Views.Video
             videoTitleTBC.Text = videoTitle.Length > 60 ? $"{videoTitle[..60]}..." : videoTitle;
             videoResolutionCB.Items.Clear();
 
-            foreach (var resolution in YoutubeHelper.GetStreamResolutions()) videoResolutionCB.Items.Add(new ComboBoxItem().Content = resolution);
+            foreach (var resolution in YoutubeHelper.GetVideoResolutions()) videoResolutionCB.Items.Add(new ComboBoxItem().Content = resolution);
 
             LoadVideoThumbnail();
         }
@@ -75,7 +75,7 @@ namespace YT_Downloader.Views.Video
         private void VideoResolution_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             videoSize.Inlines.Clear();
-            videoSize.Inlines.Add(new Run {Text = $"{Math.Round(YoutubeHelper.GetSize(videoResolutionCB.SelectedValue.ToString()), 2)} MB" });
+            videoSize.Inlines.Add(new Run {Text = $"{Math.Round(YoutubeHelper.GetVideoSize(videoResolutionCB.SelectedValue.ToString()), 2)} MB" });
         }
 
         // Inicia o download do vídeo
