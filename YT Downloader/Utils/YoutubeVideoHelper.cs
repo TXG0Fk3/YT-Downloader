@@ -6,25 +6,11 @@ using YoutubeExplode;
 using YoutubeExplode.Videos;
 using YoutubeExplode.Videos.Streams;
 using System;
-using AngleSharp.Dom;
 
 namespace YT_Downloader.Utils
 {
-    class YoutubeVideoHelper()
+    class YoutubeVideoHelper(string Url) : YoutubeClientHelper(Url)
     {
-        protected YoutubeClient _YoutubeClient = new();
-        protected string _ThumbnailPath;
-        protected Video _Video;
-        protected StreamManifest[] _StreamManifests;
-        protected YoutubeExplode.Playlists.Playlist _Playlist;
-        public bool IsPlaylist;
-
-        public YoutubeVideoHelper(string Url)
-        {
-            _Url = Url;
-            IsPlaylist = Url.Contains("playlist");
-        }
-
         public static async Task<YoutubeVideoHelper> CreateAsync(string Url)
         {
             App.Cts = new();
@@ -33,7 +19,7 @@ namespace YT_Downloader.Utils
             return youtubeHelper;    
         }
 
-        public async Task LoadInfo(CancellationToken token)
+        public override async Task LoadInfo(CancellationToken token)
         {
             _Videos.Append(await _YoutubeClient.Videos.GetAsync(_Url));
             if (token.IsCancellationRequested) return;
@@ -41,7 +27,7 @@ namespace YT_Downloader.Utils
             _StreamManifests.Append(await _YoutubeClient.Videos.Streams.GetManifestAsync(_Url));
         }
 
-        public string GetTitle() => (IsPlaylist) ? _Playlist.Title : _Videos[0].Title;
+        public override string GetTitle() => (IsPlaylist) ? _Playlist.Title : _Videos[0].Title;
 
         public HashSet<string> GetStreamResolutions()
         {
@@ -62,10 +48,10 @@ namespace YT_Downloader.Utils
             }
         }
 
-        public double GetSize(string resolution) =>
+        public override double GetSize(string resolution) =>
             (IsPlaylist) ? GetPlaylistSize(resolution) : GetStreamSize(resolution);
 
-        protected double GetStreamSize(Index i, string resolution)
+        protected override double GetStreamSize(Index i, string resolution)
         {
             var selectedStream = _StreamManifest
                 .GetVideoOnlyStreams()
@@ -79,7 +65,7 @@ namespace YT_Downloader.Utils
             return selectedStream.Size.MegaBytes + audioStream.Size.MegaBytes;
         }
 
-        protected double GetPlaylistSize(string resolution)
+        protected override double GetPlaylistSize(string resolution)
         {
             double playlistSize = 0;
 
@@ -88,17 +74,17 @@ namespace YT_Downloader.Utils
             return selectedStream.Size.MegaBytes + audioStream.Size.MegaBytes;
         }
 
-        public async void DownloadAsync(string resolution)
+        public override async void DownloadAsync(string resolution)
         {
             throw new System.NotImplementedException();
         }
 
-        protected async void DownloadStreamAsync(string resolution)
+        protected override async void DownloadStreamAsync(string resolution)
         {
             throw new System.NotImplementedException();
         }
 
-        protected async void DownloadPlaylistAsync(string resolution)
+        protected override async void DownloadPlaylistAsync(string resolution)
         {
             throw new System.NotImplementedException();
         }

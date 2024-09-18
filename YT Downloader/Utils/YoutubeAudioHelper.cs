@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace YT_Downloader.Utils
 {
-    class YoutubeAudioHelper
+    internal class YoutubeAudioHelper
     {
     }
 }
