@@ -5,20 +5,23 @@ namespace YT_Downloader
 {
     public partial class App : Application
     {
-        public static CancellationTokenSource Cts = new();
-        public static MainWindow MainWindow;
-        public static Settings.AppSettings AppSettings = new();
+        public static CancellationTokenSource cts = new();
+        public static MainWindow mainWindow;
+        public static Settings.AppSettings appSettings = new();
 
-        public App() => InitializeComponent();
+        public App()
+        {
+            this.InitializeComponent();
+        }
 
         protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
             // Carrega as configurações da aplicação
-            AppSettings.LoadSettings();
+            appSettings.LoadSettings();
 
             // Carrega a janela principal
-            MainWindow = new MainWindow();
-            MainWindow.Activate();
+            mainWindow = new MainWindow();
+            mainWindow.Activate();
         }
     }
 }

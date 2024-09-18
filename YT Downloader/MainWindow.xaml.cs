@@ -20,7 +20,7 @@ namespace YT_Downloader
             AppWindow.SetIcon(@"Assets\AppIcon.ico"); // Ícone
 
             // Aplica o tema
-            ApplyTheme(Enum.TryParse<ElementTheme>(App.AppSettings.Theme, out var parsedTheme)
+            ApplyTheme(Enum.TryParse<ElementTheme>(App.appSettings.Theme, out var parsedTheme)
                 ? parsedTheme
                 : ElementTheme.Default // Definindo um valor padrão, se a conversão falhar
                 );
@@ -48,7 +48,7 @@ namespace YT_Downloader
         // Método que altera a page sendo mostrada
         private void NavigationViewSwitch(NavigationView sender, NavigationViewItemInvokedEventArgs args)
         {
-            App.Cts.Cancel(); // Cancela operações que podem estar em andamento
+            App.cts.Cancel(); // Cancela operações que podem estar em andamento
 
             if (args.IsSettingsInvoked)
             {

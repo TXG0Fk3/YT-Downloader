@@ -16,7 +16,7 @@ namespace YT_Downloader.Views.Music
         private void NextButtonClicked(object sender, RoutedEventArgs e)
         {
             Views.Music.NextMusicPage.url = urlBox.Text;
-            App.MainWindow.view.Navigate(typeof(Views.Music.NextMusicPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
+            App.mainWindow.view.Navigate(typeof(Views.Music.NextMusicPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
         }
     }
 }
