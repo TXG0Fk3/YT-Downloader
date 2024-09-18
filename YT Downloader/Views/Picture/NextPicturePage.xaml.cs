@@ -33,8 +33,8 @@ namespace YT_Downloader.Views.Picture
         // Método que é chamado somente quando a page estiver completamente carregada
         private void NextPicturePage_Loaded(object sender, RoutedEventArgs e)
         {
-            App.cts = new CancellationTokenSource();
-            GetAndShowVideoInfo(App.cts.Token);
+            App.Cts = new CancellationTokenSource();
+            GetAndShowVideoInfo(App.Cts.Token);
         }
 
         // Coleta informações da URL ou ID do vídeo e mostra ao usuário
@@ -77,7 +77,7 @@ namespace YT_Downloader.Views.Picture
                 };
 
                 _ = await dialog.ShowAsync();
-                App.mainWindow.view.Navigate(typeof(Views.Picture.PicturePage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+                App.MainWindow.view.Navigate(typeof(Views.Picture.PicturePage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
             }
         }    
 
@@ -114,13 +114,13 @@ namespace YT_Downloader.Views.Picture
         async private void DownloadButton_Click(object sender, RoutedEventArgs e)
         {
             // Caminho onde será baixado a imagem
-            string downloadPath = App.appSettings.DefaultDownloadsPath;
-            if (App.appSettings.AlwaysAskWhereSave)
+            string downloadPath = App.AppSettings.DefaultDownloadsPath;
+            if (App.AppSettings.AlwaysAskWhereSave)
             {
                 FolderPicker openPicker = new();
                 openPicker.FileTypeFilter.Add("*");
 
-                nint windowHandle = WindowNative.GetWindowHandle(App.mainWindow);
+                nint windowHandle = WindowNative.GetWindowHandle(App.MainWindow);
                 WinRT.Interop.InitializeWithWindow.Initialize(openPicker, windowHandle);
 
                 StorageFolder folder = await openPicker.PickSingleFolderAsync();
@@ -141,14 +141,14 @@ namespace YT_Downloader.Views.Picture
             Views.DownloadFinishedPage.downloadPath = downloadPath;
             Views.DownloadFinishedPage.vidTitle = videoTitle.Text;
             Views.DownloadFinishedPage.downloadType = "P";
-            App.mainWindow.view.Navigate(typeof(Views.DownloadFinishedPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
+            App.MainWindow.view.Navigate(typeof(Views.DownloadFinishedPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
         }
 
         // Cancela a operação
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
-            App.cts.Cancel();
-            App.mainWindow.view.Navigate(typeof(Views.Picture.PicturePage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+            App.Cts.Cancel();
+            App.MainWindow.view.Navigate(typeof(Views.Picture.PicturePage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
         }
     }
 }

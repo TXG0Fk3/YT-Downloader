@@ -19,14 +19,14 @@ namespace YT_Downloader.Views
         private void LoadSettings()
         {
             SetSelectedThemeRadioButton();
-            showDefaultPath.Description = App.appSettings.DefaultDownloadsPath;
-            askWhereSaveTS.IsOn = App.appSettings.AlwaysAskWhereSave;
+            showDefaultPath.Description = App.AppSettings.DefaultDownloadsPath;
+            askWhereSaveTS.IsOn = App.AppSettings.AlwaysAskWhereSave;
         }
 
         // Define o botão de rádio selecionado com base no tema atual
         private void SetSelectedThemeRadioButton()
         {
-            var selectedTheme = App.appSettings.Theme;
+            var selectedTheme = App.AppSettings.Theme;
             var themeRadioButton = appThemeRadioBt.Items
                 .Cast<RadioButton>()
                 .FirstOrDefault(rb => rb.Tag?.ToString() == selectedTheme);
@@ -51,9 +51,9 @@ namespace YT_Downloader.Views
         // Aplica o tema e salva as configurações
         private void ApplyThemeAndSaveSettings(ElementTheme theme)
         {
-            App.mainWindow.ApplyTheme(theme);
-            App.appSettings.Theme = theme.ToString();
-            App.appSettings.SaveNewSettings();
+            App.MainWindow.ApplyTheme(theme);
+            App.AppSettings.Theme = theme.ToString();
+            App.AppSettings.SaveNewSettings();
         }
 
         // Seleciona a pasta onde serão salvos os downloads
@@ -64,7 +64,7 @@ namespace YT_Downloader.Views
                 FileTypeFilter = { "*" }
             };
 
-            InitializeWithWindow.Initialize(openPicker, WindowNative.GetWindowHandle(App.mainWindow));
+            InitializeWithWindow.Initialize(openPicker, WindowNative.GetWindowHandle(App.MainWindow));
             var selectedFolder = await openPicker.PickSingleFolderAsync();
 
             if (selectedFolder != null)
@@ -76,9 +76,9 @@ namespace YT_Downloader.Views
         // Atualiza o caminho de download e salva as configurações
         private void UpdateDownloadPath(string path)
         {
-            App.appSettings.DefaultDownloadsPath = path;
+            App.AppSettings.DefaultDownloadsPath = path;
             showDefaultPath.Description = path;
-            App.appSettings.SaveNewSettings();
+            App.AppSettings.SaveNewSettings();
         }
 
         // Define se o programa sempre deve perguntar ao usuário onde salvar os downloads
@@ -86,8 +86,8 @@ namespace YT_Downloader.Views
         {
             if (sender is ToggleSwitch toggleSwitch)
             {
-                App.appSettings.AlwaysAskWhereSave = toggleSwitch.IsOn;
-                App.appSettings.SaveNewSettings();
+                App.AppSettings.AlwaysAskWhereSave = toggleSwitch.IsOn;
+                App.AppSettings.SaveNewSettings();
             }
         }
     }
