@@ -20,7 +20,7 @@ namespace YT_Downloader.Views
         private string FileName;
         public static YoutubeClient YoutubeClient;
         public static YoutubeExplode.Videos.Video Video;
-        public static VideoOnlyStreamInfo VideoStreamInfo;
+        public static IStreamInfo VideoStreamInfo;
         public static IStreamInfo AudioStreamInfo;        
 
         public DownloadPage()

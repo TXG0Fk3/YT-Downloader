@@ -1,9 +1,13 @@
 using System;
 using System.Runtime.InteropServices;
+using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using Windows.Graphics;
+using Windows.UI;
+using Windows.UI.ViewManagement;
+using WinRT.Interop;
 
 namespace YT_Downloader
 {
@@ -42,8 +46,39 @@ namespace YT_Downloader
         }
 
         // Aplica o tema
-        public void ApplyTheme(ElementTheme theme) =>
+        public void ApplyTheme(ElementTheme theme)
+        {
+            // Aplica o tema ao rootElement (content root da janela)
             rootElement.RequestedTheme = theme;
+
+            // Customização da TitleBar diretamente no WinUI 3
+            var titleBar = AppWindow.TitleBar;
+
+            // Determina o tema a ser aplicado
+            if (theme == ElementTheme.Default)
+            {
+                theme = (Application.Current.RequestedTheme == ApplicationTheme.Dark)
+                    ? ElementTheme.Dark
+                    : ElementTheme.Light;
+            }
+
+
+            if (theme == ElementTheme.Dark)
+            {
+                titleBar.ButtonHoverBackgroundColor = Color.FromArgb(255, 61, 61, 61);
+                titleBar.ForegroundColor = Colors.White;
+                titleBar.ButtonForegroundColor = Colors.White;
+                titleBar.ButtonHoverForegroundColor = Colors.White;
+            }
+            else if (theme == ElementTheme.Light)
+            { 
+                titleBar.ButtonHoverBackgroundColor = Colors.LightGray;
+                titleBar.ForegroundColor = Colors.Black;
+                titleBar.ButtonForegroundColor = Colors.Black;
+                titleBar.ButtonHoverForegroundColor = Colors.Black;
+            }
+        }
+
 
         // Método que altera a page sendo mostrada
         private void NavigationViewSwitch(NavigationView sender, NavigationViewItemInvokedEventArgs args)
