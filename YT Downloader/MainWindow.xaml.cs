@@ -4,11 +4,13 @@ using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using Windows.ApplicationModel.Core;
 using Windows.Graphics;
 using Windows.UI;
 using Windows.UI.ViewManagement;
+using Windows.UI.WindowManagement;
 using WinRT.Interop;
 
 namespace YT_Downloader
@@ -21,14 +23,15 @@ namespace YT_Downloader
 
             // Configurações da janela
             Activated += AdjustWindowSizeForDpi; // Altera Resolução sempre que o DPI (escala) é modificado
-            ExtendsContentIntoTitleBar = true; // TitleBar infinito
             AppWindow.Title = "YT Downloader"; // Título
             AppWindow.SetIcon(@"Assets\AppIcon.ico"); // Ícone
             (AppWindow.Presenter as OverlappedPresenter).IsResizable = false; // Torna a janela não redimensionável
 
-            // Desativa o botão de maximizar
+            // Configurações da TitleBar
+            ExtendsContentIntoTitleBar = true; // TitleBar infinito
             IntPtr hwnd = WindowNative.GetWindowHandle(this);
-            _ = SetWindowLong(hwnd, -16, GetWindowLong(hwnd, -16) & ~0x00010000);
+            _ = SetWindowLong(hwnd, -16, GetWindowLong(hwnd, -16) & ~0x00010000); // Desativa o botão de maximizar
+            AppWindow.TitleBar.SetDragRectangles([new RectInt32(46, 0, 614, 32)]); // Define a área de arraste
 
             // Aplica o tema
             ApplyTheme(Enum.TryParse<ElementTheme>(App.appSettings.Theme, out var parsedTheme)
@@ -37,7 +40,9 @@ namespace YT_Downloader
                 );
 
             // Página inicial
-            //view.Navigate(typeof(Views.Video.VideoPage));
+            view.Navigate(typeof(Views.Video.VideoPage));
+
+            
         }
 
         // Ajusta resolução do app de acordo com a DPI (escala) do monitor
@@ -77,8 +82,6 @@ namespace YT_Downloader
         // Método que altera a page sendo mostrada
         private void NavigationViewSwitch(NavigationView sender, NavigationViewItemInvokedEventArgs args)
         {
-            App.cts.Cancel(); // Cancela operações que podem estar em andamento
-
             if (args.IsSettingsInvoked)
             {
                 // Navega para a SettingsPage

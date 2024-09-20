@@ -12,43 +12,60 @@
         <MicaBackdrop />
     </Window.SystemBackdrop>
 
-    <Grid x:Name="rootElement">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="32" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+    <ScrollViewer>
+        <Grid x:Name="rootElement">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="32" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Orientation="Horizontal">
-            <Button x:Name="backButton"
-                Width="46"
-                Height="32"
-                Padding="0"
-                HorizontalAlignment="Left"
-                HorizontalContentAlignment="Center"
-                Background="Transparent"
-                BorderBrush="Transparent"
-                Visibility="Visible">
-                <FontIcon FontSize="12" Glyph="&#xE72B;" />
-            </Button>
-            <BitmapIcon
-                Width="20"
-                Margin="5,0,0,0"
-                VerticalAlignment="Center"
-                ShowAsMonochrome="False"
-                UriSource="ms-appx:///Assets/Square44x44Logo.altform-lightunplated_targetsize-24.png" />
-            <TextBlock
-                Margin="10,0,0,0"
-                VerticalAlignment="Center"
-                Text="YT  Downloader" />
-        </StackPanel>
+            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                <Button
+                    x:Name="backButton"
+                    Width="46"
+                    Height="32"
+                    Padding="0"
+                    HorizontalAlignment="Left"
+                    HorizontalContentAlignment="Center"
+                    Background="Transparent"
+                    BorderBrush="Transparent"
+                    Visibility="Visible">
+                    <FontIcon FontSize="12" Glyph="&#xE72B;" />
+                </Button>
+                <BitmapIcon
+                    Width="20"
+                    Margin="15,0,0,0"
+                    VerticalAlignment="Center"
+                    ShowAsMonochrome="False"
+                    UriSource="ms-appx:///Assets/Square44x44Logo.altform-lightunplated_targetsize-24.png" />
+                <TextBlock
+                    Margin="5,0,0,2"
+                    VerticalAlignment="Center"
+                    Text="YT Downloader" />
+                <Button
+                    Width="46"
+                    Height="32"
+                    Padding="0"
+                    HorizontalAlignment="Right"
+                    HorizontalContentAlignment="Center"
+                    Background="Transparent"
+                    BorderBrush="Transparent"
+                    Visibility="Visible">
+                    <FontIcon FontSize="12" Glyph="&#xE72B;" />
+                </Button>
+            </StackPanel>
 
-        <Frame x:Name="view" x:FieldModifier="public">
-            <Frame.ContentTransitions>
-                <TransitionCollection>
-                    <NavigationThemeTransition />
-                </TransitionCollection>
-            </Frame.ContentTransitions>
-        </Frame>
-    </Grid>
+            <Frame
+                x:Name="view"
+                Grid.Row="1"
+                x:FieldModifier="public">
+                <Frame.ContentTransitions>
+                    <TransitionCollection>
+                        <NavigationThemeTransition />
+                    </TransitionCollection>
+                </Frame.ContentTransitions>
+            </Frame>
+        </Grid>
+    </ScrollViewer>
 
 </Window>
