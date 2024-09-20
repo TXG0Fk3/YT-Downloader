@@ -41,8 +41,6 @@ namespace YT_Downloader
 
             // Página inicial
             view.Navigate(typeof(Views.Video.VideoPage));
-
-            
         }
 
         // Ajusta resolução do app de acordo com a DPI (escala) do monitor
