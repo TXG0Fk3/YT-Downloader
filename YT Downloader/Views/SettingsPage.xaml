@@ -20,15 +20,16 @@
         </Style>
     </Page.Resources>
 
-    <ScrollViewer>
-        <Grid Margin="30,30,30,30">
+    <ScrollViewer Height="460">
+        <Grid Width="342">
             <StackPanel HorizontalAlignment="Stretch" Spacing="4">
 
-                <TextBlock Margin="1,0,0,6" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}">
+                <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}">
                     <Span><Bold>Appearance</Bold></Span>
                 </TextBlock>
                 <toolkit:SettingsExpander
                     Grid.Row="1"
+                    Width="330"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Left"
                     Description="Select the application theme"
@@ -52,6 +53,7 @@
                 </TextBlock>
                 <toolkit:SettingsExpander
                     Grid.Row="3"
+                    Width="330"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Stretch"
                     Description="Manage your downloads"
@@ -81,6 +83,7 @@
                 </TextBlock>
                 <toolkit:SettingsExpander
                     Grid.Row="3"
+                    Width="330"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Stretch"
                     Description="© 2024 TXG0Fk3. All rights reserved."

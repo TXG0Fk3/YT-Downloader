@@ -1,17 +1,16 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
-using Windows.ApplicationModel.Core;
 using Windows.Graphics;
 using Windows.UI;
-using Windows.UI.ViewManagement;
 using Windows.UI.WindowManagement;
 using WinRT.Interop;
+using YT_Downloader.Views;
 
 namespace YT_Downloader
 {
@@ -31,16 +30,12 @@ namespace YT_Downloader
             ExtendsContentIntoTitleBar = true; // TitleBar infinito
             IntPtr hwnd = WindowNative.GetWindowHandle(this);
             _ = SetWindowLong(hwnd, -16, GetWindowLong(hwnd, -16) & ~0x00010000); // Desativa o botão de maximizar
-            AppWindow.TitleBar.SetDragRectangles([new RectInt32(46, 0, 614, 32)]); // Define a área de arraste
 
             // Aplica o tema
             ApplyTheme(Enum.TryParse<ElementTheme>(App.appSettings.Theme, out var parsedTheme)
                 ? parsedTheme
                 : ElementTheme.Default // Definindo um valor padrão, se a conversão falhar
                 );
-
-            // Página inicial
-            view.Navigate(typeof(Views.Video.VideoPage));
         }
 
         // Ajusta resolução do app de acordo com a DPI (escala) do monitor
@@ -50,7 +45,7 @@ namespace YT_Downloader
             double scaleFactor = dpi / 96.0; // 96 é o DPI padrão de 100%
 
             // Ajusta de acordo com a escala    
-            AppWindow.Resize(new SizeInt32((int)(660 * scaleFactor), (int)(410 * scaleFactor)));
+            AppWindow.Resize(new SizeInt32((int)(470 * scaleFactor), (int)(700 * scaleFactor)));
         }
 
         // Aplica o tema
@@ -76,8 +71,21 @@ namespace YT_Downloader
             titleBar.ButtonHoverForegroundColor = foregroundColor;
         }
 
+        private async void ShowDialog_Click(object sender, RoutedEventArgs e)
+        {
+            ContentDialog dialog = new()
+            {
+                XamlRoot = rootElement.XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                //RequestedTheme = ElementTheme.Default, // TO-DO: respeitar o tema escolhido pelo usuário
+                Title = "Settings",
+                // CloseButtonText = "Close",
+                Content = new SettingsPage()
+            };
 
-        // Método que altera a page sendo mostrada
+            _ = await dialog.ShowAsync();
+        }
+
         private void NavigationViewSwitch(NavigationView sender, NavigationViewItemInvokedEventArgs args)
         {
             if (args.IsSettingsInvoked)
