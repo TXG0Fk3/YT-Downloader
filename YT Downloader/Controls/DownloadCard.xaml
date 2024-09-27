@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<UserControl
+    x:Class="YT_Downloader.Controls.DownloadCard"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:YT_Downloader.Controls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid
+        Padding="6"
+        Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}"
+        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+        BorderThickness="1"
+        CornerRadius="8"
+        RowDefinitions="Auto, *">
+
+        <!--  Header Section  -->
+        <Grid Grid.Row="0" ColumnDefinitions="80, *">
+            <!--  Thumbnail Border  -->
+            <Border
+                Grid.Column="0"
+                Background="White"
+                BorderBrush="{ThemeResource AccentButtonBackground}"
+                BorderThickness="2"
+                CornerRadius="6" />
+
+            <!--  Title and Info  -->
+            <StackPanel Grid.Column="1" Spacing="4">
+                <HyperlinkButton
+                    Padding="4"
+                    HorizontalAlignment="Left"
+                    Content="Luci4 - Kurxxed Emeraldz (Official Visual)"
+                    NavigateUri="https://www.youtube.com/watch?v=-DENhuNNkK4" />
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                    <StackPanel Orientation="Vertical" Spacing="4">
+                        <TextBlock Text="Some additional info" />
+                        <TextBlock Text="More details about the download" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <Button
+                            Width="40"
+                            Height="40"
+                            Padding="0"
+                            HorizontalAlignment="Left">
+                            <FontIcon Glyph="&#xE768;" />
+                        </Button>
+                        <Button
+                            Width="40"
+                            Height="40"
+                            Padding="0"
+                            HorizontalAlignment="Left">
+                            <FontIcon Glyph="&#xE71A;" />
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+
+        <!--  Progress Bar  -->
+        <ProgressBar Grid.Row="1" IsIndeterminate="True" />
+
+    </Grid>
+
+</UserControl>

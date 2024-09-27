@@ -19,7 +19,6 @@
             MinWidth="170"
             Margin="0,30,0,0"
             HorizontalAlignment="Center"
-            Click="NextButton_Clicked"
             Content="Next"
             Style="{StaticResource AccentButtonStyle}" />
     </StackPanel>

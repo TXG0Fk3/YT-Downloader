@@ -129,13 +129,13 @@ namespace YT_Downloader.Views
             Views.DownloadFinishedPage.downloadPath = DownloadPath;
             Views.DownloadFinishedPage.vidTitle = videoTitle.Text;
             Views.DownloadFinishedPage.downloadType = VideoStreamInfo != null ? "V" : "M";
-            App.mainWindow.view.Navigate(typeof(Views.DownloadFinishedPage), null, new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight });
+            //App.mainWindow.view.Navigate(typeof(Views.DownloadFinishedPage), null, new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight });
         }
 
         private void NavigateToPreviousPage()
         {
             var pageType = VideoStreamInfo != null ? typeof(Views.Video.VideoPage) : typeof(Views.Music.MusicPage);
-            App.mainWindow.view.Navigate(pageType, null, new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromLeft });
+            //App.mainWindow.view.Navigate(pageType, null, new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromLeft });
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)

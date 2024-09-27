@@ -10,6 +10,8 @@
     mc:Ignorable="d">
 
     <Page.Resources>
+        <x:Double x:Key="SettingsCardSpacing">4</x:Double>
+
         <Style
             x:Key="SettingsSectionHeaderTextBlockStyle"
             BasedOn="{StaticResource BodyStrongTextBlockStyle}"
@@ -18,11 +20,16 @@
                 <Setter Property="Margin" Value="1,30,0,6" />
             </Style.Setters>
         </Style>
+
     </Page.Resources>
 
-    <ScrollViewer Height="460">
+    <ScrollViewer Height="430">
         <Grid Width="342">
-            <StackPanel HorizontalAlignment="Stretch" Spacing="4">
+            <StackPanel HorizontalAlignment="Stretch" Spacing="{StaticResource SettingsCardSpacing}">
+                <StackPanel.ChildrenTransitions>
+                    <EntranceThemeTransition FromVerticalOffset="50" />
+                    <RepositionThemeTransition IsStaggeringEnabled="False" />
+                </StackPanel.ChildrenTransitions>
 
                 <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}">
                     <Span><Bold>Appearance</Bold></Span>

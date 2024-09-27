@@ -11,12 +11,7 @@
         <MicaBackdrop />
     </Window.SystemBackdrop>
 
-    <Grid x:Name="rootElement">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="32" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="80" />
-        </Grid.RowDefinitions>
+    <Grid x:Name="rootElement" RowDefinitions="32, *, 80">
 
         <!--  Header  -->
         <StackPanel Grid.Row="0" Orientation="Horizontal">
@@ -32,55 +27,85 @@
                 Text="YT Downloader" />
         </StackPanel>
 
-        <!--  Scrollable Content  -->
-        <Frame
-            x:Name="view"
-            Grid.Row="1"
-            x:FieldModifier="public">
-            <Frame.ContentTransitions>
-                <TransitionCollection>
-                    <NavigationThemeTransition />
-                </TransitionCollection>
-            </Frame.ContentTransitions>
-        </Frame>
+        <!--  Downloads  -->
+        <Grid Grid.Row="1" RowDefinitions="Auto, *">
+            <TextBlock
+                Grid.Row="0"
+                Margin="27,12,0,12"
+                FontSize="16"
+                Style="{StaticResource BodyStrongTextBlockStyle}"
+                Text="Downloads" />
+            <ScrollViewer Grid.Row="1">
+                <StackPanel
+                    x:Name="DownloadsStackPanel"
+                    Margin="12,0,12,0"
+                    Orientation="Vertical"
+                    Spacing="4">
+                    <StackPanel.ChildrenTransitions>
+                        <EntranceThemeTransition FromVerticalOffset="50" />
+                        <RepositionThemeTransition IsStaggeringEnabled="False" />
+                    </StackPanel.ChildrenTransitions>
+                    <Grid
+                        Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        RowDefinitions="Auto, Auto">
+                        <TextBlock
+                            Grid.Row="0"
+                            Margin="8"
+                            HorizontalAlignment="Center"
+                            FontSize="16"
+                            Text="You don't have downloads" />
+                        <Button
+                            Grid.Row="1"
+                            Margin="0,0,0,12"
+                            HorizontalAlignment="Center"
+                            Click="AddButton_Click">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <FontIcon Glyph="&#xE710;" />
+                                <TextBlock Text="New Download" />
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
 
         <!--  Footer  -->
         <Grid
             Grid.Row="2"
             Margin="10"
-            Padding="12"
+            Padding="10"
             Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}"
             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
             BorderThickness="1"
+            ColumnDefinitions="40, 40, *, 20, 40, 40"
             CornerRadius="8">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="40" />
-                <ColumnDefinition Width="40" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="20" />
-                <ColumnDefinition Width="40" />
-                <ColumnDefinition Width="40" />
-            </Grid.ColumnDefinitions>
             <Button
                 Grid.Column="0"
                 Width="35"
                 Height="35"
-                Padding="0">
+                Padding="0"
+                HorizontalAlignment="Center"
+                Click="AddButton_Click">
                 <FontIcon Glyph="&#xE710;" />
             </Button>
             <Button
                 Grid.Column="1"
                 Width="35"
                 Height="35"
-                Padding="0">
+                Padding="0"
+                HorizontalAlignment="Center">
                 <FontIcon Glyph="&#xE711;" />
             </Button>
-            <AppBarSeparator Grid.Column="3" />
+            <AppBarSeparator Grid.Column="3" HorizontalAlignment="Center" />
             <Button
                 Grid.Column="4"
                 Width="35"
                 Height="35"
-                Padding="0">
+                Padding="0"
+                HorizontalAlignment="Center">
                 <FontIcon Glyph="&#xE897;" />
             </Button>
             <Button
@@ -88,7 +113,8 @@
                 Width="35"
                 Height="35"
                 Padding="0"
-                Click="ShowDialog_Click">
+                HorizontalAlignment="Center"
+                Click="SettingsButton_Click">
                 <FontIcon Glyph="&#xE713;" />
             </Button>
         </Grid>

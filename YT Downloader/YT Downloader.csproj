@@ -43,6 +43,7 @@
 	</Target>
 
 	<ItemGroup>
+		<None Remove="Controls\DownloadCard.xaml" />
 		<None Remove="MusicPage.xaml" />
 		<None Remove="Views\DownloadFinishedPage.xaml" />
 		<None Remove="Views\DownloadPage.xaml" />
@@ -94,6 +95,9 @@
 
 	<ItemGroup>
 		<!-- Copy ffmpeg.exe to output directory -->
+		<Page Update="Controls\DownloadCard.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</Page>
 		<None Update="ffmpeg.exe">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>

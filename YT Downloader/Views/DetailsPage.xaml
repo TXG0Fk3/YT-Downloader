@@ -6,8 +6,24 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:YT_Downloader.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     mc:Ignorable="d">
 
-    <Grid />
+    <Grid Width="342">
+        <Grid ColumnDefinitions="*, 40">
+            <TextBox
+                Grid.Column="0"
+                Height="62"
+                Header="Enter your Youtube video/playlist ID or URL:" />
+            <Button
+                Grid.Column="1"
+                Width="35"
+                Height="35"
+                Padding="0"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom">
+                <FontIcon Glyph="&#xED0E;" />
+            </Button>
+        </Grid>
+
+    </Grid>
 </Page>

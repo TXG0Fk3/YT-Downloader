@@ -63,7 +63,7 @@ namespace YT_Downloader.Views.Video
             catch (Exception ex)
             {
                 await ShowErrorDialogAsync("An error occurred while loading the video.", ex);
-                App.mainWindow.NavigateToPreviousPage(typeof(VideoPage));
+                //App.mainWindow.NavigateToPreviousPage(typeof(VideoPage));
             }
         }
 
@@ -151,7 +151,7 @@ namespace YT_Downloader.Views.Video
                     .GetWithHighestBitrate()
             };
 
-            App.mainWindow.NavigateToNextPage(typeof(DownloadPage), parameters);
+            //App.mainWindow.NavigateToNextPage(typeof(DownloadPage), parameters);
         }
 
         // Obtém o caminho de download escolhido pelo usuário
@@ -192,7 +192,7 @@ namespace YT_Downloader.Views.Video
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             App.cts.Cancel();
-            App.mainWindow.NavigateToPreviousPage(typeof(VideoPage));
+            //App.mainWindow.NavigateToPreviousPage(typeof(VideoPage));
         }
     }
 }

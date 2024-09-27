@@ -36,6 +36,8 @@ namespace YT_Downloader
                 ? parsedTheme
                 : ElementTheme.Default // Definindo um valor padrão, se a conversão falhar
                 );
+
+            DownloadsStackPanel.Children.Add(new Controls.DownloadCard());
         }
 
         // Ajusta resolução do app de acordo com a DPI (escala) do monitor
@@ -45,7 +47,7 @@ namespace YT_Downloader
             double scaleFactor = dpi / 96.0; // 96 é o DPI padrão de 100%
 
             // Ajusta de acordo com a escala    
-            AppWindow.Resize(new SizeInt32((int)(470 * scaleFactor), (int)(700 * scaleFactor)));
+            AppWindow.Resize(new SizeInt32((int)(430 * scaleFactor), (int)(680 * scaleFactor)));
         }
 
         // Aplica o tema
@@ -71,43 +73,38 @@ namespace YT_Downloader
             titleBar.ButtonHoverForegroundColor = foregroundColor;
         }
 
-        private async void ShowDialog_Click(object sender, RoutedEventArgs e)
+        private async void SettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            ContentDialog dialog = new()
+            {
+                XamlRoot = rootElement.XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                RequestedTheme = rootElement.RequestedTheme, // TO-DO: respeitar o tema escolhido pelo usuário
+                Title = "Settings",
+                CloseButtonText = "Close",
+                Content = new SettingsPage()
+            };
+
+            rootElement.ActualThemeChanged += (sender, args) =>
+                dialog.RequestedTheme = rootElement.RequestedTheme; // Atualiza o tema dinamicamente
+
+            _ = await dialog.ShowAsync();
+        }
+
+        private async void AddButton_Click(object sender, RoutedEventArgs e)
         {
             ContentDialog dialog = new()
             {
                 XamlRoot = rootElement.XamlRoot,
                 Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
                 //RequestedTheme = ElementTheme.Default, // TO-DO: respeitar o tema escolhido pelo usuário
-                Title = "Settings",
-                // CloseButtonText = "Close",
-                Content = new SettingsPage()
+                Title = "Add New Video",
+                CloseButtonText = "Close",
+                Content = new DetailsPage()
             };
 
             _ = await dialog.ShowAsync();
         }
-
-        private void NavigationViewSwitch(NavigationView sender, NavigationViewItemInvokedEventArgs args)
-        {
-            if (args.IsSettingsInvoked)
-            {
-                // Navega para a SettingsPage
-                view.Navigate(typeof(Views.SettingsPage));
-            }
-            else
-            {
-                // Navega para a página especificada pelo usuário
-                Type newPage = Type.GetType(args.InvokedItemContainer.Tag.ToString());
-                view.Navigate(newPage, null);
-            }
-        }
-
-        // Método que altera o view (Frame) com uma animação indo para direita (indo).
-        public void NavigateToNextPage<TParameter>(Type nextPage, TParameter parameter) =>
-            view.Navigate(nextPage, parameter, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
-
-        // Método que altera o view (Frame) com uma animação indo para esquerda (voltando).
-        public void NavigateToPreviousPage(Type previousPage) =>
-            view.Navigate(previousPage, null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
 
         [DllImport("user32.dll")]
         private static extern int GetDpiForWindow(IntPtr hwnd);

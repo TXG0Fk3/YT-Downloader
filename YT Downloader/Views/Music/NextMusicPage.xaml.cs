@@ -99,7 +99,7 @@ namespace YT_Downloader.Views.Music
                 };
 
                 _ = await dialog.ShowAsync();
-                App.mainWindow.view.Navigate(typeof(Views.Music.MusicPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+                //App.mainWindow.view.Navigate(typeof(Views.Music.MusicPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
             }
         }
 
@@ -142,14 +142,14 @@ namespace YT_Downloader.Views.Music
                                                 .Where(s => s.Container == Container.Mp4)
                                                 .First(s => s.Bitrate.ToString() == $"{audioBitrate.SelectedValue.ToString().Split()[0]} {audioBitrate.SelectedValue.ToString().Split()[1]}" && s.AudioCodec == audioBitrate.SelectedValue.ToString().Split()[2]);
            
-            App.mainWindow.view.Navigate(typeof(Views.DownloadPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
+            //App.mainWindow.view.Navigate(typeof(Views.DownloadPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromRight });
         }
 
         // Cancela a operação
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             App.cts.Cancel();
-            App.mainWindow.view.Navigate(typeof(Views.Music.MusicPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
+            //App.mainWindow.view.Navigate(typeof(Views.Music.MusicPage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromLeft });
         }
     }
 }
