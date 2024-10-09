@@ -1,16 +1,23 @@
 using System;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
+using AngleSharp.Dom;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media.Animation;
 using Windows.Graphics;
 using Windows.UI;
 using Windows.UI.WindowManagement;
 using WinRT.Interop;
+using YoutubeExplode.Videos;
+using YoutubeExplode;
 using YT_Downloader.Views;
+using YoutubeExplode.Videos.Streams;
+using System.Linq;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using CommunityToolkit.WinUI;
 
 namespace YT_Downloader
 {
@@ -18,33 +25,61 @@ namespace YT_Downloader
     {
         public MainWindow()
         {
-            InitializeComponent();
-
-            // Configurações da janela
-            Activated += AdjustWindowSizeForDpi; // Altera Resolução sempre que o DPI (escala) é modificado
-            AppWindow.Title = "YT Downloader"; // Título
-            AppWindow.SetIcon(@"Assets\AppIcon.ico"); // Ícone
-            (AppWindow.Presenter as OverlappedPresenter).IsResizable = false; // Torna a janela não redimensionável
-
-            // Configurações da TitleBar
+            // Configuraï¿½ï¿½es da janela
+            Activated += AdjustWindowSizeForDpi; // Altera Resoluï¿½ï¿½o sempre que o DPI (escala) ï¿½ modificado
+            AppWindow.Title = "YT Downloader"; // Tï¿½tulo
+            AppWindow.SetIcon(@"Assets\AppIcon.ico"); // ï¿½cone
+            (AppWindow.Presenter as OverlappedPresenter).IsResizable = false; // Torna a janela nï¿½o redimensionï¿½vel
+            
+            // Configuraï¿½ï¿½es da TitleBar
             ExtendsContentIntoTitleBar = true; // TitleBar infinito
             IntPtr hwnd = WindowNative.GetWindowHandle(this);
-            _ = SetWindowLong(hwnd, -16, GetWindowLong(hwnd, -16) & ~0x00010000); // Desativa o botão de maximizar
+            _ = SetWindowLong(hwnd, -16, GetWindowLong(hwnd, -16) & ~0x00010000); // Desativa o botï¿½o de maximizar
+
+            InitializeComponent();
 
             // Aplica o tema
             ApplyTheme(Enum.TryParse<ElementTheme>(App.appSettings.Theme, out var parsedTheme)
                 ? parsedTheme
-                : ElementTheme.Default // Definindo um valor padrão, se a conversão falhar
+                : ElementTheme.Default // Definindo um valor padrï¿½o, se a conversï¿½o falhar
                 );
-
-            DownloadsStackPanel.Children.Add(new Controls.DownloadCard());
         }
 
-        // Ajusta resolução do app de acordo com a DPI (escala) do monitor
+        public async void L()
+        {
+            List<Task> tarefas = new List<Task>();
+            tarefas.Add(Task.Run(() => Test("https://www.youtube.com/watch?v=319067rZJb0")));
+            tarefas.Add(Task.Run(() => Test("https://www.youtube.com/watch?v=PZrCZ-sHs54")));
+            tarefas.Add(Task.Run(() => Test("https://www.youtube.com/watch?v=Jg00bppAwb4")));
+            tarefas.Add(Task.Run(() => Test("https://www.youtube.com/watch?v=v5w0ehBgOGQ")));
+            tarefas.Add(Task.Run(() => Test("https://www.youtube.com/watch?v=CBanYY9TJKA")));
+        }
+
+        public async Task Test(string URL)
+        {
+            var YoutubeClient = new YoutubeClient();
+            var Video = await YoutubeClient.Videos.GetAsync(URL);
+            var StreamManifest = await YoutubeClient.Videos.Streams.GetManifestAsync(URL);
+
+            var viddd = StreamManifest
+                .GetVideoOnlyStreams()
+                .Where(s => s.Container == Container.Mp4)
+                .First(s => s.VideoQuality.Label == "480p");
+
+            var auddd = (AudioOnlyStreamInfo)StreamManifest.GetAudioOnlyStreams()
+                .Where(s => s.Container == Container.Mp4)
+                .GetWithHighestBitrate();
+
+            var thumbpath = await Utils.ThumbHelper.DownloadThumbnailAsync(Video.Id);
+
+            DownloadsStackPanel.Children.Add(new Controls.DownloadCard("C:\\Users\\leove\\Downloads", thumbpath, Video, auddd, viddd));
+        }
+
+        // Ajusta resoluï¿½ï¿½o do app de acordo com a DPI (escala) do monitor
         private void AdjustWindowSizeForDpi(object sender, WindowActivatedEventArgs args)
         {
             int dpi = GetDpiForWindow(WindowNative.GetWindowHandle(this));
-            double scaleFactor = dpi / 96.0; // 96 é o DPI padrão de 100%
+            double scaleFactor = dpi / 96.0; // 96 ï¿½ o DPI padrï¿½o de 100%
 
             // Ajusta de acordo com a escala    
             AppWindow.Resize(new SizeInt32((int)(430 * scaleFactor), (int)(680 * scaleFactor)));
@@ -54,7 +89,7 @@ namespace YT_Downloader
         public void ApplyTheme(ElementTheme theme)
         {
             rootElement.RequestedTheme = theme; // Aplica o tema ao rootElement (content root da janela)
-            var titleBar = AppWindow.TitleBar; // Customização da TitleBar diretamente no WinUI 3
+            var titleBar = AppWindow.TitleBar; // Customizaï¿½ï¿½o da TitleBar diretamente no WinUI 3
 
             // Determina o tema a ser aplicado
             if (theme == ElementTheme.Default)
@@ -73,13 +108,28 @@ namespace YT_Downloader
             titleBar.ButtonHoverForegroundColor = foregroundColor;
         }
 
+        private async void AddButton_Click(object sender, RoutedEventArgs e)
+        {
+            ContentDialog dialog = new()
+            {
+                XamlRoot = rootElement.XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                RequestedTheme = rootElement.RequestedTheme, // TO-DO: respeitar o tema escolhido pelo usuï¿½rio
+                Title = "Add New Download",
+                CloseButtonText = "Close",
+                Content = new DetailsPage()
+            };
+
+            _ = await dialog.ShowAsync();
+        }
+
         private async void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
             ContentDialog dialog = new()
             {
                 XamlRoot = rootElement.XamlRoot,
                 Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
-                RequestedTheme = rootElement.RequestedTheme, // TO-DO: respeitar o tema escolhido pelo usuário
+                RequestedTheme = rootElement.RequestedTheme, // TO-DO: respeitar o tema escolhido pelo usuï¿½rio
                 Title = "Settings",
                 CloseButtonText = "Close",
                 Content = new SettingsPage()
@@ -87,21 +137,6 @@ namespace YT_Downloader
 
             rootElement.ActualThemeChanged += (sender, args) =>
                 dialog.RequestedTheme = rootElement.RequestedTheme; // Atualiza o tema dinamicamente
-
-            _ = await dialog.ShowAsync();
-        }
-
-        private async void AddButton_Click(object sender, RoutedEventArgs e)
-        {
-            ContentDialog dialog = new()
-            {
-                XamlRoot = rootElement.XamlRoot,
-                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
-                //RequestedTheme = ElementTheme.Default, // TO-DO: respeitar o tema escolhido pelo usuário
-                Title = "Add New Video",
-                CloseButtonText = "Close",
-                Content = new DetailsPage()
-            };
 
             _ = await dialog.ShowAsync();
         }

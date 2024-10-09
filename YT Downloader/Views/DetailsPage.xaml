@@ -8,12 +8,16 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Width="342">
-        <Grid ColumnDefinitions="*, 40">
+    <Grid
+        Width="324"
+        RowDefinitions="Auto, Auto"
+        RowSpacing="12">
+        <Grid Grid.Row="0" ColumnDefinitions="*, 40">
             <TextBox
+                x:Name="UrlTextBox"
                 Grid.Column="0"
                 Height="62"
-                Header="Enter your Youtube video/playlist ID or URL:" />
+                Header="Enter your YT video/playlist ID or URL:" />
             <Button
                 Grid.Column="1"
                 Width="35"
@@ -25,5 +29,79 @@
             </Button>
         </Grid>
 
+        <Grid
+            Grid.Row="1"
+            RowDefinitions="Auto, Auto, Auto, Auto"
+            RowSpacing="8"
+            Visibility="Visible">
+            <HyperlinkButton
+                x:Name="TitleHyperlink"
+                Grid.Row="0"
+                Padding="4"
+                HorizontalAlignment="Center"
+                Content="Zavodila but Dani sings it!!" />
+            <Grid
+                Grid.Row="1"
+                ColumnDefinitions="*, 104"
+                ColumnSpacing="6">
+                <Border
+                    x:Name="ThumbnailBorder"
+                    Grid.Column="0"
+                    Background="{ThemeResource AcrylicBackgroundFillColorBaseBrush}"
+                    CornerRadius="6">
+                    <ProgressRing
+                        Width="30"
+                        Height="30"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        IsActive="True" />
+                </Border>
+                <Grid
+                    Grid.Column="1"
+                    RowDefinitions="Auto, Auto"
+                    RowSpacing="6">
+                    <ComboBox
+                        Grid.Row="0"
+                        HorizontalAlignment="Stretch"
+                        Header="Format"
+                        IsEnabled="False"
+                        SelectedIndex="0">
+                        <x:String>Mp4</x:String>
+                        <x:String>Mp3</x:String>
+                    </ComboBox>
+                    <ComboBox
+                        Grid.Row="1"
+                        HorizontalAlignment="Stretch"
+                        Header="Quality"
+                        IsEnabled="False"
+                        SelectedIndex="0">
+                        <x:String>1080p60</x:String>
+                        <x:String>720p</x:String>
+                    </ComboBox>
+                </Grid>
+            </Grid>
+
+            <Grid Grid.Row="2" ColumnDefinitions="*, 40">
+                <TextBox
+                    Grid.Column="0"
+                    Height="62"
+                    Header="File Name:"
+                    PlaceholderText="Zavodila but Dani sings it!!" />
+                <Button
+                    Grid.Column="1"
+                    Width="35"
+                    Height="35"
+                    Padding="0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom">
+                    <FontIcon Glyph="&#xE72C;" />
+                </Button>
+            </Grid>
+            <TextBlock Grid.Row="3">
+                <Run>File Size:</Run>
+                <LineBreak />
+                <Run x:Name="FileSize" Foreground="DarkGray" />
+            </TextBlock>
+        </Grid>
     </Grid>
 </Page>

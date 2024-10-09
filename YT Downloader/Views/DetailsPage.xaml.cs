@@ -1,31 +1,54 @@
-using Microsoft.UI.Xaml;
+using AngleSharp.Dom;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+using System.Threading;
+using YoutubeExplode;
+using YoutubeExplode.Videos.Streams;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
 
 namespace YT_Downloader.Views
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class DetailsPage : Page
     {
+        private readonly YoutubeClient YoutubeClient;
+        private YoutubeExplode.Videos.Video Video;
+        private StreamManifest StreamManifest;
+        private readonly string ThumbnailPath;
+        private CancellationToken token;
+
         public DetailsPage()
         {
-            this.InitializeComponent();
+            YoutubeClient = new();
+            InitializeComponent();
+        }
+
+        private void UrlBox_KeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            if (e.Key == Windows.System.VirtualKey.Enter)
+            {
+                //App.mainWindow.NavigateToNextPage(typeof(Video.NextVideoPage), urlBox.Text);
+            }
+        }
+
+        //private void LoadButton_Clicked(object sender, RoutedEventArgs e) =>
+            //App.mainWindow.NavigateToNextPage(typeof(Video.NextVideoPage), urlBox.Text);
+
+        private async void LoadVideoInfoAsync()
+        {
+            try
+            {
+                Video = await YoutubeClient.Videos.GetAsync(UrlTextBox.Text);
+                if (token.IsCancellationRequested) return;
+
+                StreamManifest = await YoutubeClient.Videos.Streams.GetManifestAsync(UrlTextBox.Text);
+                if (token.IsCancellationRequested) return;
+            }
+            catch (Exception ex)
+            {
+                //await ShowErrorDialogAsync("An error occurred while loading the video.", ex);
+                //App.mainWindow.NavigateToPreviousPage(typeof(VideoPage));
+            }
         }
     }
 }

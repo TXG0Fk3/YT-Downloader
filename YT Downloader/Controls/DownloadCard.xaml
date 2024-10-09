@@ -14,43 +14,47 @@
         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
         BorderThickness="1"
         CornerRadius="8"
-        RowDefinitions="Auto, *">
+        RowDefinitions="Auto, *"
+        RowSpacing="6">
 
         <!--  Header Section  -->
-        <Grid Grid.Row="0" ColumnDefinitions="80, *">
+        <Grid Grid.Row="0" ColumnDefinitions="100, *">
             <!--  Thumbnail Border  -->
             <Border
+                x:Name="ThumbnailBorder"
                 Grid.Column="0"
-                Background="White"
-                BorderBrush="{ThemeResource AccentButtonBackground}"
-                BorderThickness="2"
                 CornerRadius="6" />
 
             <!--  Title and Info  -->
             <StackPanel Grid.Column="1" Spacing="4">
                 <HyperlinkButton
+                    x:Name="TitleHyperlink"
                     Padding="4"
-                    HorizontalAlignment="Left"
-                    Content="Luci4 - Kurxxed Emeraldz (Official Visual)"
-                    NavigateUri="https://www.youtube.com/watch?v=-DENhuNNkK4" />
-                <StackPanel Orientation="Horizontal" Spacing="4">
-                    <StackPanel Orientation="Vertical" Spacing="4">
-                        <TextBlock Text="Some additional info" />
-                        <TextBlock Text="More details about the download" />
+                    HorizontalAlignment="Left" />
+                <StackPanel
+                    HorizontalAlignment="Stretch"
+                    Orientation="Horizontal"
+                    Spacing="4">
+                    <StackPanel
+                        Width="182"
+                        Margin="6,0,0,0"
+                        Orientation="Vertical"
+                        Spacing="1">
+                        <TextBlock x:Name="ChannelTextBlock" Foreground="DarkGray" />
+                        <TextBlock x:Name="VideoQualityAndSizeTextBlock" Foreground="DarkGray" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Spacing="4">
                         <Button
                             Width="40"
                             Height="40"
                             Padding="0"
-                            HorizontalAlignment="Left">
+                            IsEnabled="False">
                             <FontIcon Glyph="&#xE768;" />
                         </Button>
                         <Button
                             Width="40"
                             Height="40"
-                            Padding="0"
-                            HorizontalAlignment="Left">
+                            Padding="0">
                             <FontIcon Glyph="&#xE71A;" />
                         </Button>
                     </StackPanel>
@@ -59,8 +63,7 @@
         </Grid>
 
         <!--  Progress Bar  -->
-        <ProgressBar Grid.Row="1" IsIndeterminate="True" />
+        <ProgressBar x:Name="DownloadProgressBar" Grid.Row="1" />
 
     </Grid>
-
 </UserControl>

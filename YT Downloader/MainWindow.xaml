@@ -29,12 +29,14 @@
 
         <!--  Downloads  -->
         <Grid Grid.Row="1" RowDefinitions="Auto, *">
+            <!--  Title  -->
             <TextBlock
                 Grid.Row="0"
                 Margin="27,12,0,12"
                 FontSize="16"
                 Style="{StaticResource BodyStrongTextBlockStyle}"
                 Text="Downloads" />
+
             <ScrollViewer Grid.Row="1">
                 <StackPanel
                     x:Name="DownloadsStackPanel"
@@ -45,12 +47,15 @@
                         <EntranceThemeTransition FromVerticalOffset="50" />
                         <RepositionThemeTransition IsStaggeringEnabled="False" />
                     </StackPanel.ChildrenTransitions>
+
+                    <!--  If don't have downloads  -->
                     <Grid
                         Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1"
                         CornerRadius="8"
-                        RowDefinitions="Auto, Auto">
+                        RowDefinitions="Auto, Auto"
+                        Visibility="Visible">
                         <TextBlock
                             Grid.Row="0"
                             Margin="8"
@@ -68,6 +73,7 @@
                             </StackPanel>
                         </Button>
                     </Grid>
+
                 </StackPanel>
             </ScrollViewer>
         </Grid>
@@ -91,6 +97,7 @@
                 Click="AddButton_Click">
                 <FontIcon Glyph="&#xE710;" />
             </Button>
+
             <Button
                 Grid.Column="1"
                 Width="35"
@@ -99,7 +106,9 @@
                 HorizontalAlignment="Center">
                 <FontIcon Glyph="&#xE711;" />
             </Button>
+
             <AppBarSeparator Grid.Column="3" HorizontalAlignment="Center" />
+
             <Button
                 Grid.Column="4"
                 Width="35"
@@ -108,6 +117,7 @@
                 HorizontalAlignment="Center">
                 <FontIcon Glyph="&#xE897;" />
             </Button>
+
             <Button
                 Grid.Column="5"
                 Width="35"

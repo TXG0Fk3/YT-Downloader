@@ -63,7 +63,7 @@ namespace YT_Downloader.Views.Video
             catch (Exception ex)
             {
                 await ShowErrorDialogAsync("An error occurred while loading the video.", ex);
-                //App.mainWindow.NavigateToPreviousPage(typeof(VideoPage));
+                 //App.mainWindow.NavigateToPreviousPage(typeof(VideoPage));
             }
         }
 
