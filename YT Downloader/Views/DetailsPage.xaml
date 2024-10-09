@@ -39,7 +39,7 @@
                 Grid.Row="0"
                 Padding="4"
                 HorizontalAlignment="Center"
-                Content="Zavodila but Dani sings it!!" />
+                Content="Loading..." />
             <Grid
                 Grid.Row="1"
                 ColumnDefinitions="*, 104"
@@ -86,14 +86,16 @@
                     Grid.Column="0"
                     Height="62"
                     Header="File Name:"
-                    PlaceholderText="Zavodila but Dani sings it!!" />
+                    IsEnabled="False"
+                    PlaceholderText="Loading..." />
                 <Button
                     Grid.Column="1"
                     Width="35"
                     Height="35"
                     Padding="0"
                     HorizontalAlignment="Right"
-                    VerticalAlignment="Bottom">
+                    VerticalAlignment="Bottom"
+                    IsEnabled="False">
                     <FontIcon Glyph="&#xE72C;" />
                 </Button>
             </Grid>
