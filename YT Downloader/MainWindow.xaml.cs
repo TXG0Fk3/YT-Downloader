@@ -18,6 +18,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using CommunityToolkit.WinUI;
+using YT_Downloader.Controls;
 
 namespace YT_Downloader
 {
@@ -43,36 +44,6 @@ namespace YT_Downloader
                 ? parsedTheme
                 : ElementTheme.Default // Definindo um valor padr�o, se a convers�o falhar
                 );
-        }
-
-        public async void L()
-        {
-            List<Task> tarefas = new List<Task>();
-            tarefas.Add(Task.Run(() => Test("https://www.youtube.com/watch?v=319067rZJb0")));
-            tarefas.Add(Task.Run(() => Test("https://www.youtube.com/watch?v=PZrCZ-sHs54")));
-            tarefas.Add(Task.Run(() => Test("https://www.youtube.com/watch?v=Jg00bppAwb4")));
-            tarefas.Add(Task.Run(() => Test("https://www.youtube.com/watch?v=v5w0ehBgOGQ")));
-            tarefas.Add(Task.Run(() => Test("https://www.youtube.com/watch?v=CBanYY9TJKA")));
-        }
-
-        public async Task Test(string URL)
-        {
-            var YoutubeClient = new YoutubeClient();
-            var Video = await YoutubeClient.Videos.GetAsync(URL);
-            var StreamManifest = await YoutubeClient.Videos.Streams.GetManifestAsync(URL);
-
-            var viddd = StreamManifest
-                .GetVideoOnlyStreams()
-                .Where(s => s.Container == Container.Mp4)
-                .First(s => s.VideoQuality.Label == "480p");
-
-            var auddd = (AudioOnlyStreamInfo)StreamManifest.GetAudioOnlyStreams()
-                .Where(s => s.Container == Container.Mp4)
-                .GetWithHighestBitrate();
-
-            var thumbpath = await Utils.ThumbHelper.DownloadThumbnailAsync(Video.Id);
-
-            DownloadsStackPanel.Children.Add(new Controls.DownloadCard("C:\\Users\\leove\\Downloads", thumbpath, Video, auddd, viddd));
         }
 
         // Ajusta resolu��o do app de acordo com a DPI (escala) do monitor
@@ -108,17 +79,39 @@ namespace YT_Downloader
             titleBar.ButtonHoverForegroundColor = foregroundColor;
         }
 
+        public void AddDownloadToStack(DownloadCard downloadCard)
+        {
+            DownloadsStackPanel.Children.Add(downloadCard);
+            CheckWithoutDownloadsCardVisibility();
+        }
+            
+        public void RemoveDownloadFromStack(DownloadCard downloadCard)
+        {
+            DownloadsStackPanel.Children.Remove(downloadCard);
+            CheckWithoutDownloadsCardVisibility();
+        }
+
+        // Checa se há itens em DownloadsStackPanel e altera sua visibilidade
+        private Microsoft.UI.Xaml.Visibility CheckWithoutDownloadsCardVisibility() =>
+            WithoutDownloadsCard.Visibility = DownloadsStackPanel.Children.Count != 0
+            ? Microsoft.UI.Xaml.Visibility.Collapsed
+            : Microsoft.UI.Xaml.Visibility.Visible;
+
         private async void AddButton_Click(object sender, RoutedEventArgs e)
         {
             ContentDialog dialog = new()
             {
                 XamlRoot = rootElement.XamlRoot,
                 Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
-                RequestedTheme = rootElement.RequestedTheme, // TO-DO: respeitar o tema escolhido pelo usu�rio
+                RequestedTheme = rootElement.RequestedTheme,
                 Title = "Add New Download",
-                CloseButtonText = "Close",
-                Content = new DetailsPage()
+                PrimaryButtonText = "Download",
+                IsPrimaryButtonEnabled = false,
+                CloseButtonText = "Cancel",
+                DefaultButton = ContentDialogButton.Primary
             };
+
+            dialog.Content = new DetailsPage(dialog);
 
             _ = await dialog.ShowAsync();
         }
