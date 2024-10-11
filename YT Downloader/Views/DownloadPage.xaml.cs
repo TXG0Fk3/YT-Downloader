@@ -125,9 +125,9 @@ namespace YT_Downloader.Views
 
         private void NavigateToDownloadFinishedPage()
         {
-            Views.DownloadFinishedPage.downloadPath = DownloadPath;
-            Views.DownloadFinishedPage.vidTitle = videoTitle.Text;
-            Views.DownloadFinishedPage.downloadType = VideoStreamInfo != null ? "V" : "M";
+            //Views.DownloadFinishedPage.downloadPath = DownloadPath;
+            //Views.DownloadFinishedPage.vidTitle = videoTitle.Text;
+            //Views.DownloadFinishedPage.downloadType = VideoStreamInfo != null ? "V" : "M";
             //App.mainWindow.view.Navigate(typeof(Views.DownloadFinishedPage), null, new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight });
         }
 

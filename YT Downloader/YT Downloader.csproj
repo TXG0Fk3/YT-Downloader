@@ -97,9 +97,6 @@
 		<Page Update="Controls\DownloadCard.xaml">
 		  <Generator>MSBuild:Compile</Generator>
 		</Page>
-		<None Update="ffmpeg.exe">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
 	</ItemGroup>
 
 	<PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
