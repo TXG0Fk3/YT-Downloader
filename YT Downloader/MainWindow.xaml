@@ -50,6 +50,7 @@
 
                     <!--  If don't have downloads  -->
                     <Grid
+                        x:Name="WithoutDownloadsCard"
                         Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1"
@@ -86,7 +87,7 @@
             Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}"
             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
             BorderThickness="1"
-            ColumnDefinitions="40, 40, *, 20, 40, 40"
+            ColumnDefinitions="40, *, 20, 40, 40"
             CornerRadius="8">
             <Button
                 Grid.Column="0"
@@ -98,19 +99,10 @@
                 <FontIcon Glyph="&#xE710;" />
             </Button>
 
-            <Button
-                Grid.Column="1"
-                Width="35"
-                Height="35"
-                Padding="0"
-                HorizontalAlignment="Center">
-                <FontIcon Glyph="&#xE711;" />
-            </Button>
-
-            <AppBarSeparator Grid.Column="3" HorizontalAlignment="Center" />
+            <AppBarSeparator Grid.Column="2" HorizontalAlignment="Center" />
 
             <Button
-                Grid.Column="4"
+                Grid.Column="3"
                 Width="35"
                 Height="35"
                 Padding="0"
@@ -119,7 +111,7 @@
             </Button>
 
             <Button
-                Grid.Column="5"
+                Grid.Column="4"
                 Width="35"
                 Height="35"
                 Padding="0"
