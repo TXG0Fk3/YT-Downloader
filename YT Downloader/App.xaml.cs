@@ -1,4 +1,4 @@
-﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml;
 using System.Threading;
 using YoutubeExplode;
 
@@ -9,7 +9,6 @@ namespace YT_Downloader
         public static CancellationTokenSource cts = new();
         public static MainWindow mainWindow;
         public static Settings.AppSettings appSettings = new();
-        public static readonly YoutubeClient youtubeClient = new();
 
         public App()
         {
