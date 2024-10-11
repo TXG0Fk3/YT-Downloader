@@ -12,34 +12,43 @@
         Width="324"
         RowDefinitions="Auto, Auto"
         RowSpacing="12">
+        <Grid.ChildrenTransitions>
+            <TransitionCollection>
+                <EntranceThemeTransition FromVerticalOffset="50" />
+                <RepositionThemeTransition />
+            </TransitionCollection>
+        </Grid.ChildrenTransitions>
+        
         <Grid Grid.Row="0" ColumnDefinitions="*, 40">
             <TextBox
                 x:Name="UrlTextBox"
                 Grid.Column="0"
                 Height="62"
-                Header="Enter your YT video/playlist ID or URL:" />
+                Header="Enter your YT video/playlist ID or URL:"
+                KeyDown="UrlBox_KeyDown" />
             <Button
                 Grid.Column="1"
                 Width="35"
                 Height="35"
                 Padding="0"
                 HorizontalAlignment="Right"
-                VerticalAlignment="Bottom">
+                VerticalAlignment="Bottom"
+                Click="LoadInfoButton_Clicked">
                 <FontIcon Glyph="&#xED0E;" />
             </Button>
         </Grid>
 
         <Grid
+            x:Name="VideoInfoGrid"
             Grid.Row="1"
             RowDefinitions="Auto, Auto, Auto, Auto"
             RowSpacing="8"
-            Visibility="Visible">
+            Visibility="Collapsed">
             <HyperlinkButton
                 x:Name="TitleHyperlink"
                 Grid.Row="0"
                 Padding="4"
-                HorizontalAlignment="Center"
-                Content="Loading..." />
+                HorizontalAlignment="Center" />
             <Grid
                 Grid.Row="1"
                 ColumnDefinitions="*, 104"
@@ -48,57 +57,36 @@
                     x:Name="ThumbnailBorder"
                     Grid.Column="0"
                     Background="{ThemeResource AcrylicBackgroundFillColorBaseBrush}"
-                    CornerRadius="6">
-                    <ProgressRing
-                        Width="30"
-                        Height="30"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        IsActive="True" />
-                </Border>
+                    CornerRadius="6" />
                 <Grid
                     Grid.Column="1"
                     RowDefinitions="Auto, Auto"
                     RowSpacing="6">
                     <ComboBox
+                        x:Name="FormatComboBox"
                         Grid.Row="0"
                         HorizontalAlignment="Stretch"
                         Header="Format"
-                        IsEnabled="False"
-                        SelectedIndex="0">
+                        SelectionChanged="Format_SelectionChanged">
                         <x:String>Mp4</x:String>
                         <x:String>Mp3</x:String>
                     </ComboBox>
                     <ComboBox
+                        x:Name="QualityComboBox"
                         Grid.Row="1"
                         HorizontalAlignment="Stretch"
                         Header="Quality"
-                        IsEnabled="False"
-                        SelectedIndex="0">
-                        <x:String>1080p60</x:String>
-                        <x:String>720p</x:String>
-                    </ComboBox>
+                        SelectionChanged="Quality_SelectionChanged" />
                 </Grid>
             </Grid>
 
-            <Grid Grid.Row="2" ColumnDefinitions="*, 40">
-                <TextBox
-                    Grid.Column="0"
-                    Height="62"
-                    Header="File Name:"
-                    IsEnabled="False"
-                    PlaceholderText="Loading..." />
-                <Button
-                    Grid.Column="1"
-                    Width="35"
-                    Height="35"
-                    Padding="0"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Bottom"
-                    IsEnabled="False">
-                    <FontIcon Glyph="&#xE72C;" />
-                </Button>
-            </Grid>
+            <TextBox
+                x:Name="FileNameTextBox"
+                Grid.Row="2"
+                Grid.Column="0"
+                Height="62"
+                Header="File Name:" />
+
             <TextBlock Grid.Row="3">
                 <Run>File Size:</Run>
                 <LineBreak />
