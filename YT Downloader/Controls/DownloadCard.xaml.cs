@@ -1,4 +1,3 @@
-using CommunityToolkit.WinUI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -70,7 +69,11 @@ namespace YT_Downloader.Controls
 
         private async Task DownloadAsync()
         {
-            DispatcherQueue.TryEnqueue(() => ErrorInfoBar.Visibility = Visibility.Collapsed);
+            DispatcherQueue.TryEnqueue(() => 
+            {
+                ErrorInfoBar.Visibility = Visibility.Collapsed;
+                DownloadProgressBar.ShowError = false;
+            });
 
             Button1.Content = new FontIcon { Glyph = "\uE8DA" };
             Button1ToolTip.Content = "Open Local";
