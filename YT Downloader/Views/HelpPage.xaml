@@ -13,7 +13,7 @@
             <StackPanel>
 
                 <TextBlock TextWrapping="Wrap">
-                    <Bold>1- </Bold>
+                    <Bold>1-</Bold>
                     <Run>Press Add Button</Run>
                 </TextBlock>
                 <Image
@@ -22,7 +22,7 @@
                     Source="/Assets/Help/One.png" />
 
                 <TextBlock TextWrapping="Wrap">
-                    <Bold>2- </Bold>
+                    <Bold>2-</Bold>
                     <Run>Put the YT Video/Playlist URL in the text box and press Enter key or press the button on the right</Run>
                 </TextBlock>
                 <Image
@@ -31,7 +31,7 @@
                     Source="/Assets/Help/Two.png" />
 
                 <TextBlock TextWrapping="Wrap">
-                    <Bold>3- </Bold>
+                    <Bold>3-</Bold>
                     <Run>Click here to select Mp4 or Mp3 Format</Run>
                 </TextBlock>
                 <Image
@@ -40,7 +40,7 @@
                     Source="/Assets/Help/Three.png" />
 
                 <TextBlock TextWrapping="Wrap">
-                    <Bold>4- </Bold>
+                    <Bold>4-</Bold>
                     <Run>Click here to select Video Quality</Run>
                 </TextBlock>
                 <Image
@@ -49,7 +49,7 @@
                     Source="/Assets/Help/Four.png" />
 
                 <TextBlock TextWrapping="Wrap">
-                    <Bold>5- </Bold>
+                    <Bold>5-</Bold>
                     <Run>Click the Download Button</Run>
                 </TextBlock>
                 <Image
@@ -58,7 +58,7 @@
                     Source="/Assets/Help/Five.png" />
 
                 <TextBlock TextWrapping="Wrap">
-                    <Bold>6- </Bold>
+                    <Bold>6-</Bold>
                     <Run>Just wait for the download to finish and enjoy the Video/Music!</Run>
                 </TextBlock>
                 <Image
