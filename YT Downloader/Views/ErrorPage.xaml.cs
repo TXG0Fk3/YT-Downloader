@@ -8,7 +8,7 @@ namespace YT_Downloader.Views
     {
         public ErrorPage(string error)
         {
-            this.InitializeComponent();
+            InitializeComponent();
             errorTextBlock.Text = error;
         }
     }

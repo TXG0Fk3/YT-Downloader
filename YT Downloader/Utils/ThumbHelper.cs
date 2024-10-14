@@ -4,8 +4,10 @@ using System.Threading.Tasks;
 
 namespace YT_Downloader.Utils
 {
+    // Classe para realizar download de Thumbnail
     static class ThumbHelper
     {
+        // Faz o download da thumbnail de uma vídeo com base no ID e retorna o caminho até ele
         public static async Task<string> DownloadThumbnailAsync(string videoId)
         {
             string tempDirectory = $"{Path.GetTempPath()}\\ThumbnailCache";

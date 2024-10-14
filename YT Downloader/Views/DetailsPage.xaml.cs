@@ -82,6 +82,7 @@ namespace YT_Downloader.Views
                 VideoInfoGrid.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
                 ResetVideoInfo();
 
+                // Exibe a barra de error
                 ErrorInfoBar.Severity = InfoBarSeverity.Error;
                 ErrorInfoBar.Title = "Error";
                 ErrorInfoBar.Message = ex.Message;
@@ -89,7 +90,7 @@ namespace YT_Downloader.Views
             }
         }
 
-        // Remove informações do vídeo
+        // Remove informações do vídeo e outros elementos
         private void ResetVideoInfo()
         {
             ContentDialogInstance.IsPrimaryButtonEnabled = false;
@@ -129,6 +130,7 @@ namespace YT_Downloader.Views
 
                 FileNameTextBox.PlaceholderText = "Custom FileName not available for Playlists.";
 
+                // Thumbnail não disponível para playlist, então mostra ícone de bloqueio
                 ThumbnailBorder.Child = new FontIcon
                 {
                     Glyph = "\uF140",
@@ -152,6 +154,7 @@ namespace YT_Downloader.Views
                 FileNameTextBox.IsEnabled = true;
             }
 
+            // Altera para o Mp4 e atualiza as qualidades disponíveis
             if (FormatComboBox.SelectedIndex != 0)
                 FormatComboBox.SelectedIndex = 0;
             else UpdateQualityComboBox();
@@ -231,7 +234,7 @@ namespace YT_Downloader.Views
             return App.appSettings.DefaultDownloadsPath;
         }
 
-        // Video selecionado
+        // VideoStrem selecionado
         private VideoOnlyStreamInfo SelectedVideoStreamInfo
         {
             get
@@ -252,7 +255,7 @@ namespace YT_Downloader.Views
             }
         }
 
-        // Áudio selecionado
+        // AudioStream selecionado
         private AudioOnlyStreamInfo SelectedAudioStreamInfo
         {
             get

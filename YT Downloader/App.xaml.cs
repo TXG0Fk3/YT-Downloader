@@ -1,6 +1,4 @@
 using Microsoft.UI.Xaml;
-using System.Threading;
-using YoutubeExplode;
 
 namespace YT_Downloader
 {
@@ -10,7 +8,7 @@ namespace YT_Downloader
         public static Settings.AppSettings appSettings = new();
 
         public App() =>
-            this.InitializeComponent();
+            InitializeComponent();
 
         protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
