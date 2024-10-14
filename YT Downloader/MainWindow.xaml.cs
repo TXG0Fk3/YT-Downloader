@@ -92,6 +92,7 @@ namespace YT_Downloader
             ? Visibility.Collapsed
             : Visibility.Visible;
 
+        // Abre dialogo de Download
         private async void AddButton_Click(object sender, RoutedEventArgs e)
         {
             ContentDialog dialog = new()
@@ -111,6 +112,7 @@ namespace YT_Downloader
             _ = await dialog.ShowAsync();
         }
 
+        // Abre dialogo de Ajuda
         private async void HelpButton_Click(object sender, RoutedEventArgs e)
         {
             ContentDialog dialog = new()
@@ -126,6 +128,7 @@ namespace YT_Downloader
             _ = await dialog.ShowAsync();
         }
 
+        // Abre dialogo de Configurações
         private async void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
             ContentDialog dialog = new()
