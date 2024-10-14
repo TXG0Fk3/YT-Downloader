@@ -6,7 +6,6 @@ namespace YT_Downloader
 {
     public partial class App : Application
     {
-        public static CancellationTokenSource cts = new();
         public static MainWindow mainWindow;
         public static Settings.AppSettings appSettings = new();
 
