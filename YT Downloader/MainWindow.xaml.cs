@@ -111,13 +111,28 @@ namespace YT_Downloader
             _ = await dialog.ShowAsync();
         }
 
+        private async void HelpButton_Click(object sender, RoutedEventArgs e)
+        {
+            ContentDialog dialog = new()
+            {
+                XamlRoot = rootElement.XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                RequestedTheme = rootElement.RequestedTheme,
+                Title = "Help",
+                CloseButtonText = "Close",
+                Content = new HelpPage()
+            };
+
+            _ = await dialog.ShowAsync();
+        }
+
         private async void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
             ContentDialog dialog = new()
             {
                 XamlRoot = rootElement.XamlRoot,
                 Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
-                RequestedTheme = rootElement.RequestedTheme, // TO-DO: respeitar o tema escolhido pelo usu�rio
+                RequestedTheme = rootElement.RequestedTheme,
                 Title = "Settings",
                 CloseButtonText = "Close",
                 Content = new SettingsPage()

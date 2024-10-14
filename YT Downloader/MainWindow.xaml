@@ -20,7 +20,7 @@
                 Margin="15,0,0,0"
                 VerticalAlignment="Center"
                 ShowAsMonochrome="False"
-                UriSource="ms-appx:///Assets/Square44x44Logo.altform-lightunplated_targetsize-24.png" />
+                UriSource="/Assets/Square44x44Logo.altform-lightunplated_targetsize-24.png" />
             <TextBlock
                 Margin="5,0,0,2"
                 VerticalAlignment="Center"
@@ -108,6 +108,7 @@
                 Height="35"
                 Padding="0"
                 HorizontalAlignment="Center"
+                Click="HelpButton_Click"
                 ToolTipService.ToolTip="Help">
                 <FontIcon Glyph="&#xE897;" />
             </Button>
