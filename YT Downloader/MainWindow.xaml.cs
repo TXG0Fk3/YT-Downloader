@@ -1,6 +1,5 @@
 using System;
 using System.Runtime.InteropServices;
-using AngleSharp.Dom;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
@@ -9,16 +8,9 @@ using Windows.Graphics;
 using Windows.UI;
 using Windows.UI.WindowManagement;
 using WinRT.Interop;
-using YoutubeExplode.Videos;
-using YoutubeExplode;
 using YT_Downloader.Views;
-using YoutubeExplode.Videos.Streams;
-using System.Linq;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using CommunityToolkit.WinUI;
 using YT_Downloader.Controls;
+using System.IO;
 
 namespace YT_Downloader
 {
@@ -26,49 +18,52 @@ namespace YT_Downloader
     {
         public MainWindow()
         {
-            // Configura��es da janela
-            Activated += AdjustWindowSizeForDpi; // Altera Resolu��o sempre que o DPI (escala) � modificado
-            AppWindow.Title = "YT Downloader"; // T�tulo
-            AppWindow.SetIcon(@"Assets\AppIcon.ico"); // �cone
-            (AppWindow.Presenter as OverlappedPresenter).IsResizable = false; // Torna a janela n�o redimension�vel
+            // Configurações da janela
+            Activated += AdjustWindowSizeForDpi; // Altera Resolução sempre que o DPI (escala) é modificado
+            Closed += MainWindow_Closed; // Método que será executado ao finalizar o programa.
+            AppWindow.Title = "YT Downloader"; // Título
+            AppWindow.SetIcon(@"Assets\AppIcon.ico"); // Ícone
+            (AppWindow.Presenter as OverlappedPresenter).IsResizable = false; // Torna a janela não redimension�vel
             
-            // Configura��es da TitleBar
+            // Configurações da TitleBar
             ExtendsContentIntoTitleBar = true; // TitleBar infinito
             IntPtr hwnd = WindowNative.GetWindowHandle(this);
-            _ = SetWindowLong(hwnd, -16, GetWindowLong(hwnd, -16) & ~0x00010000); // Desativa o bot�o de maximizar
+            _ = SetWindowLong(hwnd, -16, GetWindowLong(hwnd, -16) & ~0x00010000); // Desativa o botão de maximizar
 
             InitializeComponent();
 
             // Aplica o tema
             ApplyTheme(Enum.TryParse<ElementTheme>(App.appSettings.Theme, out var parsedTheme)
                 ? parsedTheme
-                : ElementTheme.Default // Definindo um valor padr�o, se a convers�o falhar
+                : ElementTheme.Default // Definindo um valor padrão, se a conversão falhar
                 );
         }
 
-        // Ajusta resolu��o do app de acordo com a DPI (escala) do monitor
+        // Ajusta resolução do app de acordo com a DPI (escala) do monitor
         private void AdjustWindowSizeForDpi(object sender, WindowActivatedEventArgs args)
         {
-            int dpi = GetDpiForWindow(WindowNative.GetWindowHandle(this));
-            double scaleFactor = dpi / 96.0; // 96 � o DPI padr�o de 100%
+            // Verifica se a janela está ativa
+            if (args.WindowActivationState == WindowActivationState.Deactivated) return; // Se a janela não estiver ativa, não faz nada
 
-            // Ajusta de acordo com a escala    
+            int dpi = GetDpiForWindow(WindowNative.GetWindowHandle(this));
+            double scaleFactor = dpi / 96.0; // 96 é o DPI padrão de 100%
+
+            // Ajusta o tamanho de acordo com a escala
             AppWindow.Resize(new SizeInt32((int)(430 * scaleFactor), (int)(680 * scaleFactor)));
         }
+
 
         // Aplica o tema
         public void ApplyTheme(ElementTheme theme)
         {
             rootElement.RequestedTheme = theme; // Aplica o tema ao rootElement (content root da janela)
-            var titleBar = AppWindow.TitleBar; // Customiza��o da TitleBar diretamente no WinUI 3
+            var titleBar = AppWindow.TitleBar; // Customização da TitleBar diretamente no WinUI 3
 
             // Determina o tema a ser aplicado
             if (theme == ElementTheme.Default)
-            {
                 theme = (Application.Current.RequestedTheme == ApplicationTheme.Dark)
                     ? ElementTheme.Dark
                     : ElementTheme.Light;
-            }
 
             Color buttonHoverBackgroundColor = theme == ElementTheme.Dark ? Color.FromArgb(255, 61, 61, 61) : Colors.LightGray;
             Color foregroundColor = theme == ElementTheme.Dark ? Colors.White : Colors.Black;
@@ -92,10 +87,10 @@ namespace YT_Downloader
         }
 
         // Checa se há itens em DownloadsStackPanel e altera sua visibilidade
-        private Microsoft.UI.Xaml.Visibility CheckWithoutDownloadsCardVisibility() =>
-            WithoutDownloadsCard.Visibility = DownloadsStackPanel.Children.Count != 0
-            ? Microsoft.UI.Xaml.Visibility.Collapsed
-            : Microsoft.UI.Xaml.Visibility.Visible;
+        private Visibility CheckWithoutDownloadsCardVisibility() =>
+            WithoutDownloadsCard.Visibility = DownloadsStackPanel.Children.Count > 1
+            ? Visibility.Collapsed
+            : Visibility.Visible;
 
         private async void AddButton_Click(object sender, RoutedEventArgs e)
         {
@@ -132,6 +127,13 @@ namespace YT_Downloader
                 dialog.RequestedTheme = rootElement.RequestedTheme; // Atualiza o tema dinamicamente
 
             _ = await dialog.ShowAsync();
+        }
+
+        // Deleta as thumbnails baixadas e finaliza o programa
+        private void MainWindow_Closed(object sender, WindowEventArgs args)
+        {
+            if (Directory.Exists($"{Path.GetTempPath()}\\ThumbnailCache"))
+                Directory.Delete($"{Path.GetTempPath()}\\ThumbnailCache", true);
         }
 
         [DllImport("user32.dll")]

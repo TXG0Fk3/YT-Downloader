@@ -8,11 +8,11 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <ScrollViewer>
+    <ScrollViewer Width="324" MaxHeight="430">
         <StackPanel>
-            <TextBox
+            <TextBlock
                 x:Name="errorTextBlock"
-                IsReadOnly="True"
+                IsTextSelectionEnabled="True"
                 TextWrapping="Wrap" />
         </StackPanel>
     </ScrollViewer>

@@ -9,10 +9,11 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.Storage.Pickers;
 using Windows.Storage;
+using Windows.Storage.Pickers;
 using WinRT.Interop;
 using YoutubeExplode;
+using YoutubeExplode.Videos;
 using YoutubeExplode.Videos.Streams;
 
 
@@ -22,18 +23,20 @@ namespace YT_Downloader.Views
     {
         private readonly YoutubeClient YoutubeClient;
         private YoutubeExplode.Playlists.Playlist Playlist;
-        private YoutubeExplode.Videos.Video Video;
+        private Video Video;
         private StreamManifest StreamManifest;
         private string ThumbnailPath;
-        private CancellationToken token;
+        private CancellationTokenSource CTS;
 
         private ContentDialog ContentDialogInstance;
 
         public DetailsPage(ContentDialog contentDialogInstance)
         {
             YoutubeClient = new();
+            CTS = new();
             ContentDialogInstance = contentDialogInstance;
             ContentDialogInstance.PrimaryButtonClick += DownloadButton_Clicked;
+            ContentDialogInstance.CloseButtonClick += CancelButton_Clicked;
 
             InitializeComponent();
 
@@ -56,7 +59,7 @@ namespace YT_Downloader.Views
             ResetVideoInfo();
             LoadVideoInfoAsync();
         }
-        
+
         // Carrega informações do vídeo
         private async void LoadVideoInfoAsync()
         {
@@ -64,18 +67,25 @@ namespace YT_Downloader.Views
             {
                 VideoInfoGrid.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
 
-                Video = await YoutubeClient.Videos.GetAsync(UrlTextBox.Text);
-                if (token.IsCancellationRequested) return;
-
-                StreamManifest = await YoutubeClient.Videos.Streams.GetManifestAsync(UrlTextBox.Text);
-                if (token.IsCancellationRequested) return;
+                if (UrlTextBox.Text.Contains("playlist?list=")) //Caso seja uma playlist
+                    Playlist = await YoutubeClient.Playlists.GetAsync(UrlTextBox.Text, CTS.Token);
+                else //Caso seja um único vídeo/música
+                {
+                    Video = await YoutubeClient.Videos.GetAsync(UrlTextBox.Text, CTS.Token);
+                    StreamManifest = await YoutubeClient.Videos.Streams.GetManifestAsync(UrlTextBox.Text, CTS.Token);
+                }
 
                 DisplayVideoInfo();
             }
             catch (Exception ex)
             {
-                //await ShowErrorDialogAsync("An error occurred while loading the video.", ex);
-                //App.mainWindow.NavigateToPreviousPage(typeof(VideoPage));
+                VideoInfoGrid.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+                ResetVideoInfo();
+
+                ErrorInfoBar.Severity = InfoBarSeverity.Error;
+                ErrorInfoBar.Title = "Error";
+                ErrorInfoBar.Message = ex.Message;
+                ErrorInfoBar.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
             }
         }
 
@@ -83,6 +93,9 @@ namespace YT_Downloader.Views
         private void ResetVideoInfo()
         {
             ContentDialogInstance.IsPrimaryButtonEnabled = false;
+
+            Video = null;
+            Playlist = null;
 
             TitleHyperlink.Content = "Loading...";
             TitleHyperlink.NavigateUri = null;
@@ -102,28 +115,49 @@ namespace YT_Downloader.Views
                 HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Center,
                 VerticalContentAlignment = Microsoft.UI.Xaml.VerticalAlignment.Center,
             };
+
+            ErrorInfoBar.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
         }
 
         // Mostra informações do vídeo
         private async void DisplayVideoInfo()
         {
-            TitleHyperlink.Content = Video.Title;
-            TitleHyperlink.NavigateUri = new Uri(Video.Url);
-            FileNameTextBox.PlaceholderText = string.Concat(Video.Title.Where(c => !Path.GetInvalidFileNameChars().Contains(c)));
+            if (Playlist != null) // Caso for uma playlist
+            {
+                TitleHyperlink.Content = Playlist.Title;
+                TitleHyperlink.NavigateUri = new Uri(Playlist.Url);
+
+                FileNameTextBox.PlaceholderText = "Custom FileName not available for Playlists.";
+
+                ThumbnailBorder.Child = new FontIcon
+                {
+                    Glyph = "\uF140",
+                    FontSize = 32,
+                    HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Center,
+                    VerticalAlignment = Microsoft.UI.Xaml.VerticalAlignment.Center
+                };
+            }
+            else // Caso seja um único vídeo/música 
+            {
+                TitleHyperlink.Content = Video.Title;
+                TitleHyperlink.NavigateUri = new Uri(Video.Url);
+                FileNameTextBox.PlaceholderText = string.Concat(Video.Title.Where(c => !Path.GetInvalidFileNameChars().Contains(c)));
+
+                ThumbnailBorder.Child = new Image
+                {
+                    Source = new BitmapImage(new Uri(ThumbnailPath = await Utils.ThumbHelper.DownloadThumbnailAsync(Video.Id))),
+                    Stretch = Microsoft.UI.Xaml.Media.Stretch.Fill
+                };
+
+                FileNameTextBox.IsEnabled = true;
+            }
 
             if (FormatComboBox.SelectedIndex != 0)
                 FormatComboBox.SelectedIndex = 0;
             else UpdateQualityComboBox();
 
-            ThumbnailBorder.Child = new Image
-            {
-                Source = new BitmapImage(new Uri(ThumbnailPath = await Utils.ThumbHelper.DownloadThumbnailAsync(Video.Id))),
-                Stretch = Microsoft.UI.Xaml.Media.Stretch.Fill
-            };
-
             FormatComboBox.IsEnabled = true;
-            QualityComboBox.IsEnabled = true;
-            FileNameTextBox.IsEnabled = true;
+            QualityComboBox.IsEnabled = true;         
 
             ContentDialogInstance.IsPrimaryButtonEnabled = true;
         }
@@ -134,12 +168,10 @@ namespace YT_Downloader.Views
             UpdateQualityComboBox();
             QualityComboBox.IsEnabled = FormatComboBox.SelectedItem.ToString() == "Mp4";
         }
-            
+
         // Ação caso a seleção da qualidade seja alterada
-        private void Quality_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (QualityComboBox.SelectedItem != null) FileSize.Text = $"{Math.Round(Size, 2)} MB";
-        }
+        private void Quality_SelectionChanged(object sender, SelectionChangedEventArgs e) =>
+            FileSize.Text = (QualityComboBox.SelectedItem != null && Video != null) ? $"{Math.Round(Size, 2)} MB" : "Undetermined";
 
         // Atualiza as qualidades disponíveis em QualityComboBox
         private void UpdateQualityComboBox()
@@ -151,13 +183,34 @@ namespace YT_Downloader.Views
         }
 
         // Ação a ser executada caso o botão Download do ContentDialog seja pressionado
-        internal async void DownloadButton_Clicked(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        private async void DownloadButton_Clicked(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
             string downloadPath = await GetDownloadPathAsync();
             if (string.IsNullOrEmpty(downloadPath)) return;
 
-            App.mainWindow.AddDownloadToStack(new Controls.DownloadCard(YoutubeClient, downloadPath, ThumbnailPath, FileName, Video, SelectedAudioStreamInfo, SelectedVideoStreamInfo));
+            if (Playlist != null) // Caso for uma playlist
+            {
+                await foreach (var video in YoutubeClient.Playlists.GetVideosAsync(Playlist.Id))
+                {
+                    StreamManifest = await YoutubeClient.Videos.Streams.GetManifestAsync(video.Url, CTS.Token);
+                    ThumbnailPath = await Utils.ThumbHelper.DownloadThumbnailAsync(video.Id);
+                    
+                    App.mainWindow.AddDownloadToStack(new Controls.DownloadCard(
+                        YoutubeClient, downloadPath, ThumbnailPath, video.Title,
+                        video, SelectedVideoStreamInfo, SelectedAudioStreamInfo));
+                }
+            }
+            else // Caso for um único vídeo/música
+            {
+                App.mainWindow.AddDownloadToStack(new Controls.DownloadCard(
+                    YoutubeClient, downloadPath, ThumbnailPath, FileName,
+                    Video, SelectedVideoStreamInfo, SelectedAudioStreamInfo));
+            }
         }
+
+        // Cancela o processo e fecha o contentdialog
+        private void CancelButton_Clicked(ContentDialog sender, ContentDialogButtonClickEventArgs args) =>
+            CTS.Cancel();
 
         // Coleta o caminho padrão para salvar arquivos ou chama o filepicker
         private async Task<string> GetDownloadPathAsync()
@@ -183,14 +236,19 @@ namespace YT_Downloader.Views
         {
             get
             {
-                int selectedFps = QualityComboBox.SelectedValue.ToString().Split(' ')[0].EndsWith("60") ? 60 : 30;
-                int selectedResolution = int.Parse(QualityComboBox.SelectedValue.ToString().Split('p')[0]);
+                if (FormatComboBox.SelectedItem.ToString() == "Mp4")
+                {
+                    int selectedFps = QualityComboBox.SelectedValue.ToString().Split(' ')[0].EndsWith("60") ? 60 : 30;
+                    int selectedResolution = int.Parse(QualityComboBox.SelectedValue.ToString().Split('p')[0]);
 
-                return StreamManifest.GetVideoOnlyStreams()
-                    .Where(s => s.Container == Container.Mp4)
-                    .OrderBy(s => Math.Abs((int.Parse(s.VideoQuality.Label.Split('p')[0]) - selectedResolution)) 
-                                + Math.Abs((s.VideoQuality.Label.Split(' ')[0].EndsWith("60") ? 60 : 30) - selectedFps))
-                    .FirstOrDefault();
+                    return StreamManifest.GetVideoOnlyStreams()
+                        .Where(s => s.Container == Container.Mp4)
+                        .OrderBy(s => Math.Abs((int.Parse(s.VideoQuality.Label.Split('p')[0]) - selectedResolution))
+                                    + Math.Abs((s.VideoQuality.Label.Split(' ')[0].EndsWith("60") ? 60 : 30) - selectedFps))
+                        .FirstOrDefault();
+                }
+                else
+                    return null;
             }
         }
 
@@ -210,9 +268,12 @@ namespace YT_Downloader.Views
         {
             get
             {
-                return FileNameTextBox.Text == ""
-                    ? FileNameTextBox.PlaceholderText
-                    : FileNameTextBox.Text;
+                if (Playlist != null) // Caso for playlist
+                    return null;
+                else
+                    return FileNameTextBox.Text == ""
+                        ? Video.Title
+                        : FileNameTextBox.Text;
             }
         }
 
@@ -221,13 +282,16 @@ namespace YT_Downloader.Views
         {
             get
             {
-                return FormatComboBox.SelectedItem.ToString() == "Mp4"
-                    ? StreamManifest
-                      .GetVideoOnlyStreams()
-                      .Where(s => s.Container == Container.Mp4)
-                      .Select(s => s.VideoQuality.Label)
-                      .ToHashSet()
-                    : ["Best"];
+                if (FormatComboBox.SelectedItem.ToString() == "Mp4")
+                    return Playlist != null
+                        ? ["2160p60", "2160p", "1440p60", "1440p", "1080p60", "1080p", "720p60", "720p", "480p60", "480p", "360p60", "360p", "240p60", "240p", "144p60", "144p"]
+                        : StreamManifest
+                            .GetVideoOnlyStreams()
+                            .Where(s => s.Container == Container.Mp4)
+                            .Select(s => s.VideoQuality.Label)
+                            .ToHashSet();
+                else
+                    return ["Best"];
             }
         }
 

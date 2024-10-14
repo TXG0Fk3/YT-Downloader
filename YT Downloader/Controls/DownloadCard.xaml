@@ -14,8 +14,7 @@
         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
         BorderThickness="1"
         CornerRadius="8"
-        RowDefinitions="Auto, *"
-        RowSpacing="6">
+        RowDefinitions="Auto, *, Auto">
 
         <!--  Header Section  -->
         <Grid Grid.Row="0" ColumnDefinitions="100, *">
@@ -30,7 +29,9 @@
                 <HyperlinkButton
                     x:Name="TitleHyperlink"
                     Padding="4"
-                    HorizontalAlignment="Left" />
+                    HorizontalAlignment="Left"
+                    ToolTipService.ToolTip="Open Video in Browser" />
+
                 <StackPanel
                     HorizontalAlignment="Stretch"
                     Orientation="Horizontal"
@@ -43,19 +44,25 @@
                         <TextBlock x:Name="ChannelTextBlock" Foreground="DarkGray" />
                         <TextBlock x:Name="VideoQualityAndSizeTextBlock" Foreground="DarkGray" />
                     </StackPanel>
+
                     <StackPanel Orientation="Horizontal" Spacing="4">
                         <Button
-                            Width="40"
-                            Height="40"
-                            Padding="0"
-                            IsEnabled="False">
-                            <FontIcon Glyph="&#xE768;" />
-                        </Button>
-                        <Button
+                            x:Name="Button1"
                             Width="40"
                             Height="40"
                             Padding="0">
-                            <FontIcon Glyph="&#xE71A;" />
+                            <ToolTipService.ToolTip>
+                                <ToolTip x:Name="Button1ToolTip" />
+                            </ToolTipService.ToolTip>
+                        </Button>
+                        <Button
+                            x:Name="Button2"
+                            Width="40"
+                            Height="40"
+                            Padding="0">
+                            <ToolTipService.ToolTip>
+                                <ToolTip x:Name="Button2ToolTip" />
+                            </ToolTipService.ToolTip>
                         </Button>
                     </StackPanel>
                 </StackPanel>
@@ -63,7 +70,27 @@
         </Grid>
 
         <!--  Progress Bar  -->
-        <ProgressBar x:Name="DownloadProgressBar" Grid.Row="1" />
+        <ProgressBar
+            x:Name="DownloadProgressBar"
+            Grid.Row="1"
+            Margin="0,6,0,0" />
 
+        <!--  Error InfoBar  -->
+        <InfoBar
+            x:Name="ErrorInfoBar"
+            Title="Error"
+            Grid.Row="2"
+            Margin="0,6,0,0"
+            IsClosable="False"
+            IsOpen="True"
+            Severity="Error"
+            Visibility="Collapsed">
+            <InfoBar.ActionButton>
+                <Button
+                    HorizontalAlignment="Right"
+                    Click="ErrorButton_Click"
+                    Content="See log" />
+            </InfoBar.ActionButton>
+        </InfoBar>
     </Grid>
 </UserControl>

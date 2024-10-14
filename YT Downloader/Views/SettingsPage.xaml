@@ -31,6 +31,7 @@
                     <RepositionThemeTransition IsStaggeringEnabled="False" />
                 </StackPanel.ChildrenTransitions>
 
+                <!--  Appearance Section  -->
                 <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}">
                     <Span><Bold>Appearance</Bold></Span>
                 </TextBlock>
@@ -55,6 +56,7 @@
                     </toolkit:SettingsExpander.Items>
                 </toolkit:SettingsExpander>
 
+                <!--  Files Section  -->
                 <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}">
                     <Span><Bold>Files</Bold></Span>
                 </TextBlock>
@@ -85,6 +87,7 @@
                     </toolkit:SettingsExpander.Items>
                 </toolkit:SettingsExpander>
 
+                <!--  About Section  -->
                 <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}">
                     <Span><Bold>About</Bold></Span>
                 </TextBlock>
@@ -104,6 +107,8 @@
                         <toolkit:SettingsCard HorizontalContentAlignment="Left" ContentAlignment="Left">
                             <StackPanel Margin="-12,0,0,0" Orientation="Vertical">
                                 <HyperlinkButton Content="TXG0Fk3 GitHub" NavigateUri="https://github.com/TXG0Fk3" />
+                                <HyperlinkButton Content="Project Repository" NavigateUri="https://github.com/TXG0Fk3/YT-Downloader" />
+                                <HyperlinkButton Content="Send FeedBack" NavigateUri="https://github.com/TXG0Fk3/YT-Downloader/issues" />
                             </StackPanel>
                         </toolkit:SettingsCard>
                     </toolkit:SettingsExpander.Items>

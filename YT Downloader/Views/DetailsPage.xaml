@@ -10,21 +10,21 @@
 
     <Grid
         Width="324"
-        RowDefinitions="Auto, Auto"
+        RowDefinitions="Auto, Auto, Auto"
         RowSpacing="12">
         <Grid.ChildrenTransitions>
             <TransitionCollection>
-                <EntranceThemeTransition FromVerticalOffset="50" />
                 <RepositionThemeTransition />
             </TransitionCollection>
         </Grid.ChildrenTransitions>
-        
+
+        <!--  URL Section  -->
         <Grid Grid.Row="0" ColumnDefinitions="*, 40">
             <TextBox
                 x:Name="UrlTextBox"
                 Grid.Column="0"
                 Height="62"
-                Header="Enter your YT video/playlist ID or URL:"
+                Header="Enter your YT video/playlist URL:"
                 KeyDown="UrlBox_KeyDown" />
             <Button
                 Grid.Column="1"
@@ -33,22 +33,27 @@
                 Padding="0"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Bottom"
-                Click="LoadInfoButton_Clicked">
+                Click="LoadInfoButton_Clicked"
+                ToolTipService.ToolTip="Load Video">
                 <FontIcon Glyph="&#xED0E;" />
             </Button>
         </Grid>
 
+        <!--  Video Info and Download Preferences  -->
         <Grid
             x:Name="VideoInfoGrid"
             Grid.Row="1"
             RowDefinitions="Auto, Auto, Auto, Auto"
             RowSpacing="8"
             Visibility="Collapsed">
+
             <HyperlinkButton
                 x:Name="TitleHyperlink"
                 Grid.Row="0"
                 Padding="4"
-                HorizontalAlignment="Center" />
+                HorizontalAlignment="Center"
+                ToolTipService.ToolTip="Open Video in Browser" />
+
             <Grid
                 Grid.Row="1"
                 ColumnDefinitions="*, 104"
@@ -93,5 +98,13 @@
                 <Run x:Name="FileSize" Foreground="DarkGray" />
             </TextBlock>
         </Grid>
+
+        <!--  Error&Warnings InfoBar  -->
+        <InfoBar
+            x:Name="ErrorInfoBar"
+            Grid.Row="2"
+            IsClosable="false"
+            IsOpen="True"
+            Visibility="Collapsed" />
     </Grid>
 </Page>

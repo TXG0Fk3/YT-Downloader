@@ -95,7 +95,8 @@
                 Height="35"
                 Padding="0"
                 HorizontalAlignment="Center"
-                Click="AddButton_Click">
+                Click="AddButton_Click"
+                ToolTipService.ToolTip="Add New Download">
                 <FontIcon Glyph="&#xE710;" />
             </Button>
 
@@ -106,7 +107,8 @@
                 Width="35"
                 Height="35"
                 Padding="0"
-                HorizontalAlignment="Center">
+                HorizontalAlignment="Center"
+                ToolTipService.ToolTip="Help">
                 <FontIcon Glyph="&#xE897;" />
             </Button>
 
@@ -116,7 +118,8 @@
                 Height="35"
                 Padding="0"
                 HorizontalAlignment="Center"
-                Click="SettingsButton_Click">
+                Click="SettingsButton_Click"
+                ToolTipService.ToolTip="Settings">
                 <FontIcon Glyph="&#xE713;" />
             </Button>
         </Grid>

@@ -1,4 +1,5 @@
 using CommunityToolkit.WinUI;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System;
@@ -20,18 +21,20 @@ namespace YT_Downloader.Controls
         private readonly string DownloadPath;
         private readonly string FileName;
         private readonly string ThumbnailPath;
-        private readonly Video Video;
+        private readonly IVideo Video;
         private readonly VideoOnlyStreamInfo VideoStreamInfo;
         private readonly AudioOnlyStreamInfo AudioStreamInfo;
-        public CancellationToken token;
+        private CancellationTokenSource CTS;
+
+        private Exception Ex;
 
         public DownloadCard(YoutubeClient youtubeClient,
                             string downloadPath,
                             string thumbnailPath,
                             string fileName,
-                            Video video,
-                            AudioOnlyStreamInfo audioStreamInfo,
-                            VideoOnlyStreamInfo videoStreamInfo = null)
+                            IVideo video,
+                            VideoOnlyStreamInfo videoStreamInfo,
+                            AudioOnlyStreamInfo audioStreamInfo)
         {
             YoutubeClient = youtubeClient;
             DownloadPath = downloadPath;
@@ -40,13 +43,13 @@ namespace YT_Downloader.Controls
             Video = video;
             VideoStreamInfo = videoStreamInfo;
             AudioStreamInfo = audioStreamInfo;
-            token = new();
+            CTS = new();
 
             InitializeComponent();
 
             LoadVideoInfo();
 
-            // Inicia o download de forma assíncrona
+            // Inicia o download
             _ = DownloadAsync();
         }
 
@@ -67,6 +70,16 @@ namespace YT_Downloader.Controls
 
         private async Task DownloadAsync()
         {
+            DispatcherQueue.TryEnqueue(() => ErrorInfoBar.Visibility = Visibility.Collapsed);
+
+            Button1.Content = new FontIcon { Glyph = "\uE8DA" };
+            Button1ToolTip.Content = "Open Local";
+            Button1.IsEnabled = false;
+
+            Button2.Content = new FontIcon { Glyph = "\uF78A" };
+            Button2ToolTip.Content = "Cancel";
+            Button2.Click += CancelButton_Click;
+
             try
             {
                 await (VideoStreamInfo != null
@@ -74,14 +87,32 @@ namespace YT_Downloader.Controls
                     : DownloadAudioAsync()).ConfigureAwait(false);
 
                 // Se chegou até aqui, significa que o Download foi feito com sucesso e atualiza o progrebar para 100%
-                DispatcherQueue.TryEnqueue(() => DownloadProgressBar.Value = 100);
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    DownloadProgressBar.Value = 100;
+                    Button1.IsEnabled = true;
+                    Button1.Click += OpenLocalButton_Click;
+
+                    Button2.Content = new FontIcon { Glyph = "\uE74D" };
+                    Button2ToolTip.Content = "Delete";
+                    Button2.Click -= CancelButton_Click;
+                    Button2.Click += DeleteButton_Click;
+                });               
             }
             catch (Exception ex)
             {
+                Ex = ex;
                 // Atualiza a UI em caso de erro
-                await DispatcherQueue.EnqueueAsync(() => DownloadProgressBar.ShowError = true);
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    DownloadProgressBar.ShowError = true;
+                    ErrorInfoBar.Visibility = Visibility.Visible;
 
-                Debug.WriteLine(ex);
+                    Button1.Content = new FontIcon { Glyph = "\uE72C" };
+                    Button1ToolTip.Content = "Retry";
+                    Button1.Click += RepeatButton_Click;
+                    Button1.IsEnabled = true;
+                });
             }
         }
 
@@ -96,7 +127,7 @@ namespace YT_Downloader.Controls
                     // Atualiza a UI apenas se a diferença de progresso for maior que 1% (ou outro valor que fizer sentido)
                     if (Math.Abs(p % 0.01) < 0.0001 || p == 1.0)
                         DispatcherQueue.TryEnqueue(() => DownloadProgressBar.Value = p * 100);
-                }), token);
+                }), CTS.Token);
         }
 
         private async Task DownloadAudioAsync()
@@ -108,7 +139,47 @@ namespace YT_Downloader.Controls
                     // Atualiza a UI apenas se a diferença de progresso for maior que 1% (ou outro valor que fizer sentido)
                     if (Math.Abs(p % 0.01) < 0.0001 || p == 1.0)
                         DispatcherQueue.TryEnqueue(() => DownloadProgressBar.Value = p * 100);
-                }), token);
+                }), CTS.Token);
+        }
+
+        private void OpenLocalButton_Click(object sender, RoutedEventArgs e) =>
+            Process.Start("explorer.exe", DownloadPath);
+
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            CTS.Cancel();
+            App.mainWindow.RemoveDownloadFromStack(this);
+        }
+
+        private void RepeatButton_Click(object sender, RoutedEventArgs e)
+        {
+            Button1.Click -= RepeatButton_Click;
+            _ = DownloadAsync();
+        }    
+
+        private void DeleteButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (VideoStreamInfo != null)
+                File.Delete($"{DownloadPath}\\{FileName}.mp4");
+            else
+                File.Delete($"{DownloadPath}\\{FileName}.mp3");
+
+            App.mainWindow.RemoveDownloadFromStack(this);
+        }
+
+        // Exibe um diálogo de erro
+        private async void ErrorButton_Click(object sender, RoutedEventArgs e)
+        {
+            ContentDialog dialog = new()
+            {
+                XamlRoot = XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Title = "An error occurred while downloading the video.",
+                Content = new Views.ErrorPage(Ex.Message),
+                CloseButtonText = "Close"
+            };
+
+            await dialog.ShowAsync();
         }
 
         // Propriedade que retorna a qualidade do download (vídeo ou áudio)

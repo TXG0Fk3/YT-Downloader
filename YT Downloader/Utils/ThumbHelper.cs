@@ -8,12 +8,15 @@ namespace YT_Downloader.Utils
     {
         public static async Task<string> DownloadThumbnailAsync(string videoId)
         {
-            string thumbnailUrl = $"https://img.youtube.com/vi/{videoId}/mqdefault.jpg";
-            string tempFilePath = $"{Path.GetTempPath()}\\{videoId}.jpg";
+            string tempDirectory = $"{Path.GetTempPath()}\\ThumbnailCache";
+            string tempFilePath = $"{tempDirectory}\\{videoId}.jpg";
+
+            // Garante que o diretório exista
+            Directory.CreateDirectory(tempDirectory);
 
             using (var httpClient = new HttpClient())
             {
-                var content = await httpClient.GetByteArrayAsync(thumbnailUrl);
+                var content = await httpClient.GetByteArrayAsync($"https://img.youtube.com/vi/{videoId}/mqdefault.jpg");
                 await File.WriteAllBytesAsync(tempFilePath, content);
             }
 

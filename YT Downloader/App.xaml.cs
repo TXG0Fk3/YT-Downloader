@@ -10,10 +10,8 @@ namespace YT_Downloader
         public static MainWindow mainWindow;
         public static Settings.AppSettings appSettings = new();
 
-        public App()
-        {
+        public App() =>
             this.InitializeComponent();
-        }
 
         protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
