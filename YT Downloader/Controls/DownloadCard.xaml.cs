@@ -89,10 +89,11 @@ namespace YT_Downloader.Controls
                     ? DownloadVideoAsync()
                     : DownloadAudioAsync()).ConfigureAwait(false);
 
-                // Se chegou até aqui, significa que o Download foi feito com sucesso e atualiza o progrebar para 100%
+                // Se chegou até aqui, significa que o Download foi feito com sucesso e atualiza o progressbar para 100%
                 DispatcherQueue.TryEnqueue(() =>
                 {
                     DownloadProgressBar.Value = 100;
+                    DownloadProgressPercent.Text = $"100%";
                     Button1.IsEnabled = true;
                     Button1.Click += OpenLocalButton_Click;
 
@@ -129,7 +130,11 @@ namespace YT_Downloader.Controls
                 {
                     // Atualiza a UI apenas se a diferença de progresso for maior que 1% (ou outro valor que fizer sentido)
                     if (Math.Abs(p % 0.01) < 0.0001 || p == 1.0)
-                        DispatcherQueue.TryEnqueue(() => DownloadProgressBar.Value = p * 100);
+                        DispatcherQueue.TryEnqueue(() =>
+                        {
+                            DownloadProgressBar.Value = p * 100;
+                            DownloadProgressPercent.Text = $"{p * 100:00}%";
+                        });
                 }), CTS.Token);
         }
 

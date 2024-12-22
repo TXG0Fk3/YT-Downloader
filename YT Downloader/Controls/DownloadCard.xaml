@@ -70,17 +70,25 @@
         </Grid>
 
         <!--  Progress Bar  -->
-        <ProgressBar
-            x:Name="DownloadProgressBar"
+        <Grid
             Grid.Row="1"
-            Margin="0,6,0,0" />
+            Margin="0,6,0,0"
+            ColumnDefinitions="*, 38">
+            <ProgressBar x:Name="DownloadProgressBar" Grid.Column="0" />
+            <TextBlock
+                x:Name="DownloadProgressPercent"
+                Grid.Column="1"
+                HorizontalAlignment="Right"
+                Text="00%" />
+        </Grid>
+
 
         <!--  Error InfoBar  -->
         <InfoBar
             x:Name="ErrorInfoBar"
             Title="Error"
             Grid.Row="2"
-            Margin="0,6,0,0"
+            Margin="0,4,0,0"
             IsClosable="False"
             IsOpen="True"
             Severity="Error"

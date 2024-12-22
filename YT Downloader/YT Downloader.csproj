@@ -22,7 +22,7 @@
 		<HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
 		<Authors>TXG0Fk3</Authors>
 		<Company>TXG0fk3</Company>
-		<Version>2.0</Version>
+		<Version>2.1</Version>
 		<Title>YT Downloader</Title>
 	</PropertyGroup>
 
@@ -65,10 +65,10 @@
 	<ItemGroup>
 		<!-- NuGet Packages -->
 		<PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.1.240916" />
-		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240802000" />
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.241114003" />
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" />
-		<PackageReference Include="YoutubeExplode" Version="6.4.3" />
-		<PackageReference Include="YoutubeExplode.Converter" Version="6.4.3" />
+		<PackageReference Include="YoutubeExplode" Version="6.5.0" />
+		<PackageReference Include="YoutubeExplode.Converter" Version="6.5.0" />
 		<Manifest Include="$(ApplicationManifest)" />
 	</ItemGroup>
 
