@@ -69,7 +69,10 @@
                             Margin="0,0,0,12"
                             HorizontalAlignment="Center"
                             Click="AddButton_Click">
-                            <StackPanel Orientation="Horizontal" Spacing="6" Margin="0,2,0,0">
+                            <StackPanel
+                                Margin="0,2,0,0"
+                                Orientation="Horizontal"
+                                Spacing="6">
                                 <FontIcon Glyph="&#xE948;" />
                                 <TextBlock Text="New Download" />
                             </StackPanel>
