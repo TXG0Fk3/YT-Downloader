@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.InteropServices;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
@@ -7,7 +6,6 @@ using Microsoft.UI.Xaml.Controls;
 using Windows.Graphics;
 using Windows.UI;
 using Windows.UI.WindowManagement;
-using WinRT.Interop;
 using YT_Downloader.Views;
 using YT_Downloader.Controls;
 using System.IO;
@@ -29,12 +27,9 @@ namespace YT_Downloader
 
             var scaleFactor = win32WindowService.GetSystemDPI() / 96.0;
             AppWindow.Resize(new SizeInt32((int)(430 * scaleFactor), (int)(680 * scaleFactor))); // Tamanho padrão da janela
-            // (AppWindow.Presenter as OverlappedPresenter).IsResizable = false; // Torna a janela não redimension�vel
 
             // Configurações da TitleBar
             ExtendsContentIntoTitleBar = true; // TitleBar infinito
-            // IntPtr hwnd = WindowNative.GetWindowHandle(this);
-            // _ = SetWindowLong(hwnd, -16, GetWindowLong(hwnd, -16) & ~0x00010000); // Desativa o botão de maximizar
 
             InitializeComponent();
 
@@ -43,19 +38,6 @@ namespace YT_Downloader
                 ? parsedTheme
                 : ElementTheme.Default // Definindo um valor padrão, se a conversão falhar
                 );
-        }
-
-        // Ajusta resolução do app de acordo com a DPI (escala) do monitor
-        private void AdjustWindowSizeForDpi(object sender, WindowActivatedEventArgs args)
-        {
-            // Verifica se a janela está ativa
-            if (args.WindowActivationState == WindowActivationState.Deactivated) return; // Se a janela não estiver ativa, não faz nada
-
-            int dpi = GetDpiForWindow(WindowNative.GetWindowHandle(this));
-            double scaleFactor = dpi / 96.0; // 96 é o DPI padrão de 100%
-
-            // Ajusta o tamanho de acordo com a escala
-            AppWindow.Resize(new SizeInt32((int)(430 * scaleFactor), (int)(680 * scaleFactor)));
         }
 
 
@@ -159,14 +141,5 @@ namespace YT_Downloader
             if (Directory.Exists($"{Path.GetTempPath()}\\ThumbnailCache"))
                 Directory.Delete($"{Path.GetTempPath()}\\ThumbnailCache", true);
         }
-
-        [DllImport("user32.dll")]
-        private static extern int GetDpiForWindow(IntPtr hwnd);
-
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
-
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
     }
 }
