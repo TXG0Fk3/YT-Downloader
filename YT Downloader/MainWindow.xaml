@@ -86,6 +86,7 @@
         <!--  Footer  -->
         <Grid
             Grid.Row="2"
+            Width="380"
             Margin="10"
             Padding="10"
             Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}"

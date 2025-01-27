@@ -11,6 +11,7 @@ using WinRT.Interop;
 using YT_Downloader.Views;
 using YT_Downloader.Controls;
 using System.IO;
+using YT_Downloader.Services;
 
 namespace YT_Downloader
 {
@@ -19,16 +20,21 @@ namespace YT_Downloader
         public MainWindow()
         {
             // Configurações da janela
-            Activated += AdjustWindowSizeForDpi; // Altera Resolução sempre que o DPI (escala) é modificado
             Closed += MainWindow_Closed; // Método que será executado ao finalizar o programa.
             AppWindow.Title = "YT Downloader"; // Título
             AppWindow.SetIcon(@"Assets\AppIcon.ico"); // Ícone
-            (AppWindow.Presenter as OverlappedPresenter).IsResizable = false; // Torna a janela não redimension�vel
-            
+
+            var win32WindowService = new Win32WindowService(this);
+            win32WindowService.SetWindowMinMaxSize(new Win32WindowService.POINT() { x = 430, y = 480 }); // Tamanho mínimo da janela
+
+            var scaleFactor = win32WindowService.GetSystemDPI() / 96.0;
+            AppWindow.Resize(new SizeInt32((int)(430 * scaleFactor), (int)(680 * scaleFactor))); // Tamanho padrão da janela
+            // (AppWindow.Presenter as OverlappedPresenter).IsResizable = false; // Torna a janela não redimension�vel
+
             // Configurações da TitleBar
             ExtendsContentIntoTitleBar = true; // TitleBar infinito
-            IntPtr hwnd = WindowNative.GetWindowHandle(this);
-            _ = SetWindowLong(hwnd, -16, GetWindowLong(hwnd, -16) & ~0x00010000); // Desativa o botão de maximizar
+            // IntPtr hwnd = WindowNative.GetWindowHandle(this);
+            // _ = SetWindowLong(hwnd, -16, GetWindowLong(hwnd, -16) & ~0x00010000); // Desativa o botão de maximizar
 
             InitializeComponent();
 
