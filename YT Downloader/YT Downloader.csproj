@@ -66,10 +66,10 @@
 	<ItemGroup>
 		<!-- NuGet Packages -->
 		<PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.1.240916" />
-		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.241114003" />
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.250108002" />
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" />
-		<PackageReference Include="YoutubeExplode" Version="6.5.0" />
-		<PackageReference Include="YoutubeExplode.Converter" Version="6.5.0" />
+		<PackageReference Include="YoutubeExplode" Version="6.5.2" />
+		<PackageReference Include="YoutubeExplode.Converter" Version="6.5.2" />
 		<Manifest Include="$(ApplicationManifest)" />
 	</ItemGroup>
 
