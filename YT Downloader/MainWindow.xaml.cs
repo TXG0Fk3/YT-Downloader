@@ -23,7 +23,7 @@ namespace YT_Downloader
             AppWindow.SetIcon(@"Assets\AppIcon.ico"); // Ícone
 
             var win32WindowService = new Win32WindowService(this);
-            win32WindowService.SetWindowMinMaxSize(new Win32WindowService.POINT() { x = 430, y = 480 }); // Tamanho mínimo da janela
+            win32WindowService.SetWindowMinMaxSize(new Win32WindowService.POINT() { x = 430, y = 680 }); // Tamanho mínimo da janela
 
             var scaleFactor = win32WindowService.GetSystemDPI() / 96.0;
             AppWindow.Resize(new SizeInt32((int)(430 * scaleFactor), (int)(680 * scaleFactor))); // Tamanho padrão da janela
@@ -62,20 +62,13 @@ namespace YT_Downloader
             titleBar.ButtonHoverForegroundColor = foregroundColor;
         }
 
-        public void AddDownloadToStack(DownloadCard downloadCard)
+        public void AddCardToDownloadsStack(UIElement card)
         {
-            DownloadsStackPanel.Children.Add(downloadCard);
-            CheckWithoutDownloadsCardVisibility();
-        }
-            
-        public void RemoveDownloadFromStack(DownloadCard downloadCard)
-        {
-            DownloadsStackPanel.Children.Remove(downloadCard);
-            CheckWithoutDownloadsCardVisibility();
+            DownloadsStackPanel.Children.Add(card);
         }
 
         // Checa se há itens em DownloadsStackPanel e altera sua visibilidade
-        private Visibility CheckWithoutDownloadsCardVisibility() =>
+        private void DownloadsStackPanel_LayoutUpdated(object sender, object e) =>
             WithoutDownloadsCard.Visibility = DownloadsStackPanel.Children.Count > 1
             ? Visibility.Collapsed
             : Visibility.Visible;

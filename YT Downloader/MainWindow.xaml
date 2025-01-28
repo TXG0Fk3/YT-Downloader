@@ -41,6 +41,7 @@
                 <StackPanel
                     x:Name="DownloadsStackPanel"
                     Margin="12,0,12,0"
+                    LayoutUpdated="DownloadsStackPanel_LayoutUpdated"
                     Orientation="Vertical"
                     Spacing="4">
                     <StackPanel.ChildrenTransitions>
