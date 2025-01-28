@@ -27,13 +27,16 @@ namespace YT_Downloader.Controls
 
         private Exception Ex;
 
+        public event EventHandler DownloadCompleted;
+
         public DownloadCard(YoutubeClient youtubeClient,
                             string downloadPath,
                             string thumbnailPath,
                             string fileName,
                             IVideo video,
                             VideoOnlyStreamInfo videoStreamInfo,
-                            AudioOnlyStreamInfo audioStreamInfo)
+                            AudioOnlyStreamInfo audioStreamInfo,
+                            CancellationTokenSource playlistCTS = null)
         {
             YoutubeClient = youtubeClient;
             DownloadPath = downloadPath;
@@ -43,6 +46,8 @@ namespace YT_Downloader.Controls
             VideoStreamInfo = videoStreamInfo;
             AudioStreamInfo = audioStreamInfo;
             CTS = new();
+
+            playlistCTS?.Token.Register(() => CTS.Cancel());
 
             InitializeComponent();
 
@@ -101,7 +106,9 @@ namespace YT_Downloader.Controls
                     Button2ToolTip.Content = "Delete";
                     Button2.Click -= CancelButton_Click;
                     Button2.Click += DeleteButton_Click;
-                });               
+
+                    DownloadCompleted?.Invoke(this, EventArgs.Empty); // Informa a todos os observadores que o Download foi concluído
+                });
             }
             catch (Exception ex)
             {
@@ -146,7 +153,11 @@ namespace YT_Downloader.Controls
                 {
                     // Atualiza a UI apenas se a diferença de progresso for maior que 1% (ou outro valor que fizer sentido)
                     if (Math.Abs(p % 0.01) < 0.0001 || p == 1.0)
-                        DispatcherQueue.TryEnqueue(() => DownloadProgressBar.Value = p * 100);
+                        DispatcherQueue.TryEnqueue(() =>
+                        {
+                            DownloadProgressBar.Value = p * 100;
+                            DownloadProgressPercent.Text = $"{p * 100:00}%";
+                        });
                 }), CTS.Token);
         }
 
@@ -156,7 +167,7 @@ namespace YT_Downloader.Controls
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             CTS.Cancel();
-            App.mainWindow.RemoveDownloadFromStack(this);
+            (Parent as StackPanel).Children.Remove(this);
         }
 
         private void RepeatButton_Click(object sender, RoutedEventArgs e)
@@ -172,7 +183,7 @@ namespace YT_Downloader.Controls
             else
                 File.Delete($"{DownloadPath}\\{FileName}.mp3");
 
-            App.mainWindow.RemoveDownloadFromStack(this);
+            (Parent as StackPanel).Children.Remove(this);
         }
 
         // Exibe um diálogo de erro

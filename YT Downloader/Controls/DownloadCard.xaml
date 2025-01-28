@@ -32,20 +32,22 @@
                     HorizontalAlignment="Left"
                     ToolTipService.ToolTip="Open Video in Browser" />
 
-                <StackPanel
-                    HorizontalAlignment="Stretch"
-                    Orientation="Horizontal"
-                    Spacing="4">
+                <Grid ColumnDefinitions="*, Auto">
                     <StackPanel
+                        Grid.Column="0"
                         Width="182"
                         Margin="6,0,0,0"
+                        HorizontalAlignment="Left"
                         Orientation="Vertical"
                         Spacing="1">
                         <TextBlock x:Name="ChannelTextBlock" Foreground="DarkGray" />
                         <TextBlock x:Name="VideoQualityAndSizeTextBlock" Foreground="DarkGray" />
                     </StackPanel>
 
-                    <StackPanel Orientation="Horizontal" Spacing="4">
+                    <StackPanel
+                        Grid.Column="1"
+                        Orientation="Horizontal"
+                        Spacing="4">
                         <Button
                             x:Name="Button1"
                             Width="40"
@@ -65,7 +67,7 @@
                             </ToolTipService.ToolTip>
                         </Button>
                     </StackPanel>
-                </StackPanel>
+                </Grid>
             </StackPanel>
         </Grid>
 
