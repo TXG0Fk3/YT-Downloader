@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -15,6 +16,7 @@ using WinRT.Interop;
 using YoutubeExplode;
 using YoutubeExplode.Videos;
 using YoutubeExplode.Videos.Streams;
+using YT_Downloader.Controls;
 
 
 namespace YT_Downloader.Views
@@ -193,19 +195,48 @@ namespace YT_Downloader.Views
 
             if (Playlist != null) // Caso for uma playlist
             {
+                CancellationTokenSource cts = new();
+
+                downloadPath += $"\\{string.Concat(Playlist.Title.Where(c => !Path.GetInvalidFileNameChars().Contains(c)))}";
+                Directory.CreateDirectory(downloadPath);
+
+                var playlistCard = new PlaylistDownloadCard(
+                    Playlist.Title,
+                    Playlist.Url,
+                    Playlist.Author.ToString(),
+                    QualityComboBox.SelectedValue.ToString(),
+                    downloadPath,
+                    Playlist.Count,
+                    cts);
+
+                App.mainWindow.AddCardToDownloadsStack(playlistCard);
+
+                int playlistVideoCount = 0;
+
                 await foreach (var video in YoutubeClient.Playlists.GetVideosAsync(Playlist.Id))
                 {
+                    if (cts.IsCancellationRequested) return;
+
+                    playlistVideoCount++;
+
                     StreamManifest = await YoutubeClient.Videos.Streams.GetManifestAsync(video.Url, CTS.Token);
                     ThumbnailPath = await Utils.ThumbHelper.DownloadThumbnailAsync(video.Id);
-                    
-                    App.mainWindow.AddDownloadToStack(new Controls.DownloadCard(
+
+                    DownloadCard downloadCard = new(
                         YoutubeClient, downloadPath, ThumbnailPath, video.Title,
-                        video, SelectedVideoStreamInfo, SelectedAudioStreamInfo));
+                        video, SelectedVideoStreamInfo, SelectedAudioStreamInfo, cts);
+
+                    downloadCard.DownloadCompleted += playlistCard.DownloadCard_DownloadCompleted;
+
+                    playlistCard.AddDownloadCardToStack(downloadCard);
                 }
+
+                playlistCard.PlaylistVideoCount = playlistVideoCount;
+                playlistCard.UpdateDownloadProgress();
             }
             else // Caso for um único vídeo/música
             {
-                App.mainWindow.AddDownloadToStack(new Controls.DownloadCard(
+                App.mainWindow.AddCardToDownloadsStack(new DownloadCard(
                     YoutubeClient, downloadPath, ThumbnailPath, FileName,
                     Video, SelectedVideoStreamInfo, SelectedAudioStreamInfo));
             }
@@ -253,7 +284,7 @@ namespace YT_Downloader.Views
                 else
                     return null;
             }
-        }
+        }  
 
         // AudioStream selecionado
         private AudioOnlyStreamInfo SelectedAudioStreamInfo
