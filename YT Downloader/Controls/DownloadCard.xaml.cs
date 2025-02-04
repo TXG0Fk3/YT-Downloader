@@ -178,12 +178,24 @@ namespace YT_Downloader.Controls
 
         private void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
-            if (VideoStreamInfo != null)
-                File.Delete($"{DownloadPath}\\{FileName}.mp4");
-            else
-                File.Delete($"{DownloadPath}\\{FileName}.mp3");
+            try
+            {
+                if (VideoStreamInfo != null)
+                    File.Delete($"{DownloadPath}\\{FileName}.mp4");
+                else
+                    File.Delete($"{DownloadPath}\\{FileName}.mp3");
 
-            (Parent as StackPanel).Children.Remove(this);
+                (Parent as StackPanel).Children.Remove(this);
+            }
+            catch (Exception ex)
+            {
+                Ex = ex;
+                // Atualiza a UI em caso de erro
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    ErrorInfoBar.Visibility = Visibility.Visible;
+                });
+            }
         }
 
         // Exibe um diálogo de erro
