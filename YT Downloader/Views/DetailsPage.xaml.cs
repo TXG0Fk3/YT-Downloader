@@ -220,9 +220,9 @@ namespace YT_Downloader.Views
                     tasks.Add(Task.Run(async () => playlistVideos.Add((video, await YoutubeClient.Videos.Streams.GetManifestAsync(video.Url, CTS.Token)))));
                 }
 
-                playlistCard.PlaylistVideoCount = playlistVideos.Count;
-
                 await Task.WhenAll(tasks);
+
+                playlistCard.PlaylistVideoCount = playlistVideos.Count;
 
                 foreach (var (video, streamManifest) in playlistVideos)
                 {
