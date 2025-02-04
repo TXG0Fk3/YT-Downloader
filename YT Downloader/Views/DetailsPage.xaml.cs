@@ -5,7 +5,6 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -14,6 +13,8 @@ using Windows.Storage;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
 using YoutubeExplode;
+using YoutubeExplode.Common;
+using YoutubeExplode.Playlists;
 using YoutubeExplode.Videos;
 using YoutubeExplode.Videos.Streams;
 using YT_Downloader.Controls;
@@ -206,20 +207,26 @@ namespace YT_Downloader.Views
                     Playlist.Author.ToString(),
                     QualityComboBox.SelectedValue.ToString(),
                     downloadPath,
-                    Playlist.Count,
                     cts);
 
                 App.mainWindow.AddCardToDownloadsStack(playlistCard);
 
-                int playlistVideoCount = 0;
+                List<(PlaylistVideo video, StreamManifest streamManifest)> playlistVideos = new();
 
-                await foreach (var video in YoutubeClient.Playlists.GetVideosAsync(Playlist.Id))
+                List<Task> tasks = new();
+
+                foreach (var video in await YoutubeClient.Playlists.GetVideosAsync(Playlist.Id))
+                {
+                    tasks.Add(Task.Run(async () => playlistVideos.Add((video, await YoutubeClient.Videos.Streams.GetManifestAsync(video.Url, CTS.Token)))));
+                }
+
+                await Task.WhenAll(tasks);
+
+                foreach (var (video, streamManifest) in playlistVideos)
                 {
                     if (cts.IsCancellationRequested) return;
 
-                    playlistVideoCount++;
-
-                    StreamManifest = await YoutubeClient.Videos.Streams.GetManifestAsync(video.Url, CTS.Token);
+                    StreamManifest = streamManifest;
                     ThumbnailPath = await Utils.ThumbHelper.DownloadThumbnailAsync(video.Id);
 
                     DownloadCard downloadCard = new(
@@ -231,7 +238,7 @@ namespace YT_Downloader.Views
                     playlistCard.AddDownloadCardToStack(downloadCard);
                 }
 
-                playlistCard.PlaylistVideoCount = playlistVideoCount;
+                playlistCard.PlaylistVideoCount = playlistVideos.Count;
                 playlistCard.UpdateDownloadProgress();
             }
             else // Caso for um único vídeo/música
