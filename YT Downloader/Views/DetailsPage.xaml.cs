@@ -220,6 +220,8 @@ namespace YT_Downloader.Views
                     tasks.Add(Task.Run(async () => playlistVideos.Add((video, await YoutubeClient.Videos.Streams.GetManifestAsync(video.Url, CTS.Token)))));
                 }
 
+                playlistCard.PlaylistVideoCount = playlistVideos.Count;
+
                 await Task.WhenAll(tasks);
 
                 foreach (var (video, streamManifest) in playlistVideos)
@@ -237,9 +239,6 @@ namespace YT_Downloader.Views
 
                     playlistCard.AddDownloadCardToStack(downloadCard);
                 }
-
-                playlistCard.PlaylistVideoCount = playlistVideos.Count;
-                playlistCard.UpdateDownloadProgress();
             }
             else // Caso for um único vídeo/música
             {
