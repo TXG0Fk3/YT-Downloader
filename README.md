@@ -8,5 +8,3 @@ It's simple to use, just have a link to a YT Video/Playlist and Download by clic
 
 ### HomePage Preview
 ![image](https://github.com/user-attachments/assets/b6741fab-80a9-4412-8322-ef31f3e58972)
-
-Last Version: V 2.2 - 01/28/2025
