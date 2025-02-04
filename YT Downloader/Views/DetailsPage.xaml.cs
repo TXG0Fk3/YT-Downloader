@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace YT_Downloader.Views
     public sealed partial class DetailsPage : Page
     {
         private readonly YoutubeClient YoutubeClient;
-        private YoutubeExplode.Playlists.Playlist Playlist;
+        private Playlist Playlist;
         private Video Video;
         private StreamManifest StreamManifest;
         private string ThumbnailPath;
@@ -52,7 +53,7 @@ namespace YT_Downloader.Views
             if (e.Key == Windows.System.VirtualKey.Enter)
             {
                 ResetVideoInfo();
-                LoadVideoInfoAsync();
+                _ = LoadVideoInfoAsync();
             }
         }
 
@@ -60,11 +61,11 @@ namespace YT_Downloader.Views
         public void LoadInfoButton_Clicked(object sender, RoutedEventArgs e)
         {
             ResetVideoInfo();
-            LoadVideoInfoAsync();
+            _ = LoadVideoInfoAsync();
         }
 
         // Carrega informações do vídeo
-        private async void LoadVideoInfoAsync()
+        private async Task LoadVideoInfoAsync()
         {
             try
             {
@@ -78,7 +79,7 @@ namespace YT_Downloader.Views
                     StreamManifest = await YoutubeClient.Videos.Streams.GetManifestAsync(UrlTextBox.Text, CTS.Token);
                 }
 
-                DisplayVideoInfo();
+                _ = DisplayVideoInfo();
             }
             catch (Exception ex)
             {
@@ -124,7 +125,7 @@ namespace YT_Downloader.Views
         }
 
         // Mostra informações do vídeo
-        private async void DisplayVideoInfo()
+        private async Task DisplayVideoInfo()
         {
             if (Playlist != null) // Caso for uma playlist
             {
@@ -158,9 +159,8 @@ namespace YT_Downloader.Views
             }
 
             // Altera para o Mp4 e atualiza as qualidades disponíveis
-            if (FormatComboBox.SelectedIndex != 0)
-                FormatComboBox.SelectedIndex = 0;
-            else UpdateQualityComboBox();
+            if (FormatComboBox.SelectedIndex == 0) UpdateQualityComboBox();
+            else FormatComboBox.SelectedIndex = 0;
 
             FormatComboBox.IsEnabled = true;
             QualityComboBox.IsEnabled = true;         
@@ -211,7 +211,7 @@ namespace YT_Downloader.Views
 
                 App.mainWindow.AddCardToDownloadsStack(playlistCard);
 
-                List<(PlaylistVideo video, StreamManifest streamManifest)> playlistVideos = new();
+                ConcurrentBag<(PlaylistVideo video, StreamManifest streamManifest)> playlistVideos = new();
 
                 List<Task> tasks = new();
 
@@ -271,7 +271,7 @@ namespace YT_Downloader.Views
             return App.appSettings.DefaultDownloadsPath;
         }
 
-        // VideoStrem selecionado
+        // VideoStream selecionado
         private VideoOnlyStreamInfo SelectedVideoStreamInfo
         {
             get
