@@ -91,6 +91,28 @@
                     <EntranceThemeTransition FromVerticalOffset="50" />
                     <RepositionThemeTransition IsStaggeringEnabled="False" />
                 </StackPanel.ChildrenTransitions>
+
+                <!--  If playlist content is loading  -->
+                <Grid
+                    x:Name="LoadingPlaylistContentCard"
+                    Padding="10"
+                    Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    RowDefinitions="Auto, Auto"
+                    Visibility="Visible">
+                    <TextBlock
+                        Grid.Row="0"
+                        Margin="8"
+                        HorizontalAlignment="Center"
+                        FontSize="16"
+                        Text="Loading Playlist Content..." />
+                    <ProgressBar
+                        x:Name="LoadingPlaylistContentProgressBar"
+                        Grid.Row="1"
+                        IsIndeterminate="True" />
+                </Grid>
             </StackPanel>
         </Expander>
     </Grid>

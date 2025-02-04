@@ -15,7 +15,7 @@ namespace YT_Downloader.Controls
         private readonly string Author;
         private readonly string DownloadQuality;
         private readonly string FolderPath;
-        public int? PlaylistVideoCount;
+        public int PlaylistVideoCount;
         private int CompletedDownloadsCount;
         private CancellationTokenSource CTS;
 
@@ -24,7 +24,6 @@ namespace YT_Downloader.Controls
                                     string author,
                                     string downloadQuality,
                                     string folderPath,
-                                    int? playlistVideoCount,
                                     CancellationTokenSource cts)
         {
             PlaylistTitle = playlistTitle;
@@ -32,7 +31,6 @@ namespace YT_Downloader.Controls
             Author = author;
             DownloadQuality = downloadQuality;
             FolderPath = folderPath;
-            PlaylistVideoCount = playlistVideoCount;
             CompletedDownloadsCount = 0;
             CTS = cts;
 
@@ -52,6 +50,11 @@ namespace YT_Downloader.Controls
 
         public void AddDownloadCardToStack(DownloadCard downloadCard)
         {
+            if (LoadingPlaylistContentCard.Visibility == Visibility.Visible)
+            {
+                LoadingPlaylistContentCard.Visibility = Visibility.Collapsed;
+                LoadingPlaylistContentProgressBar.IsIndeterminate = false;
+            }
             DownloadsStackPanel.Children.Add(downloadCard);
         }
 
