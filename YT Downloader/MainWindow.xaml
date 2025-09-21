@@ -17,13 +17,14 @@
         <StackPanel Grid.Row="0" Orientation="Horizontal">
             <BitmapIcon
                 Width="20"
-                Margin="15,0,0,0"
+                Margin="14,0,0,0"
                 VerticalAlignment="Center"
                 ShowAsMonochrome="False"
                 UriSource="/Assets/Square44x44Logo.altform-lightunplated_targetsize-24.png" />
             <TextBlock
-                Margin="5,0,0,2"
+                Margin="12,0,0,2"
                 VerticalAlignment="Center"
+                Style="{StaticResource CaptionTextBlockStyle}"
                 Text="YT Downloader" />
         </StackPanel>
 
