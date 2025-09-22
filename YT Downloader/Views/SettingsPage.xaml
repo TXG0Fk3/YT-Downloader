@@ -39,19 +39,16 @@
                     Grid.Row="1"
                     Width="330"
                     HorizontalAlignment="Stretch"
-                    HorizontalContentAlignment="Left"
                     Description="Select the application theme"
                     Header="Application Theme"
                     HeaderIcon="{ui:FontIcon Glyph=}">
                     <toolkit:SettingsExpander.Items>
                         <toolkit:SettingsCard>
-                            <toolkit:SettingsCard.Header>
-                                <RadioButtons x:Name="appThemeRadioBt" SelectionChanged="Theme_SelectionChanged">
-                                    <RadioButton Content="Light" Tag="Light" />
-                                    <RadioButton Content="Dark" Tag="Dark" />
-                                    <RadioButton Content="System" Tag="Default" />
-                                </RadioButtons>
-                            </toolkit:SettingsCard.Header>
+                            <RadioButtons x:Name="appThemeRadioBt" SelectionChanged="Theme_SelectionChanged">
+                                <RadioButton Content="Light" Tag="Light" />
+                                <RadioButton Content="Dark" Tag="Dark" />
+                                <RadioButton Content="System" Tag="Default" />
+                            </RadioButtons>
                         </toolkit:SettingsCard>
                     </toolkit:SettingsExpander.Items>
                 </toolkit:SettingsExpander>
