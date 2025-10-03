@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using YoutubeExplode.Videos.Streams;
 using YT_Downloader.Enums;
 
 namespace YT_Downloader.Models
@@ -7,6 +8,8 @@ namespace YT_Downloader.Models
     public class DownloadItem
     {
         public string VideoId { get; set; }
+        public VideoOnlyStreamInfo VideoStreamInfo { get; set; }
+        public AudioOnlyStreamInfo AudioStreamInfo { get; set; }
         public string OutputPath { get; set; }
         public double Progress { get; private set; } = 0.0;
         public DownloadStatus Status { get; set; } = DownloadStatus.Pending;
