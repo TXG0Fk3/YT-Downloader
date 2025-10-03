@@ -11,6 +11,7 @@ namespace YT_Downloader.Models
         public double Progress { get; private set; }
         public DownloadStatus Status { get; set; } = DownloadStatus.Pending;
         public Exception Error { get; set; }
+        public DownloadType Type { get; set; }
         public Task DownloadTask { get; set; }
 
         public event Action<DownloadItem> Completed;
