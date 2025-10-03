@@ -10,7 +10,7 @@ namespace YT_Downloader.Services
 {
     public class YoutubeService
     {
-        private YoutubeClient _youtubeClient = new();
+        private readonly YoutubeClient _youtubeClient = new();
 
         public async Task<IVideo> GetVideoAsync(string videoUrl, CancellationToken token) =>
             await _youtubeClient.Videos.GetAsync(videoUrl, token);
