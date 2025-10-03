@@ -8,9 +8,9 @@ namespace YT_Downloader.Models
     {
         public string VideoId { get; set; }
         public string OutputPath { get; set; }
-        public double Progress { get; private set; }
+        public double Progress { get; private set; } = 0.0;
         public DownloadStatus Status { get; set; } = DownloadStatus.Pending;
-        public Exception Error { get; set; }
+        public Exception Error { get; private set; }
         public DownloadType Type { get; set; }
         public Task DownloadTask { get; set; }
 
@@ -25,17 +25,25 @@ namespace YT_Downloader.Models
 
         public void UpdateProgress(double value)
         {
-            Progress = value;
+            Progress = Math.Clamp(value, 0.0, 1.0);
             ProgressChanged?.Invoke(this);
         }
 
         public void MarkAsDownloading() => Status = DownloadStatus.Downloading;
-        public void MarkAsCompleted() => Status = DownloadStatus.Completed;
-        public void MarkAsCancelled() => Status = DownloadStatus.Cancelled;
+
+        public void MarkAsCompleted() => OnCompleted();
+
+        public void MarkAsCancelled()
+        {
+            Status = DownloadStatus.Cancelled;
+            Completed?.Invoke(this);
+        }
+
         public void MarkAsError(Exception ex)
         {
             Status = DownloadStatus.Error;
             Error = ex;
+            Completed?.Invoke(this);
         }
     }
 }
