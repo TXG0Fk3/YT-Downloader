@@ -19,6 +19,7 @@ namespace YT_Downloader.Models
 
         internal void OnCompleted()
         {
+            Status = DownloadStatus.Completed;
             Completed?.Invoke(this);
         }
 
