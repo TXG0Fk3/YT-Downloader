@@ -14,6 +14,16 @@ namespace YT_Downloader.Models
         public AudioOnlyStreamInfo AudioStreamInfo { get; set; }
         public string OutputPath { get; set; }
         public double Progress { get; private set; } = 0.0;
+        public DownloadStatus Status { get; set; } = DownloadStatus.Pending;
+        public Exception Error { get; private set; }
+        public DownloadType Type { get; set; }
+        public Task DownloadTask { get; set; }
+
+        public double FileSizeMB =>
+            Type == DownloadType.Video
+                ? (VideoStreamInfo?.Size.MegaBytes ?? 0) + (AudioStreamInfo?.Size.MegaBytes ?? 0)
+                : (AudioStreamInfo?.Size.MegaBytes ?? 0);
+
         public TimeSpan? RemainingTime
         {
             get
@@ -27,16 +37,6 @@ namespace YT_Downloader.Models
                 return TimeSpan.FromSeconds(remainingSeconds);
             }
         }
-        
-        public DownloadStatus Status { get; set; } = DownloadStatus.Pending;
-        public Exception Error { get; private set; }
-        public DownloadType Type { get; set; }
-        public Task DownloadTask { get; set; }
-
-        public double FileSizeMB =>
-            Type == DownloadType.Video
-                ? (VideoStreamInfo?.Size.MegaBytes ?? 0) + (AudioStreamInfo?.Size.MegaBytes ?? 0)
-                : (AudioStreamInfo?.Size.MegaBytes ?? 0);
 
         public double DownloadSpeedMBps
         {
