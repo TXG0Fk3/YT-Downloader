@@ -27,10 +27,29 @@ namespace YT_Downloader.Models
                 return TimeSpan.FromSeconds(remainingSeconds);
             }
         }
+        
         public DownloadStatus Status { get; set; } = DownloadStatus.Pending;
         public Exception Error { get; private set; }
         public DownloadType Type { get; set; }
         public Task DownloadTask { get; set; }
+
+        public double FileSizeMB =>
+            Type == DownloadType.Video
+                ? (VideoStreamInfo?.Size.MegaBytes ?? 0) + (AudioStreamInfo?.Size.MegaBytes ?? 0)
+                : (AudioStreamInfo?.Size.MegaBytes ?? 0);
+
+        public double DownloadSpeedMBps
+        {
+            get
+            {
+                if (!_startTime.HasValue || Progress <= 0)
+                    return 0.0;
+
+                var elapsedTime = DateTime.Now - _startTime.Value;
+                var downloadedMB = FileSizeMB * Progress;
+                return downloadedMB / elapsedTime.TotalSeconds;
+            }
+        }
 
         public event Action<DownloadItem> Completed;
         public event Action<DownloadItem> ProgressChanged;
@@ -50,7 +69,7 @@ namespace YT_Downloader.Models
         public void MarkAsDownloading()
         {
             if (!_startTime.HasValue)
-            _startTime = DateTime.Now;
+                _startTime = DateTime.Now;
             Status = DownloadStatus.Downloading;
         }
 
