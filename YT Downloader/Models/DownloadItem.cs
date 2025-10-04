@@ -54,12 +54,6 @@ namespace YT_Downloader.Models
         public event Action<DownloadItem> Completed;
         public event Action<DownloadItem> ProgressChanged;
 
-        internal void OnCompleted()
-        {
-            Status = DownloadStatus.Completed;
-            Completed?.Invoke(this);
-        }
-
         public void UpdateProgress(double value)
         {
             Progress = Math.Clamp(value, 0.0, 1.0);
@@ -73,19 +67,26 @@ namespace YT_Downloader.Models
             Status = DownloadStatus.Downloading;
         }
 
-        public void MarkAsCompleted() => OnCompleted();
+        public void MarkAsCompleted()
+        {
+            Status = DownloadStatus.Completed;
+            Progress = 1.0;
+            RaiseCompleted();
+        }
 
         public void MarkAsCancelled()
         {
             Status = DownloadStatus.Cancelled;
-            Completed?.Invoke(this);
+            RaiseCompleted();
         }
 
         public void MarkAsError(Exception ex)
         {
             Status = DownloadStatus.Error;
             Error = ex;
-            Completed?.Invoke(this);
+            RaiseCompleted();
         }
+
+        private void RaiseCompleted() => Completed?.Invoke(this);
     }
 }
