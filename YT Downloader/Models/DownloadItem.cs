@@ -49,6 +49,7 @@ namespace YT_Downloader.Models
 
         public void MarkAsDownloading()
         {
+            if (!_startTime.HasValue)
             _startTime = DateTime.Now;
             Status = DownloadStatus.Downloading;
         }
