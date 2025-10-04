@@ -1,10 +1,12 @@
+using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using YoutubeExplode;
-using YoutubeExplode.Videos;
-using YoutubeExplode.Playlists;
 using YoutubeExplode.Common;
+using YoutubeExplode.Converter;
+using YoutubeExplode.Playlists;
+using YoutubeExplode.Videos;
 using YoutubeExplode.Videos.Streams;
 
 namespace YT_Downloader.Services
@@ -47,6 +49,24 @@ namespace YT_Downloader.Services
             }
 
             return await Task.WhenAll(tasks);
+        }
+
+        public async Task DownloadVideoAsync(
+            VideoOnlyStreamInfo videoStreamInfo, AudioOnlyStreamInfo audioStreamInfo,
+            string outputPath, IProgress<double> progress,  
+            CancellationToken token)
+        {
+            await _youtubeClient.Videos.DownloadAsync(new IStreamInfo[] { videoStreamInfo, audioStreamInfo },
+                new ConversionRequestBuilder(outputPath).Build(), progress, token);
+        }
+
+        public async Task DownloadAudioAsync(
+            AudioOnlyStreamInfo audioStreamInfo,
+            string outputPath, IProgress<double> progress,
+            CancellationToken token)
+        {
+            await _youtubeClient.Videos.DownloadAsync(new IStreamInfo[] { audioStreamInfo },
+                new ConversionRequestBuilder(outputPath).Build(), progress, token);
         }
     }
 }
