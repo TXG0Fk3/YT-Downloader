@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using YoutubeExplode;
@@ -30,13 +31,12 @@ namespace YT_Downloader.Services
         public async Task<IReadOnlyList<StreamManifest>> GetPlaylistStreamManifestsAsync(Playlist playlist, CancellationToken token)
         {
             var semaphore = new SemaphoreSlim(16);
-            var tasks = new List<Task<StreamManifest>>();
 
-            foreach (var v in await GetPlaylistVideosAsync(playlist.Id, token))
-            {
-                await semaphore.WaitAsync(token);
-                tasks.Add(Task.Run(async () =>
+            return await Task.WhenAll(
+                (await GetPlaylistVideosAsync(playlist.Id, token))
+                .Select(async v =>
                 {
+                    await semaphore.WaitAsync(token);
                     try
                     {
                         return await GetStreamManifestAsync(v.Id, token);
@@ -45,10 +45,8 @@ namespace YT_Downloader.Services
                     {
                         semaphore.Release();
                     }
-                }, token));
-            }
-
-            return await Task.WhenAll(tasks);
+                })
+            );
         }
 
         public async Task DownloadVideoAsync(
