@@ -7,11 +7,26 @@ namespace YT_Downloader.Models
 {
     public class DownloadItem
     {
+        private DateTime? _startTime;
+
         public string VideoId { get; set; }
         public VideoOnlyStreamInfo VideoStreamInfo { get; set; }
         public AudioOnlyStreamInfo AudioStreamInfo { get; set; }
         public string OutputPath { get; set; }
         public double Progress { get; private set; } = 0.0;
+        public TimeSpan? RemainingTime
+        {
+            get
+            {
+                if (!_startTime.HasValue || Progress <= 0)
+                    return null;
+
+                var elapsedTime = DateTime.Now - _startTime.Value;
+                var totalSeconds = elapsedTime.TotalSeconds / Progress;
+                var remainingSeconds = totalSeconds * (1 - Progress);
+                return TimeSpan.FromSeconds(remainingSeconds);
+            }
+        }
         public DownloadStatus Status { get; set; } = DownloadStatus.Pending;
         public Exception Error { get; private set; }
         public DownloadType Type { get; set; }
@@ -32,7 +47,11 @@ namespace YT_Downloader.Models
             ProgressChanged?.Invoke(this);
         }
 
-        public void MarkAsDownloading() => Status = DownloadStatus.Downloading;
+        public void MarkAsDownloading()
+        {
+            _startTime = DateTime.Now;
+            Status = DownloadStatus.Downloading;
+        }
 
         public void MarkAsCompleted() => OnCompleted();
 
