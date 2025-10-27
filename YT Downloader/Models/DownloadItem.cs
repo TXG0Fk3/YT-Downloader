@@ -1,22 +1,22 @@
 using System;
-using System.Threading.Tasks;
 using YoutubeExplode.Videos.Streams;
 using YT_Downloader.Enums;
 
 namespace YT_Downloader.Models
 {
-    public class DownloadItem
+    public class DownloadItem : IDownloadable
     {
         private DateTime? _startTime;
 
         public string VideoId { get; set; }
+        public string Title { get; set; }
+        public DownloadType Type { get; set; }
         public VideoOnlyStreamInfo VideoStreamInfo { get; set; }
         public AudioOnlyStreamInfo AudioStreamInfo { get; set; }
         public string OutputPath { get; set; }
         public double Progress { get; private set; } = 0.0;
         public DownloadStatus Status { get; private set; } = DownloadStatus.Pending;
         public Exception Error { get; private set; }
-        public DownloadType Type { get; set; }
 
         public double FileSizeMB =>
             Type == DownloadType.Video
