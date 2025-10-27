@@ -1,4 +1,6 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
+using YT_Downloader.ViewModels;
 
 namespace YT_Downloader
 {
@@ -7,8 +9,18 @@ namespace YT_Downloader
         public static MainWindow mainWindow;
         public static Settings.AppSettings appSettings = new();
 
-        public App() =>
+        private readonly IServiceProvider _services;
+
+        public App()
+        {
             InitializeComponent();
+
+            var services = new ServiceCollection();
+            services.AddTransient<MainPageViewModel>();
+            services.AddSingleton<YoutubeService>();
+            services.AddSingleton<DownloadsService>();
+            _services = services.BuildServiceProvider();
+        }
 
         protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
@@ -19,5 +31,7 @@ namespace YT_Downloader
             mainWindow = new MainWindow();
             mainWindow.Activate();
         }
+
+        public static T GetService<T>() where T : class => ((App)Current)._services.GetRequiredService<T>();
     }
 }
