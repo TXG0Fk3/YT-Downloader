@@ -14,7 +14,7 @@ namespace YT_Downloader.Models
         public AudioOnlyStreamInfo AudioStreamInfo { get; set; }
         public string OutputPath { get; set; }
         public double Progress { get; private set; } = 0.0;
-        public DownloadStatus Status { get; set; } = DownloadStatus.Pending;
+        public DownloadStatus Status { get; private set; } = DownloadStatus.Pending;
         public Exception Error { get; private set; }
         public DownloadType Type { get; set; }
         public Task DownloadTask { get; set; }
@@ -51,7 +51,7 @@ namespace YT_Downloader.Models
             }
         }
 
-        public event Action<DownloadItem> Completed;
+        public event Action<DownloadItem> StatusChanged;
         public event Action<DownloadItem> ProgressChanged;
 
         public void UpdateProgress(double value)
@@ -64,29 +64,28 @@ namespace YT_Downloader.Models
         {
             if (!_startTime.HasValue)
                 _startTime = DateTime.Now;
-            Status = DownloadStatus.Downloading;
+            SetStatus(DownloadStatus.Downloading);
         }
 
         public void MarkAsCompleted()
         {
-            Status = DownloadStatus.Completed;
             Progress = 1.0;
-            RaiseCompleted();
+            SetStatus(DownloadStatus.Completed);
         }
 
-        public void MarkAsCancelled()
-        {
-            Status = DownloadStatus.Cancelled;
-            RaiseCompleted();
-        }
+        public void MarkAsCancelled() =>
+            SetStatus(DownloadStatus.Cancelled);
 
         public void MarkAsError(Exception ex)
         {
-            Status = DownloadStatus.Error;
             Error = ex;
-            RaiseCompleted();
+            SetStatus(DownloadStatus.Error);
         }
 
-        private void RaiseCompleted() => Completed?.Invoke(this);
+        private void SetStatus(DownloadStatus status)
+        {
+            Status = status;
+            StatusChanged?.Invoke(this);
+        }
     }
 }
