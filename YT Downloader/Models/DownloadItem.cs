@@ -17,7 +17,6 @@ namespace YT_Downloader.Models
         public DownloadStatus Status { get; private set; } = DownloadStatus.Pending;
         public Exception Error { get; private set; }
         public DownloadType Type { get; set; }
-        public Task DownloadTask { get; set; }
 
         public double FileSizeMB =>
             Type == DownloadType.Video
