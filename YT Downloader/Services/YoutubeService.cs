@@ -64,7 +64,7 @@ namespace YT_Downloader.Services
             CancellationToken token)
         {
             await _youtubeClient.Videos.DownloadAsync(new IStreamInfo[] { audioStreamInfo },
-                new ConversionRequestBuilder(outputPath).Build(), progress, token);
+                new ConversionRequestBuilder(outputPath).SetContainer("mp3").Build(), progress, token);
         }
     }
 }
