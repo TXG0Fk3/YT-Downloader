@@ -50,10 +50,8 @@ namespace YT_Downloader.ViewModels.Components
                 OnOpenLocal();
         }
 
-        private bool CanFirstButton()
-        {
-            return Status is DownloadStatus.Completed or DownloadStatus.Error;
-        }
+        private bool CanFirstButton() =>
+            Status is DownloadStatus.Completed or DownloadStatus.Error;
 
         [RelayCommand]
         private void OnSecondButton()
