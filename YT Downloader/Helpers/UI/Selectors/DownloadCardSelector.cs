@@ -1,6 +1,6 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using YT_Downloader.Models;
+using YT_Downloader.ViewModels.Components;
 
 namespace YT_Downloader.Helpers.UI.Selectors
 {
@@ -10,6 +10,6 @@ namespace YT_Downloader.Helpers.UI.Selectors
         public DataTemplate GroupTemplate { get; set; }
 
         protected override DataTemplate SelectTemplateCore(object item, DependencyObject container) =>
-            item is DownloadItem ? ItemTemplate : GroupTemplate;
+            item is DownloadItemViewModel ? ItemTemplate : GroupTemplate;
     }
 }
