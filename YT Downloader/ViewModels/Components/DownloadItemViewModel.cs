@@ -16,11 +16,12 @@ namespace YT_Downloader.ViewModels.Components
         public string Quality => _downloadItem.Quality;
         public string ThumbnailPath => _downloadItem.ThumbnailPath;
 
-        public double Progress => _downloadItem.Progress;
+        public IProgress<double> ProgressReporter { get; }
+        public double Progress => _downloadItem.Progress * 100;
+        public string FormatedProgress => $"{Progress:00}%";
+
         public DownloadStatus Status => _downloadItem.Status;
         public Exception Error => _downloadItem.Error;
-
-        public string FormatedProgress => $"{Progress:00}%";
 
         public string FirstButtonIcon => Status != DownloadStatus.Error ? "\uE8DA" : "\uE72C";
         public string SecondButtonIcon => Status == DownloadStatus.Completed ? "\uE74D" : "\uF78A";
