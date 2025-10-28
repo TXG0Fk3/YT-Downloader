@@ -54,41 +54,32 @@ namespace YT_Downloader.Models
             }
         }
 
-        public event Action<DownloadItem> StatusChanged;
-        public event Action<DownloadItem> ProgressChanged;
-
         public void UpdateProgress(double value)
         {
-            Progress = Math.Clamp(value, 0.0, 1.0);
-            ProgressChanged?.Invoke(this);
+            if (Math.Abs(value % 0.01) < 0.0001 || value == 1.0)
+                Progress = Math.Clamp(value, 0.0, 1.0);
         }
 
         public void MarkAsDownloading()
         {
             if (!_startTime.HasValue)
                 _startTime = DateTime.Now;
-            SetStatus(DownloadStatus.Downloading);
+            Status = DownloadStatus.Downloading;
         }
 
         public void MarkAsCompleted()
         {
             Progress = 1.0;
-            SetStatus(DownloadStatus.Completed);
+            Status = DownloadStatus.Completed;
         }
 
         public void MarkAsCancelled() =>
-            SetStatus(DownloadStatus.Cancelled);
+            Status = DownloadStatus.Cancelled;
 
         public void MarkAsError(Exception ex)
         {
             Error = ex;
-            SetStatus(DownloadStatus.Error);
-        }
-
-        private void SetStatus(DownloadStatus status)
-        {
-            Status = status;
-            StatusChanged?.Invoke(this);
+            Status = DownloadStatus.Error;
         }
     }
 }
