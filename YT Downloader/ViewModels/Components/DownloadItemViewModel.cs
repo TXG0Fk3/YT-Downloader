@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System;
 using YT_Downloader.Enums;
 using YT_Downloader.Models;
@@ -27,6 +28,45 @@ namespace YT_Downloader.ViewModels.Components
         public DownloadItemViewModel(DownloadItem downloadItem)
         {
             _downloadItem = downloadItem;
+
+            downloadItem.StatusChanged += (_) => OnStatusChanged();
+            downloadItem.ProgressChanged += (_) => OnPropertyChanged(nameof(Progress));
         }
+
+        private void OnStatusChanged()
+        {
+            OnPropertyChanged(nameof(FirstButtonIcon));
+            OnPropertyChanged(nameof(SecondButtonIcon));
+
+            FirstButtonCommand.NotifyCanExecuteChanged();
+        }
+
+        [RelayCommand(CanExecute = nameof(CanFirstButton))]
+        private void OnFirstButton()
+        {
+            if (Status == DownloadStatus.Error)
+                OnRetry();
+            else if (Status == DownloadStatus.Completed)
+                OnOpenLocal();
+        }
+
+        private bool CanFirstButton()
+        {
+            return Status is DownloadStatus.Completed or DownloadStatus.Error;
+        }
+
+        [RelayCommand]
+        private void OnSecondButton()
+        {
+            if (Status == DownloadStatus.Completed)
+                OnDelete();
+            else
+                OnCancel();
+        }
+
+        private void OnCancel() { }
+        private void OnDelete() { }
+        private void OnOpenLocal() { }
+        private void OnRetry() { }
     }
 }
