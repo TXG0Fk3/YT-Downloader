@@ -10,9 +10,13 @@ namespace YT_Downloader.Models
 
         public string VideoId { get; set; }
         public string Title { get; set; }
+        public string Author { get; set; }
+        public string Url { get; set; }
         public DownloadType Type { get; set; }
+        public string Quality { get; set; }
         public VideoOnlyStreamInfo VideoStreamInfo { get; set; }
         public AudioOnlyStreamInfo AudioStreamInfo { get; set; }
+        public string ThumbnailPath { get; set; }
         public string OutputPath { get; set; }
         public double Progress { get; private set; } = 0.0;
         public DownloadStatus Status { get; private set; } = DownloadStatus.Pending;
