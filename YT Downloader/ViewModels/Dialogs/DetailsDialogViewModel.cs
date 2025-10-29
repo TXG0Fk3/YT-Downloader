@@ -31,7 +31,7 @@ namespace YT_Downloader.ViewModels.Dialogs
         [ObservableProperty] private IReadOnlyList<string> _availableFormats = ["Mp4", "Mp3"];
         [ObservableProperty] private HashSet<string> _availableQualities = new();
 
-        [ObservableProperty] private string? _selectedFormat;
+        [ObservableProperty] private string? _selectedFormat = "Mp4";
         [ObservableProperty] private string? _selectedQuality;
 
         [ObservableProperty] private bool _isPlaylist;
