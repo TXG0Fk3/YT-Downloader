@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:selectors="using:YT_Downloader.Helpers.UI.Selectors"
+    xmlns:ui="using:CommunityToolkit.WinUI">
+
+    <selectors:DonwloadCardSelector
+        x:Key="DownloadCardSelector"
+        GroupTemplate="{StaticResource GroupTemplate}"
+        ItemTemplate="{StaticResource ItemTemplate}" />
+
+    <!--  DownloadItem Template  -->
+    <DataTemplate x:Key="ItemTemplate">
+        <Grid
+            Margin="0,0,0,4"
+            Padding="6"
+            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="8"
+            RowDefinitions="Auto, *, Auto">
+
+            <!--  Header Section  -->
+            <Grid Grid.Row="0" ColumnDefinitions="100, *">
+                <!--  Thumbnail Border  -->
+                <Border
+                    x:Name="ThumbnailBorder"
+                    Grid.Column="0"
+                    CornerRadius="6">
+                    <Image Source="{Binding ThumbnailPath}" Stretch="Fill" />
+                </Border>
+
+                <!--  Title and Info  -->
+                <StackPanel Grid.Column="1" Spacing="4">
+                    <HyperlinkButton
+                        Padding="4"
+                        HorizontalAlignment="Left"
+                        Content="{Binding Title}"
+                        NavigateUri="{Binding Url}"
+                        ToolTipService.ToolTip="Open Video in Browser" />
+
+                    <Grid ColumnDefinitions="*, Auto">
+                        <StackPanel
+                            Grid.Column="0"
+                            Width="182"
+                            Margin="6,0,0,0"
+                            HorizontalAlignment="Left"
+                            Orientation="Vertical"
+                            Spacing="1">
+                            <TextBlock Foreground="DarkGray" Text="{Binding Author}" />
+                            <TextBlock Foreground="DarkGray" Text="{Binding Quality}" />
+                        </StackPanel>
+
+                        <StackPanel
+                            Grid.Column="1"
+                            Orientation="Horizontal"
+                            Spacing="4">
+                            <Button
+                                Width="40"
+                                Height="40"
+                                Padding="0"
+                                Command="{Binding FirstButtonCommand}"
+                                ToolTipService.ToolTip="A">
+                                <FontIcon Glyph="{Binding FirstButtonIcon}" />
+                            </Button>
+                            <Button
+                                Width="40"
+                                Height="40"
+                                Padding="0"
+                                Command="{Binding SecondButtonCommand}"
+                                ToolTipService.ToolTip="A">
+                                <FontIcon Glyph="{Binding SecondButtonIcon}" />
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+
+            <!--  Progress Bar  -->
+            <Grid
+                Grid.Row="1"
+                Margin="0,6,0,0"
+                ColumnDefinitions="*, 38">
+                <ProgressBar Grid.Column="0" Value="{Binding Progress}" />
+                <TextBlock
+                    Grid.Column="1"
+                    HorizontalAlignment="Right"
+                    Text="{Binding FormatedProgress}" />
+            </Grid>
+
+            <!--  Error InfoBar  -->
+            <InfoBar
+                Title="Error"
+                Grid.Row="2"
+                Margin="0,4,0,0"
+                IsClosable="False"
+                IsOpen="True"
+                Severity="Error"
+                Visibility="Collapsed">
+                <InfoBar.ActionButton>
+                    <Button HorizontalAlignment="Right" Content="See log" />
+                </InfoBar.ActionButton>
+            </InfoBar>
+        </Grid>
+    </DataTemplate>
+
+    <!--  DownloadGroup Template  -->
+    <DataTemplate x:Key="GroupTemplate">
+        <Grid
+            Margin="0,0,0,4"
+            CornerRadius="8"
+            RowDefinitions="Auto, Auto">
+
+            <!--  Title and Info  -->
+            <Grid
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1,1,1,0"
+                RowDefinitions="Auto, *">
+                <StackPanel Padding="6" Spacing="4">
+                    <HyperlinkButton
+                        Padding="4"
+                        HorizontalAlignment="Left"
+                        ToolTipService.ToolTip="Open Video in Browser" />
+
+                    <Grid ColumnDefinitions="*, Auto">
+                        <StackPanel
+                            Grid.Column="0"
+                            Width="240"
+                            Margin="6,0,0,0"
+                            HorizontalAlignment="Left"
+                            Orientation="Vertical"
+                            Spacing="1">
+                            <TextBlock Foreground="DarkGray" />
+                            <TextBlock Foreground="DarkGray" />
+                        </StackPanel>
+
+                        <StackPanel
+                            Grid.Column="1"
+                            Orientation="Horizontal"
+                            Spacing="4">
+                            <Button
+                                Width="40"
+                                Height="40"
+                                Padding="0"
+                                Content="{ui:FontIcon Glyph=&#xE8DA;}"
+                                ToolTipService.ToolTip="Open Folder" />
+                            <Button
+                                Width="40"
+                                Height="40"
+                                Padding="0"
+                                Content="{ui:FontIcon Glyph=&#xE74D;}"
+                                ToolTipService.ToolTip="Delete All &amp; Close PlaylistCard" />
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+
+                <!--  Progress Bar  -->
+                <Grid
+                    Grid.Row="1"
+                    Margin="6,0,6,6"
+                    ColumnDefinitions="*, 38">
+                    <ProgressBar Grid.Column="0" />
+                    <TextBlock
+                        Grid.Column="1"
+                        HorizontalAlignment="Right"
+                        Text="00%" />
+                </Grid>
+            </Grid>
+
+            <!--  Group Content (ItemTemplate)  -->
+            <Expander
+                Grid.Row="1"
+                Padding="4"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Stretch"
+                CornerRadius="0"
+                Header="Playlist Content"
+                IsExpanded="true">
+                <Expander.ContentTransitions>
+                    <TransitionCollection>
+                        <RepositionThemeTransition />
+                    </TransitionCollection>
+                </Expander.ContentTransitions>
+                <Grid>
+                    <!--  If playlist content is loading  -->
+                    <Grid
+                        Padding="10"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        RowDefinitions="Auto, Auto"
+                        Visibility="Visible">
+                        <TextBlock
+                            Grid.Row="0"
+                            Margin="8"
+                            HorizontalAlignment="Center"
+                            FontSize="16"
+                            Text="Loading Playlist Content..." />
+                        <ProgressBar Grid.Row="1" IsIndeterminate="True" />
+                    </Grid>
+
+                    <!--  Downloads List  -->
+                    <ItemsControl ItemTemplate="{StaticResource ItemTemplate}">
+                        <ItemsControl.ItemContainerTransitions>
+                            <EntranceThemeTransition FromVerticalOffset="50" />
+                            <RepositionThemeTransition IsStaggeringEnabled="False" />
+                        </ItemsControl.ItemContainerTransitions>
+                    </ItemsControl>
+                </Grid>
+            </Expander>
+        </Grid>
+    </DataTemplate>
+
+</ResourceDictionary>
