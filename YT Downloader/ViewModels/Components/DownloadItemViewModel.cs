@@ -30,8 +30,13 @@ namespace YT_Downloader.ViewModels.Components
         {
             _downloadItem = downloadItem;
 
-            downloadItem.StatusChanged += (_) => OnStatusChanged();
-            downloadItem.ProgressChanged += (_) => OnPropertyChanged(nameof(Progress));
+            ProgressReporter = new Progress<double>(value =>
+            {
+                _downloadItem.UpdateProgress(value);
+                
+                OnPropertyChanged(nameof(Progress));
+                OnPropertyChanged(nameof(FormatedProgress));
+            });
         }
 
         private void OnStatusChanged()
