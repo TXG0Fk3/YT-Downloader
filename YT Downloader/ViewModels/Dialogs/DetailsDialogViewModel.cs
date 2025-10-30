@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,6 +22,8 @@ namespace YT_Downloader.ViewModels.Dialogs
         private IVideo? _video;
         private IPlaylist? _playlist;
         private StreamManifest? _streamManifest;
+        private VideoOnlyStreamInfo? _videoStreamInfo;
+        private AudioOnlyStreamInfo? _audioStreamInfo;
         private CancellationTokenSource? _cts;
 
         [ObservableProperty] private string _urlBoxText = string.Empty;
@@ -97,12 +100,14 @@ namespace YT_Downloader.ViewModels.Dialogs
 
             _cts = new CancellationTokenSource();
             _video = await _youtubeService.GetVideoAsync(UrlBoxText, _cts.Token);
-            _streamManifest = await _youtubeService.GetStreamManifestAsync(_video.Id, _cts.Token);
 
             Title = _video.Title;
+            DefaultFileName = SanitizeFileName(_video.Title);
+
+            _streamManifest = await _youtubeService.GetStreamManifestAsync(_video.Id, _cts.Token);
             ThumbnailPath = await ThumbHelper.DownloadThumbnailAsync(_video.Id);
 
-            AvailableQualities = GetAvailableQualities();
+            UpdateAvailableQualities();   
         }
 
         private async Task LoadPlaylistInfoAsync()
@@ -129,16 +134,49 @@ namespace YT_Downloader.ViewModels.Dialogs
                     if (_streamManifest != null)
                     {
                         AvailableQualities = _streamManifest
-                        .GetVideoOnlyStreams()
-                        .Where(s => s.Container == Container.Mp4)
-                        .Select(s => s.VideoQuality.Label)
-                        .ToHashSet();
-            }
+                            .GetVideoOnlyStreams()
+                            .Where(s => s.Container == Container.Mp4)
+                            .Select(s => s.VideoQuality.Label)
+                            .ToHashSet();
+                    }   
                 }
             }
             else AvailableQualities = ["Best"];
 
             SelectedQuality = AvailableQualities.FirstOrDefault();
         }
+
+        private void UpdateSize()
+        {
+            if (IsPlaylist) SizeMB = "Undetermined";
+            else if (_videoStreamInfo != null && _audioStreamInfo != null)
+            {
+                SizeMB = SelectedFormat == "Mp4" 
+                    ? $"{(_videoStreamInfo.Size.MegaBytes + _audioStreamInfo.Size.MegaBytes):F1} MB"
+                    : $"{_audioStreamInfo.Size.MegaBytes:F1} MB";
+            }
+        }
+
+        async partial void OnSelectedFormatChanged(string? value)
+        {
+            if (value != null)
+                UpdateAvailableQualities();
+        }
+
+        async partial void OnSelectedQualityChanged(string? value)
+        {   
+            if (value != null)
+            {
+                if (!IsPlaylist && _streamManifest != null)
+                {
+                    _videoStreamInfo = _youtubeService.GetVideoOnlyStreamInfo(_streamManifest, value);
+                    _audioStreamInfo = _youtubeService.GetBestAudioOnlyStreamInfo(_streamManifest);
+                }
+
+                UpdateSize();
+            } 
+        }
+        private static string SanitizeFileName(string name) =>
+            string.Concat(name.Where(c => !Path.GetInvalidFileNameChars().Contains(c)));
     } 
 }
