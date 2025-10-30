@@ -110,21 +110,35 @@ namespace YT_Downloader.ViewModels.Dialogs
             IsPlaylist = true;
         }
 
-        private HashSet<string> GetAvailableQualities()
+        private void UpdateAvailableQualities()
         {
-            if (_streamManifest == null) return new();
-
             if (SelectedFormat == "Mp4")
             {
-                return IsPlaylist
-                    ? ["2160p60", "2160p", "1440p60", "1440p", "1080p60", "1080p", "720p60", "720p", "480p60", "480p", "360p60", "360p", "240p60", "240p", "144p60", "144p"]
-                    : _streamManifest
+                if (IsPlaylist)
+                {
+                    AvailableQualities = new HashSet<string>
+                    {
+                        "2160p60", "2160p", "1440p60", "1440p",
+                        "1080p60", "1080p", "720p60", "720p",
+                        "480p60", "480p", "360p60", "360p",
+                        "240p60", "240p", "144p60", "144p"
+                    };
+                }
+                else
+                {
+                    if (_streamManifest != null)
+                    {
+                        AvailableQualities = _streamManifest
                         .GetVideoOnlyStreams()
                         .Where(s => s.Container == Container.Mp4)
                         .Select(s => s.VideoQuality.Label)
                         .ToHashSet();
             }
-            else return ["Best"];
+                }
+            }
+            else AvailableQualities = ["Best"];
+
+            SelectedQuality = AvailableQualities.FirstOrDefault();
         }
     } 
 }
