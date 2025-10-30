@@ -46,8 +46,6 @@ namespace YT_Downloader.ViewModels.Dialogs
         [ObservableProperty] private string _errorMessage = string.Empty;
         [ObservableProperty] private bool _isErrorVisible;
 
-        private string _fileName = string.Empty;
-
         public bool IsQualitySelectionEnabled => SelectedFormat == "Mp4" && !IsContentLoading;
         public bool IsContentVisible => IsContentLoading || IsContentLoaded;
         public bool IsDownloadEnabled => IsContentLoaded && !IsContentLoading;
