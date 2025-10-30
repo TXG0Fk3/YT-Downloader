@@ -169,13 +169,16 @@ namespace YT_Downloader.ViewModels.Dialogs
             {
                 if (!IsPlaylist && _streamManifest != null)
                 {
+                    if (SelectedFormat == "Mp4")
                     _videoStreamInfo = _youtubeService.GetVideoOnlyStreamInfo(_streamManifest, value);
+
                     _audioStreamInfo = _youtubeService.GetBestAudioOnlyStreamInfo(_streamManifest);
                 }
 
                 UpdateSize();
             } 
         }
+
         private static string SanitizeFileName(string name) =>
             string.Concat(name.Where(c => !Path.GetInvalidFileNameChars().Contains(c)));
     } 
