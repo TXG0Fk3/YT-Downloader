@@ -23,8 +23,9 @@ namespace YT_Downloader.ViewModels.Dialogs
         private StreamManifest? _streamManifest;
         private CancellationTokenSource? _cts;
 
-        [ObservableProperty] private string _ContentUrl = string.Empty;
+        [ObservableProperty] private string _urlBoxText = string.Empty;
         [ObservableProperty] private string _title = string.Empty;
+        [ObservableProperty] private string _contentUrl = string.Empty;
         [ObservableProperty] private string _thumbnailPath = string.Empty;
         [ObservableProperty] private string _sizeMB = string.Empty;
 
@@ -60,14 +61,14 @@ namespace YT_Downloader.ViewModels.Dialogs
         [RelayCommand]
         private async Task LoadContentInfo()
         {
-            if (string.IsNullOrWhiteSpace(ContentUrl))
+            if (string.IsNullOrWhiteSpace(UrlBoxText))
                 return;
 
             IsErrorVisible = false;
             IsContentLoading = true;
             try
             {
-                if (ContentUrl.Contains("playlist?list="))
+                if (UrlBoxText.Contains("playlist?list="))
                     await LoadPlaylistInfoAsync();
                 else
                     await LoadVideoInfoAsync();
@@ -90,7 +91,7 @@ namespace YT_Downloader.ViewModels.Dialogs
             IsPlaylist = false;
 
             _cts = new CancellationTokenSource();
-            _video = await _youtubeService.GetVideoAsync(ContentUrl, _cts.Token);
+            _video = await _youtubeService.GetVideoAsync(UrlBoxText, _cts.Token);
             _streamManifest = await _youtubeService.GetStreamManifestAsync(_video.Id, _cts.Token);
 
             Title = _video.Title;
