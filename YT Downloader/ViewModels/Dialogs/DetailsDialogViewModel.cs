@@ -159,13 +159,13 @@ namespace YT_Downloader.ViewModels.Dialogs
             }
         }
 
-        async partial void OnSelectedFormatChanged(string? value)
+        partial void OnSelectedFormatChanged(string? value)
         {
             if (value != null)
                 UpdateAvailableQualities();
         }
 
-        async partial void OnSelectedQualityChanged(string? value)
+        partial void OnSelectedQualityChanged(string? value)
         {   
             if (value != null)
             {
