@@ -27,6 +27,7 @@ namespace YT_Downloader.ViewModels.Dialogs
         [ObservableProperty] private string _title = string.Empty;
         [ObservableProperty] private string _contentUrl = string.Empty;
         [ObservableProperty] private string _thumbnailPath = string.Empty;
+        [ObservableProperty] private string _fileName = string.Empty;
         [ObservableProperty] private string _sizeMB = string.Empty;
 
         [ObservableProperty] private IReadOnlyList<string> _availableFormats = ["Mp4", "Mp3"];
