@@ -45,7 +45,8 @@ namespace YT_Downloader.ViewModels.Dialogs
 
         [ObservableProperty, NotifyPropertyChangedFor(nameof(IsQualitySelectionEnabled), nameof(IsContentVisible), nameof(IsDownloadEnabled))]
         private bool _isContentLoading;
-        [ObservableProperty] private bool _isContentLoaded;
+        [ObservableProperty, NotifyPropertyChangedFor(nameof(IsContentVisible), nameof(IsDownloadEnabled))]
+        private bool _isContentLoaded;
 
         [ObservableProperty] private string _errorMessage = string.Empty;
         [ObservableProperty] private bool _isErrorVisible;
