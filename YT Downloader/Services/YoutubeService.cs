@@ -60,6 +60,9 @@ namespace YT_Downloader.Services
                 .FirstOrDefault();
         }
 
+        public AudioOnlyStreamInfo? GetBestAudioOnlyStreamInfo(StreamManifest streamManifest) =>
+            (AudioOnlyStreamInfo)streamManifest.GetAudioOnlyStreams().Where(s => s.Container == Container.Mp4).GetWithHighestBitrate();
+
         public async Task DownloadVideoAsync(
             VideoOnlyStreamInfo videoStreamInfo, AudioOnlyStreamInfo audioStreamInfo,
             string outputPath, IProgress<double> progress,  
