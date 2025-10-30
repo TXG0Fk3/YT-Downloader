@@ -61,9 +61,6 @@ namespace YT_Downloader.ViewModels.Dialogs
         [RelayCommand]
         private async Task LoadContentInfo()
         {
-            if (string.IsNullOrWhiteSpace(UrlBoxText))
-                return;
-
             IsErrorVisible = false;
             IsContentLoading = true;
             try
