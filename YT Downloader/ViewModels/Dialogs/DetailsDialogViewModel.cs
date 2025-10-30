@@ -61,7 +61,15 @@ namespace YT_Downloader.ViewModels.Dialogs
         [RelayCommand]
         private async Task LoadContentInfo()
         {
+            IsContentLoaded = false;
             IsErrorVisible = false;
+            SelectedFormat = "Mp4";
+            Title = "Loading...";
+            DefaultFileName = "Loading...";
+            UserFileName = string.Empty;
+            SizeMB = "Loading...";
+            ContentUrl = UrlBoxText;
+
             IsContentLoading = true;
             try
             {
