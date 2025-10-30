@@ -49,6 +49,17 @@ namespace YT_Downloader.Services
             );
         }
 
+        public VideoOnlyStreamInfo? GetVideoOnlyStreamInfo(StreamManifest streamManifest, string quality)
+        {
+            var targetResolution = ParseResolution(quality);
+            var targetFps = ParseFps(quality);
+
+            return streamManifest.GetVideoOnlyStreams()
+                .Where(s => s.Container == Container.Mp4)
+                .OrderBy(s => Score(s, targetResolution, targetFps))
+                .FirstOrDefault();
+        }
+
         public async Task DownloadVideoAsync(
             VideoOnlyStreamInfo videoStreamInfo, AudioOnlyStreamInfo audioStreamInfo,
             string outputPath, IProgress<double> progress,  
@@ -66,5 +77,18 @@ namespace YT_Downloader.Services
             await _youtubeClient.Videos.DownloadAsync(new IStreamInfo[] { audioStreamInfo },
                 new ConversionRequestBuilder(outputPath).SetContainer("mp3").Build(), progress, token);
         }
+
+        private static int Score(VideoOnlyStreamInfo stream, int targetResolution, int targetFps)
+        {
+            var label = stream.VideoQuality.Label;
+            var res = ParseResolution(label);
+            var fps = ParseFps(label);
+            return Math.Abs(res - targetResolution) + Math.Abs(fps - targetFps);
+        }
+
+        private static int ParseResolution(string text) => int.Parse(text.Split('p')[0]);
+        private static int ParseFps(string text) => text.Split(' ')[0].EndsWith("60") ? 60 : 30;
+
+
     }
 }
