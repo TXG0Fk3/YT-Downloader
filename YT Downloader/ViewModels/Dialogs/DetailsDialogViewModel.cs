@@ -40,7 +40,7 @@ namespace YT_Downloader.ViewModels.Dialogs
         private bool _isContentLoading;
         [ObservableProperty] private bool _isContentLoaded;
 
-        [ObservableProperty] private string _ErrorMessage = string.Empty;
+        [ObservableProperty] private string _errorMessage = string.Empty;
         [ObservableProperty] private bool _isErrorVisible;
 
         private string _fileName = string.Empty;
