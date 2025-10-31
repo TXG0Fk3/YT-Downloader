@@ -55,10 +55,8 @@ namespace YT_Downloader.ViewModels.Dialogs
         public bool IsContentVisible => IsContentLoading || IsContentLoaded;
         public bool IsDownloadEnabled => IsContentLoaded && !IsContentLoading;
 
-        public DetailsDialogViewModel(YoutubeService youtubeService)
-        {
+        public DetailsDialogViewModel(YoutubeService youtubeService) =>
             _youtubeService = youtubeService;
-        }
 
         public IDownloadable GetDownloadInfo() =>
             throw new NotImplementedException();
