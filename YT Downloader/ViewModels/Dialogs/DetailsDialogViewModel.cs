@@ -50,10 +50,10 @@ namespace YT_Downloader.ViewModels.Dialogs
         [ObservableProperty] private string _errorMessage = string.Empty;
         [ObservableProperty] private bool _isErrorVisible;
 
-        public bool IsQualitySelectionEnabled => SelectedFormat == "Mp4" && !IsContentLoading;
+        public bool IsQualitySelectionEnabled => SelectedFormat == "Mp4" && IsContentLoaded;
         public bool IsFileNameBoxEnabled => !IsPlaylist && IsContentLoaded;
         public bool IsContentVisible => IsContentLoading || IsContentLoaded;
-        public bool IsDownloadEnabled => IsContentLoaded && !IsContentLoading;
+        public bool IsDownloadEnabled => IsContentLoaded;
 
         public DetailsDialogViewModel(YoutubeService youtubeService) =>
             _youtubeService = youtubeService;
