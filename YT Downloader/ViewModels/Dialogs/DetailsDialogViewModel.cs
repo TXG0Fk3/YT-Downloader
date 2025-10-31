@@ -78,11 +78,14 @@ namespace YT_Downloader.ViewModels.Dialogs
             IsContentLoading = true;
             try
             {
+                _cts = new CancellationTokenSource();
+
                 if (UrlBoxText.Contains("playlist?list="))
                     await LoadPlaylistInfoAsync();
                 else
                     await LoadVideoInfoAsync();
 
+                UpdateAvailableQualities();
                 IsContentLoaded = true;
             }
             catch (Exception ex)
@@ -100,7 +103,6 @@ namespace YT_Downloader.ViewModels.Dialogs
         {
             IsPlaylist = false;
 
-            _cts = new CancellationTokenSource();
             _video = await _youtubeService.GetVideoAsync(UrlBoxText, _cts.Token);
 
             Title = _video.Title;
@@ -108,8 +110,6 @@ namespace YT_Downloader.ViewModels.Dialogs
 
             _streamManifest = await _youtubeService.GetStreamManifestAsync(_video.Id, _cts.Token);
             ThumbnailPath = await ThumbHelper.DownloadThumbnailAsync(_video.Id);
-
-            UpdateAvailableQualities();   
         }
 
         private async Task LoadPlaylistInfoAsync()
