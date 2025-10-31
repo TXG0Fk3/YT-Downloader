@@ -70,6 +70,7 @@ namespace YT_Downloader.ViewModels.Dialogs
             IsErrorVisible = false;
             SelectedFormat = "Mp4";
             Title = "Loading...";
+            ThumbnailPath = string.Empty;
             DefaultFileName = "Loading...";
             UserFileName = string.Empty;
             SizeMB = "Loading...";
