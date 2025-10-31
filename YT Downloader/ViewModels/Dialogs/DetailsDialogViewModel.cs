@@ -115,6 +115,11 @@ namespace YT_Downloader.ViewModels.Dialogs
         private async Task LoadPlaylistInfoAsync()
         {
             IsPlaylist = true;
+
+            _playlist = await _youtubeService.GetPlaylistAsync(UrlBoxText, _cts.Token);
+
+            Title = _playlist.Title;
+            DefaultFileName = "Custom File Name not available for Playlists.";
         }
 
         private void UpdateAvailableQualities()
