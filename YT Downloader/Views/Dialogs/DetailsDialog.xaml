@@ -85,6 +85,7 @@
                     <FontIcon
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
+                        FontSize="32"
                         Glyph="&#xE733;"
                         Visibility="{Binding IsPlaylist, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 </Grid>
