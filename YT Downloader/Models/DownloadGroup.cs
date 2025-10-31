@@ -6,8 +6,11 @@ namespace YT_Downloader.Models
 {
     public class DownloadGroup : IDownloadable
     {
-        public string Title { get; set; }
-        public List<DownloadItem> Items { get; } = new();
+        public required string PlaylistId { get; set; }
+        public required string Title { get; set; }
+        public required string Author { get; set; }
+        public required string Quality { get; set; }
+        public List<DownloadItem> Items { get; set; } = new();
 
         public double Progress => Items.Count == 0 ? 0 : Items.Average(i => i.Progress);
 
