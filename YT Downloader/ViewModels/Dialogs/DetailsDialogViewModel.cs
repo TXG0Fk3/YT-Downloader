@@ -68,6 +68,7 @@ namespace YT_Downloader.ViewModels.Dialogs
         {
             IsContentLoaded = false;
             IsErrorVisible = false;
+
             SelectedFormat = "Mp4";
             Title = "Loading...";
             ThumbnailPath = string.Empty;
