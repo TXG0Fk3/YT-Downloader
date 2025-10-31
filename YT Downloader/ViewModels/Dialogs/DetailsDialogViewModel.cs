@@ -42,7 +42,6 @@ namespace YT_Downloader.ViewModels.Dialogs
         [ObservableProperty] private string? _selectedQuality;
 
         [ObservableProperty] private bool _isPlaylist;
-
         [ObservableProperty, NotifyPropertyChangedFor(nameof(IsQualitySelectionEnabled), nameof(IsContentVisible), nameof(IsDownloadEnabled))]
         private bool _isContentLoading;
         [ObservableProperty, NotifyPropertyChangedFor(nameof(IsContentVisible), nameof(IsDownloadEnabled))]
