@@ -115,7 +115,7 @@
                 Grid.Column="0"
                 Height="62"
                 Header="File Name:"
-                IsEnabled="{Binding IsContentLoading, Converter={StaticResource BooleanNegationConverter}}"
+                IsEnabled="{Binding IsFileNameBoxEnabled}"
                 PlaceholderText="{Binding DefaultFileName}"
                 Text="{Binding UserFileName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
