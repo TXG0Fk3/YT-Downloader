@@ -16,7 +16,6 @@ namespace YT_Downloader.ViewModels.Components
         public string Quality => _downloadItem.Quality;
         public string ThumbnailPath => _downloadItem.ThumbnailPath;
 
-        public IProgress<double> ProgressReporter { get; }
         public double Progress => _downloadItem.Progress * 100;
         public string FormatedProgress => $"{Progress:00}%";
 
@@ -30,21 +29,22 @@ namespace YT_Downloader.ViewModels.Components
         {
             _downloadItem = downloadItem;
 
-            ProgressReporter = new Progress<double>(value =>
+            _downloadItem.PropertyChanged += (s, e) =>
             {
-                _downloadItem.UpdateProgress(value);
-                
-                OnPropertyChanged(nameof(Progress));
-                OnPropertyChanged(nameof(FormatedProgress));
-            });
-        }
+                if (e.PropertyName == nameof(DownloadItem.Progress))
+                {
+                    OnPropertyChanged(nameof(Progress));
+                    OnPropertyChanged(nameof(FormatedProgress));
+                }
 
-        private void OnStatusChanged()
-        {
-            OnPropertyChanged(nameof(FirstButtonIcon));
-            OnPropertyChanged(nameof(SecondButtonIcon));
-
-            FirstButtonCommand.NotifyCanExecuteChanged();
+                if (e.PropertyName == nameof(DownloadItem.Status))
+                {
+                    OnPropertyChanged(nameof(Status));
+                    OnPropertyChanged(nameof(FirstButtonIcon));
+                    OnPropertyChanged(nameof(SecondButtonIcon));
+                    FirstButtonCommand.NotifyCanExecuteChanged();
+                }
+            };
         }
 
         [RelayCommand(CanExecute = nameof(CanFirstButton))]
