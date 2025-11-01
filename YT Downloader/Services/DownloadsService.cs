@@ -34,44 +34,63 @@ namespace YT_Downloader.Services
 
         private async Task ProcessQueueAsync(CancellationToken token)
         {
-            while (_downloadQueue.TryDequeue(out var item))
+            try
             {
-                await _semaphore.WaitAsync(token);
-
-                _ = Task.Run(async () =>
+                while (true)
                 {
-                    try
+                    if (_downloadQueue.TryDequeue(out var item))
                     {
-                        item.MarkAsDownloading();
-                        if (item.Type == DownloadType.Video)
-                            await _youtubeService.DownloadVideoAsync(
-                                item.VideoStreamInfo, item.AudioStreamInfo,
-                                item.OutputPath, item.ProgressReporter, token
-                            );
-                        else
-                            await _youtubeService.DownloadAudioAsync(
-                                item.AudioStreamInfo,
-                                item.OutputPath, item.ProgressReporter, token
-                            );
-
-                        item.MarkAsCompleted();
+                        _ = DownloadAsync(item);
                     }
-                    catch (OperationCanceledException)
+                    else
                     {
-                        item.MarkAsCancelled();
+                        await Task.Delay(200, token);
+                        if (_downloadQueue.IsEmpty)
+                        {
+                            _processing = false;
+                            return;
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        item.MarkAsError(ex);
-                    }
-                    finally
-                    {
-                        _semaphore.Release();
-                    }
-                }, token);
+                }
             }
+            catch (OperationCanceledException)
+            {
+                _processing = false;
+            }
+        }
 
-            _processing = false;
+        private async Task DownloadAsync(DownloadItem item)
+        {
+            await _semaphore.WaitAsync();
+            try
+            {
+                item.MarkAsDownloading();
+
+                if (item.Type == DownloadType.Video)
+                    await _youtubeService.DownloadVideoAsync(
+                        item.VideoStreamInfo, item.AudioStreamInfo,
+                        item.OutputPath, item.ProgressReporter, item.CTS.Token
+                    );
+                else
+                    await _youtubeService.DownloadAudioAsync(
+                        item.AudioStreamInfo,
+                        item.OutputPath, item.ProgressReporter, item.CTS.Token
+                    );
+
+                item.MarkAsCompleted();
+            }
+            catch (OperationCanceledException)
+            {
+                item.MarkAsCancelled();
+            }
+            catch (Exception ex)
+            {
+                item.MarkAsError(ex);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
     }
 }
