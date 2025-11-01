@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using System;
+using System.Threading;
 using YoutubeExplode.Videos.Streams;
 using YT_Downloader.Enums;
 
@@ -25,6 +26,7 @@ namespace YT_Downloader.Models
         [ObservableProperty] public Exception? error;
 
         public IProgress<double> ProgressReporter { get; }
+        public CancellationTokenSource CTS { get; private set; } = new();
 
         public DownloadItem() =>
             ProgressReporter = new Progress<double>(p => UpdateProgress(p));
@@ -71,6 +73,7 @@ namespace YT_Downloader.Models
         {
             if (!_startTime.HasValue)
                 _startTime = DateTime.Now;
+            CTS = new();
             Status = DownloadStatus.Downloading;
         }
 
