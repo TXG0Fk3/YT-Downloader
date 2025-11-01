@@ -1,26 +1,33 @@
+using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using YoutubeExplode.Videos.Streams;
 using YT_Downloader.Enums;
 
 namespace YT_Downloader.Models
 {
-    public class DownloadItem : IDownloadable
+    public partial class DownloadItem : ObservableObject, IDownloadable
     {
         private DateTime? _startTime;
 
-        public string VideoId { get; set; }
-        public string Title { get; set; }
-        public string Author { get; set; }
-        public string Url { get; set; }
-        public DownloadType Type { get; set; }
-        public string Quality { get; set; }
-        public VideoOnlyStreamInfo VideoStreamInfo { get; set; }
-        public AudioOnlyStreamInfo AudioStreamInfo { get; set; }
-        public string ThumbnailPath { get; set; }
-        public string OutputPath { get; set; }
-        public double Progress { get; private set; } = 0.0;
-        public DownloadStatus Status { get; private set; } = DownloadStatus.Pending;
-        public Exception Error { get; private set; }
+        public required string VideoId { get; set; }
+        public required string Title { get; set; }
+        public required string Author { get; set; }
+        public required string Url { get; set; }
+        public required DownloadType Type { get; set; }
+        public required string Quality { get; set; }
+        public required VideoOnlyStreamInfo VideoStreamInfo { get; set; }
+        public required AudioOnlyStreamInfo AudioStreamInfo { get; set; }
+        public required string ThumbnailPath { get; set; }
+        public required string OutputPath { get; set; }
+
+        [ObservableProperty] private double progress = 0.0;
+        [ObservableProperty] public DownloadStatus status = DownloadStatus.Pending;
+        [ObservableProperty] public Exception? error;
+
+        public IProgress<double> ProgressReporter { get; }
+
+        public DownloadItem() =>
+            ProgressReporter = new Progress<double>(p => UpdateProgress(p));
 
         public double FileSizeMB =>
             Type == DownloadType.Video
