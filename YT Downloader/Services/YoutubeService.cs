@@ -91,7 +91,5 @@ namespace YT_Downloader.Services
 
         private static int ParseResolution(string text) => int.Parse(text.Split('p')[0]);
         private static int ParseFps(string text) => text.Split(' ')[0].EndsWith("60") ? 60 : 30;
-
-
     }
 }
