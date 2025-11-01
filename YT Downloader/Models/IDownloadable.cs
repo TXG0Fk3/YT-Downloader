@@ -2,7 +2,7 @@ using YT_Downloader.Enums;
 
 namespace YT_Downloader.Models
 {
-    public class IDownloadable
+    public interface IDownloadable
     {
         string Title { get; }
         double Progress { get; }
