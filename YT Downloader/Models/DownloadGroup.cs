@@ -27,6 +27,9 @@ namespace YT_Downloader.Models
                     ? DownloadStatus.Downloading
                     : DownloadStatus.Pending;
 
+        public DownloadGroup() =>
+            Items.CollectionChanged += OnItemsChanged;
+
         private void OnItemsChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.NewItems != null)
