@@ -75,7 +75,7 @@
                     Background="{ThemeResource AcrylicBackgroundFillColorBaseBrush}"
                     CornerRadius="6">
                     <Image
-                        Source="{Binding ThumbnailPath}"
+                        Source="{Binding ThumbnailUrl}"
                         Stretch="Fill"
                         Visibility="{Binding IsContentLoading, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Invert}" />
                     <ProgressRing
@@ -100,7 +100,7 @@
                         Header="Format"
                         IsEnabled="{Binding IsContentLoading, Converter={StaticResource BooleanNegationConverter}}"
                         ItemsSource="{Binding AvailableFormats}"
-                        SelectedValue="{Binding SelectedFormat, Mode=TwoWay}" />
+                        SelectedItem="{Binding SelectedFormat, Mode=TwoWay}" />
                     <ComboBox
                         Grid.Row="1"
                         HorizontalAlignment="Stretch"
