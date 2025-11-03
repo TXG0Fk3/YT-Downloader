@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using YT_Downloader.Services;
 using YT_Downloader.ViewModels;
+using YT_Downloader.Views;
 
 namespace YT_Downloader
 {
@@ -20,6 +21,7 @@ namespace YT_Downloader
             services.AddTransient<MainPageViewModel>();
             services.AddSingleton<YoutubeService>();
             services.AddSingleton<DownloadsService>();
+            services.AddSingleton<SettingsService>();
             services.AddSingleton<DialogService>();
             _services = services.BuildServiceProvider();
         }
