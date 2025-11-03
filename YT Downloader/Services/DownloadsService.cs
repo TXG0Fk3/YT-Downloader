@@ -68,13 +68,12 @@ namespace YT_Downloader.Services
 
                 if (item.Type == DownloadType.Video)
                     await _youtubeService.DownloadVideoAsync(
-                        item.VideoStreamInfo, item.AudioStreamInfo,
+                        item.Manifest, item.VideoStreamOption,
                         item.OutputPath, item.ProgressReporter, item.CTS.Token
                     );
                 else
                     await _youtubeService.DownloadAudioAsync(
-                        item.AudioStreamInfo,
-                        item.OutputPath, item.ProgressReporter, item.CTS.Token
+                        item.Manifest, item.OutputPath, item.ProgressReporter, item.CTS.Token
                     );
 
                 item.MarkAsCompleted();

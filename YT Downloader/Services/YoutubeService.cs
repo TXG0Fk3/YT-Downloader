@@ -128,21 +128,28 @@ namespace YT_Downloader.Services
             (AudioOnlyStreamInfo)streamManifest.GetAudioOnlyStreams().Where(s => s.Container == Container.Mp4).GetWithHighestBitrate();
 
         public async Task DownloadVideoAsync(
-            VideoOnlyStreamInfo videoStreamInfo, AudioOnlyStreamInfo audioStreamInfo,
+            StreamManifest streamManifest, StreamOption videoStreamOption,
             string outputPath, IProgress<double> progress,  
             CancellationToken token)
         {
-            await _youtubeClient.Videos.DownloadAsync(new IStreamInfo[] { videoStreamInfo, audioStreamInfo },
-                new ConversionRequestBuilder(outputPath).Build(), progress, token);
+            var videoStreamInfo = GetVideoOnlyStreamInfo(streamManifest, videoStreamOption.Quality);
+            var audioStreamInfo = GetBestAudioOnlyStreamInfo(streamManifest);
+
+            if (videoStreamInfo != null && audioStreamInfo != null)
+                await _youtubeClient.Videos.DownloadAsync(new IStreamInfo[] { videoStreamInfo, audioStreamInfo },
+                    new ConversionRequestBuilder(outputPath).Build(), progress, token);
         }
 
         public async Task DownloadAudioAsync(
-            AudioOnlyStreamInfo audioStreamInfo,
+            StreamManifest streamManifest,
             string outputPath, IProgress<double> progress,
             CancellationToken token)
         {
-            await _youtubeClient.Videos.DownloadAsync(new IStreamInfo[] { audioStreamInfo },
-                new ConversionRequestBuilder(outputPath).SetContainer("mp3").Build(), progress, token);
+            var audioStreamInfo = GetBestAudioOnlyStreamInfo(streamManifest);
+
+            if (audioStreamInfo != null)
+                await _youtubeClient.Videos.DownloadAsync(new IStreamInfo[] { audioStreamInfo },
+                    new ConversionRequestBuilder(outputPath).SetContainer("mp3").Build(), progress, token);
         }
 
         private async Task<StreamManifest> GetStreamManifestAsync(string videoId, CancellationToken token) =>
