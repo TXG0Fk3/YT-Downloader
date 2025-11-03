@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using YoutubeExplode;
 using YoutubeExplode.Common;
 using YoutubeExplode.Converter;
-using YoutubeExplode.Playlists;
-using YoutubeExplode.Videos;
 using YoutubeExplode.Videos.Streams;
+using YT_Downloader.Enums;
+using YT_Downloader.Models.Info;
 
 namespace YT_Downloader.Services
 {
@@ -16,24 +16,88 @@ namespace YT_Downloader.Services
     {
         private readonly YoutubeClient _youtubeClient = new();
 
-        public async Task<IVideo> GetVideoAsync(string videoUrl, CancellationToken token) =>
-            await _youtubeClient.Videos.GetAsync(videoUrl, token);
+        public async Task<VideoInfo> GetVideoAsync(string videoUrl, CancellationToken token)
+        {
+            var video = await _youtubeClient.Videos.GetAsync(videoUrl, token);
+            var streamManifest = await GetStreamManifestAsync(video.Id, token);
 
-        public async Task<IPlaylist> GetPlaylistAsync(string playlistUrl, CancellationToken token) =>
-            await _youtubeClient.Playlists.GetAsync(playlistUrl, token);
+            List<StreamOption> streamOptions = new();
 
-        public async Task<IReadOnlyList<IVideo>> GetPlaylistVideosAsync(string playlistId, CancellationToken token) =>
-            await _youtubeClient.Playlists.GetVideosAsync(playlistId, token);
+            streamOptions.AddRange(
+                streamManifest
+                    .GetVideoOnlyStreams()
+                    .Where(s => s.Container == Container.Mp4)
+                    .Select(s => new StreamOption
+                    {
+                        Quality = s.VideoQuality.Label,
+                        Format = MediaFormat.Mp4,
+                        SizeMB = s.Size.MegaBytes
+                    })
+            );
 
-        public async Task<StreamManifest> GetStreamManifestAsync(string videoId, CancellationToken token) =>
-            await _youtubeClient.Videos.Streams.GetManifestAsync(videoId, token);
+            var bestAudio = GetBestAudioOnlyStreamInfo(streamManifest);
+            if (bestAudio != null)
+            {
+                streamOptions.Add(new StreamOption
+                {
+                    Quality = "Best",
+                    Format = MediaFormat.Mp3,
+                    SizeMB = bestAudio.Size.MegaBytes
+                });
+            }
 
-        public async Task<IReadOnlyList<StreamManifest>> GetPlaylistStreamManifestsAsync(Playlist playlist, CancellationToken token)
+            return new VideoInfo
+            {
+                Id = video.Id,
+                Url = video.Url,
+                Title = video.Title,
+                Author = video.Author.ToString(),
+                ThumbnailUrl = $"https://img.youtube.com/vi/{video.Id}/mqdefault.jpg",
+                Streams = streamOptions,
+                Manifest = streamManifest
+            };
+        }
+
+        public async Task<PlaylistInfo> GetPlaylistAsync(string playlistUrl, CancellationToken token)
+        {
+            var playlist = await _youtubeClient.Playlists.GetAsync(playlistUrl, token);
+
+            return new PlaylistInfo
+            {
+                Id = playlist.Id,
+                Url = playlist.Url,
+                Title = playlist.Title,
+                Author = playlist.Author?.ToString() ?? "Unknown Author"
+            };
+        }
+
+        public async Task<IReadOnlyList<VideoInfo>> GetPlaylistVideosAsync(string playlistId, CancellationToken token)
         {
             var semaphore = new SemaphoreSlim(16);
 
             return await Task.WhenAll(
-                (await GetPlaylistVideosAsync(playlist.Id, token))
+                (await _youtubeClient.Playlists.GetVideosAsync(playlistId, token))
+                .Select(async v =>
+                {
+                    await semaphore.WaitAsync(token);
+                    try
+                    {
+                        return await GetVideoAsync(v.Url, token);
+                    }
+                    finally
+                    {
+                        semaphore.Release();
+                    }
+                })
+            );
+        }
+
+        public async Task<IEnumerable<StreamManifest>> GetPlaylistStreamManifestsAsync(string playlistId, CancellationToken token)
+        {
+            var semaphore = new SemaphoreSlim(16);
+
+            return await Task.WhenAll(
+                (await GetPlaylistVideosAsync(playlistId, token))
                 .Select(async v =>
                 {
                     await semaphore.WaitAsync(token);
@@ -80,6 +144,9 @@ namespace YT_Downloader.Services
             await _youtubeClient.Videos.DownloadAsync(new IStreamInfo[] { audioStreamInfo },
                 new ConversionRequestBuilder(outputPath).SetContainer("mp3").Build(), progress, token);
         }
+
+        private async Task<StreamManifest> GetStreamManifestAsync(string videoId, CancellationToken token) =>
+            await _youtubeClient.Videos.Streams.GetManifestAsync(videoId, token);
 
         private static int Score(VideoOnlyStreamInfo stream, int targetResolution, int targetFps)
         {
