@@ -3,6 +3,7 @@ using System;
 using System.Threading;
 using YoutubeExplode.Videos.Streams;
 using YT_Downloader.Enums;
+using YT_Downloader.Models.Info;
 
 namespace YT_Downloader.Models
 {
@@ -10,16 +11,17 @@ namespace YT_Downloader.Models
     {
         private DateTime? _startTime;
 
-        public required string VideoId { get; set; }
-        public required string Title { get; set; }
-        public required string Author { get; set; }
-        public required string Url { get; set; }
-        public required DownloadType Type { get; set; }
-        public required string Quality { get; set; }
-        public required VideoOnlyStreamInfo VideoStreamInfo { get; set; }
-        public required AudioOnlyStreamInfo AudioStreamInfo { get; set; }
-        public required string ThumbnailPath { get; set; }
-        public required string OutputPath { get; set; }
+        public string VideoId { get; set; }
+        public string Url { get; set; }
+        public string Title { get; set; }
+        public string Author { get; set; }
+        public string ThumbnailUrl { get; set; }
+        public DownloadType Type { get; set; }
+        public string Quality { get; set; }
+        public StreamManifest Manifest { get; set; }
+        public StreamOption VideoStreamOption { get; set; }
+        public StreamOption AudioStreamOption { get; set; }
+        public string OutputPath { get; set; }
 
         [ObservableProperty] private double progress = 0.0;
         [ObservableProperty] public DownloadStatus status = DownloadStatus.Pending;
@@ -33,8 +35,8 @@ namespace YT_Downloader.Models
 
         public double FileSizeMB =>
             Type == DownloadType.Video
-                ? (VideoStreamInfo?.Size.MegaBytes ?? 0) + (AudioStreamInfo?.Size.MegaBytes ?? 0)
-                : (AudioStreamInfo?.Size.MegaBytes ?? 0);
+                ? VideoStreamOption.SizeMB + AudioStreamOption.SizeMB
+                : AudioStreamOption.SizeMB;
 
         public TimeSpan? RemainingTime
         {

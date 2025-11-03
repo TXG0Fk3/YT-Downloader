@@ -9,13 +9,13 @@ namespace YT_Downloader.Models
 {
     public class DownloadGroup : ObservableObject, IDownloadable
     {
-        public required string PlaylistId { get; set; }
-        public required string Title { get; set; }
-        public required string Author { get; set; }
-        public required string Url { get; set; }
-        public required DownloadType Type { get; set; }
-        public required string Quality { get; set; }
-        public required string OutputPath { get; set; }
+        public string PlaylistId { get; set; }
+        public string Url { get; set; }
+        public string Title { get; set; }
+        public string Author { get; set; }
+        public DownloadType Type { get; set; }
+        public string Quality { get; set; }
+        public string OutputPath { get; set; }
         public ObservableCollection<DownloadItem> Items { get; } = new();
 
         public double Progress => Items.Count == 0 ? 0 : Items.Average(i => i.Progress);
