@@ -33,20 +33,12 @@ namespace YT_Downloader.Models
         private void OnItemsChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.NewItems != null)
-            {
                 foreach (DownloadItem item in e.NewItems)
-                {
                     item.PropertyChanged += OnItemPropertyChanged;
-                }
-            }
 
             if (e.OldItems != null)
-            {
                 foreach (DownloadItem item in e.OldItems)
-                {
                     item.PropertyChanged -= OnItemPropertyChanged;
-                }
-            }
 
             OnPropertyChanged(nameof(Progress));
             OnPropertyChanged(nameof(Status));
