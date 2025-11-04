@@ -49,6 +49,7 @@
 		<None Remove="MusicPage.xaml" />
 		<None Remove="Views\ErrorPage.xaml" />
 		<None Remove="Views\HelpPage.xaml" />
+		<None Remove="Views\MainPage.xaml" />
 		<None Remove="Views\Picture\NextPicturePage.xaml" />
 		<None Remove="Views\Resources\DownloadCardTemplates.xaml" />
 		<None Remove="Views\SettingsPage.xaml" />
@@ -117,6 +118,13 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </Page>
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Page Update="Views\MainPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </Page>
+	</ItemGroup>
+
 	<ItemGroup>
 	  <Page Update="Controls\PlaylistDownloadCard.xaml">
 	    <Generator>MSBuild:Compile</Generator>
