@@ -202,6 +202,19 @@
                         <ProgressBar Grid.Row="1" IsIndeterminate="True" />
                     </Grid>
 
+                    <!--  If Error  -->
+                    <InfoBar
+                        Title="Error"
+                        Margin="0,4,0,0"
+                        IsClosable="False"
+                        IsOpen="True"
+                        Severity="Error"
+                        Visibility="Collapsed">
+                        <InfoBar.ActionButton>
+                            <Button HorizontalAlignment="Right" Content="See log" />
+                        </InfoBar.ActionButton>
+                    </InfoBar>
+
                     <!--  Downloads List  -->
                     <ItemsControl ItemTemplate="{StaticResource ItemTemplate}">
                         <ItemsControl.ItemContainerTransitions>
