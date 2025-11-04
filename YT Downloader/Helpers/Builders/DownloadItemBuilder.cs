@@ -1,3 +1,4 @@
+using System.IO;
 using YT_Downloader.Enums;
 using YT_Downloader.Models;
 using YT_Downloader.Models.Info;
@@ -31,6 +32,7 @@ namespace YT_Downloader.Helpers.Builders
             _item.Quality = quality;
             _item.VideoStreamOption = videoStream;
             _item.AudioStreamOption = audioStream;
+            _item.OutputPath = Path.ChangeExtension(_item.OutputPath, "mp4");
             return this;
         }
 
@@ -39,6 +41,7 @@ namespace YT_Downloader.Helpers.Builders
             _item.Type = DownloadType.Audio;
             _item.Quality = "Best";
             _item.AudioStreamOption = audioStream;
+            _item.OutputPath = Path.ChangeExtension(_item.OutputPath, "mp3");
             return this;
         }
 
