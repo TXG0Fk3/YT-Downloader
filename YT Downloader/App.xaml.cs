@@ -23,6 +23,7 @@ namespace YT_Downloader
             services.AddSingleton<DownloadsService>();
             services.AddSingleton<SettingsService>();
             services.AddSingleton<DialogService>();
+            services.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
             _services = services.BuildServiceProvider();
         }
 
