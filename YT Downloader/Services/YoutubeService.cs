@@ -92,27 +92,6 @@ namespace YT_Downloader.Services
             );
         }
 
-        public async Task<IEnumerable<StreamManifest>> GetPlaylistStreamManifestsAsync(string playlistId, CancellationToken token)
-        {
-            var semaphore = new SemaphoreSlim(16);
-
-            return await Task.WhenAll(
-                (await GetPlaylistVideosAsync(playlistId, token))
-                .Select(async v =>
-                {
-                    await semaphore.WaitAsync(token);
-                    try
-                    {
-                        return await GetStreamManifestAsync(v.Id, token);
-                    }
-                    finally
-                    {
-                        semaphore.Release();
-                    }
-                })
-            );
-        }
-
         public VideoOnlyStreamInfo? GetVideoOnlyStreamInfo(StreamManifest streamManifest, string quality)
         {
             var targetResolution = ParseResolution(quality);
