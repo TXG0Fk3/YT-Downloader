@@ -14,7 +14,7 @@ namespace YT_Downloader.ViewModels.Components
         public string Author => _downloadItem.Author;
         public string Url => _downloadItem.Url;
         public string Quality => _downloadItem.Quality;
-        public string ThumbnailPath => _downloadItem.ThumbnailPath;
+        public string ThumbnailPath => _downloadItem.ThumbnailUrl;
 
         public double Progress => _downloadItem.Progress * 100;
         public string FormatedProgress => $"{Progress:00}%";
