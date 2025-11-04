@@ -1,7 +1,9 @@
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using YT_Downloader.Services;
 using YT_Downloader.ViewModels;
+using YT_Downloader.ViewModels.Dialogs;
 using YT_Downloader.Views;
 
 namespace YT_Downloader
@@ -19,6 +21,8 @@ namespace YT_Downloader
 
             var services = new ServiceCollection();
             services.AddTransient<MainPageViewModel>();
+            services.AddTransient<DetailsDialogViewModel>();
+
             services.AddSingleton<YoutubeService>();
             services.AddSingleton<DownloadsService>();
             services.AddSingleton<SettingsService>();
