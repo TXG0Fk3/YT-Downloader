@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using YT_Downloader.Enums;
+using YT_Downloader.Helpers;
 using YT_Downloader.Messages;
 using YT_Downloader.Models;
 using YT_Downloader.Models.Info;
@@ -112,7 +113,7 @@ namespace YT_Downloader.ViewModels.Dialogs
 
             Title = _video.Title;
             ThumbnailUrl = _video.ThumbnailUrl;
-            DefaultFileName = SanitizeFileName(_video.Title);
+            DefaultFileName = FileNameHelper.SanitizeFileName(_video.Title);
         }
 
         private async Task LoadPlaylistInfoAsync()
