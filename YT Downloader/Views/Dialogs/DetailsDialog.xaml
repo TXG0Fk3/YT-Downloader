@@ -11,6 +11,7 @@
     CloseButtonText="Cancel"
     DefaultButton="Primary"
     IsPrimaryButtonEnabled="{Binding IsDownloadEnabled}"
+    PrimaryButtonCommand="{Binding DownloadCommand}"
     PrimaryButtonText="Download"
     Style="{StaticResource DefaultContentDialogStyle}"
     mc:Ignorable="d">
