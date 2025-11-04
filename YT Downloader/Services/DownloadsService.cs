@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Concurrent;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using YT_Downloader.Enums;
+using YT_Downloader.Helpers;
+using YT_Downloader.Helpers.Builders;
 using YT_Downloader.Models;
 
 namespace YT_Downloader.Services
@@ -21,18 +24,43 @@ namespace YT_Downloader.Services
             _semaphore = new SemaphoreSlim(maxParallelDownloads);
         }
 
-        public void EnqueueDownload(DownloadItem item, CancellationToken token)
+        public async Task EnqueueDownloadable(IDownloadable downloadable)
         {
-            _downloadQueue.Enqueue(item);
+            if (downloadable is DownloadItem downloadItem)
+                _downloadQueue.Enqueue(downloadItem);
+            else if (downloadable is DownloadGroup downloadGroup)
+                await EnqueuePlaylist(downloadGroup);
+            else return;
 
             if (!_processing)
             {
                 _processing = true;
-                _ = ProcessQueueAsync(token);
+                _ = ProcessQueueAsync();
             }
         }
 
-        private async Task ProcessQueueAsync(CancellationToken token)
+        public async Task EnqueuePlaylist(DownloadGroup group)
+        {
+            var groupVideoInfos = await _youtubeService.GetPlaylistVideosAsync(group.PlaylistId, group.CTS.Token);
+            
+            foreach (var videoInfo in groupVideoInfos)
+            {
+                var builder = new DownloadItemBuilder().FromVideoInfo(videoInfo)
+                    .WithOutputPath(Path.Combine(group.OutputPath, FileNameHelper.SanitizeFileName(videoInfo.Title)))
+                    .WithGroupCancellation(group.CTS.Token);
+
+                var item = group.Type == DownloadType.Video
+                    ? builder.AsVideo(group.Quality,
+                        _youtubeService.GetClosestMp4StreamOption(videoInfo.Streams, group.Quality),
+                        _youtubeService.GetBestMp3StreamOption(videoInfo.Streams)).Build()
+                    : builder.AsAudio(_youtubeService.GetBestMp3StreamOption(videoInfo.Streams)).Build();
+
+                group.Items.Add(item);
+                _downloadQueue.Enqueue(item);
+            }
+        }
+
+        private async Task ProcessQueueAsync()
         {
             try
             {
@@ -44,7 +72,7 @@ namespace YT_Downloader.Services
                     }
                     else
                     {
-                        await Task.Delay(200, token);
+                        await Task.Delay(200);
                         if (_downloadQueue.IsEmpty)
                         {
                             _processing = false;
