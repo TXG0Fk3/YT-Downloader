@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using YT_Downloader.Enums;
 
 namespace YT_Downloader.Models
@@ -17,6 +18,7 @@ namespace YT_Downloader.Models
         public string Quality { get; set; }
         public string OutputPath { get; set; }
         public ObservableCollection<DownloadItem> Items { get; } = new();
+        public CancellationTokenSource CTS { get; private set; } = new();
 
         public double Progress => Items.Count == 0 ? 0 : Items.Average(i => i.Progress);
 
