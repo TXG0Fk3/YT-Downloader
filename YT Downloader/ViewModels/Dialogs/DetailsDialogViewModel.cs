@@ -202,8 +202,5 @@ namespace YT_Downloader.ViewModels.Dialogs
                 UpdateSize();
             } 
         }
-
-        private static string SanitizeFileName(string name) =>
-            string.Concat(name.Where(c => !Path.GetInvalidFileNameChars().Contains(c)));
     } 
 }
