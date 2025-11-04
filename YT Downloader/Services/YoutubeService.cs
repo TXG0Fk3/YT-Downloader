@@ -92,19 +92,19 @@ namespace YT_Downloader.Services
             );
         }
 
-        public VideoOnlyStreamInfo? GetVideoOnlyStreamInfo(StreamManifest streamManifest, string quality)
+        public StreamOption? GetClosestMp4StreamOption(IEnumerable<StreamOption> streams, string quality)
         {
             var targetResolution = ParseResolution(quality);
             var targetFps = ParseFps(quality);
 
-            return streamManifest.GetVideoOnlyStreams()
-                .Where(s => s.Container == Container.Mp4)
+            return streams
+                .Where(s => s.Format == MediaFormat.Mp4)
                 .OrderBy(s => Score(s, targetResolution, targetFps))
                 .FirstOrDefault();
         }
 
-        public AudioOnlyStreamInfo? GetBestAudioOnlyStreamInfo(StreamManifest streamManifest) =>
-            (AudioOnlyStreamInfo)streamManifest.GetAudioOnlyStreams().Where(s => s.Container == Container.Mp4).GetWithHighestBitrate();
+        public StreamOption? GetBestMp3StreamOption(IEnumerable<StreamOption> streams) =>
+            streams.FirstOrDefault(s => s.Format == MediaFormat.Mp3);
 
         public async Task DownloadVideoAsync(
             StreamManifest streamManifest, StreamOption videoStreamOption,
@@ -134,9 +134,15 @@ namespace YT_Downloader.Services
         private async Task<StreamManifest> GetStreamManifestAsync(string videoId, CancellationToken token) =>
             await _youtubeClient.Videos.Streams.GetManifestAsync(videoId, token);
 
-        private static int Score(VideoOnlyStreamInfo stream, int targetResolution, int targetFps)
+        private VideoOnlyStreamInfo? GetVideoOnlyStreamInfo(StreamManifest streamManifest, string quality) =>
+            streamManifest.GetVideoOnlyStreams().FirstOrDefault(s => s.Container == Container.Mp4 && s.VideoQuality.Label == quality);
+
+        private AudioOnlyStreamInfo? GetBestAudioOnlyStreamInfo(StreamManifest streamManifest) =>
+            (AudioOnlyStreamInfo)streamManifest.GetAudioOnlyStreams().Where(s => s.Container == Container.Mp4).GetWithHighestBitrate();
+
+        private static int Score(StreamOption stream, int targetResolution, int targetFps)
         {
-            var label = stream.VideoQuality.Label;
+            var label = stream.Quality;
             var res = ParseResolution(label);
             var fps = ParseFps(label);
             return Math.Abs(res - targetResolution) + Math.Abs(fps - targetFps);
