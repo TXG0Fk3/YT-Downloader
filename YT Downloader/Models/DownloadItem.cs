@@ -28,7 +28,7 @@ namespace YT_Downloader.Models
         [ObservableProperty] public Exception? error;
 
         public IProgress<double> ProgressReporter { get; }
-        public CancellationTokenSource CTS { get; private set; } = new();
+        public CancellationTokenSource CTS { get; set; } = new();
 
         public DownloadItem() =>
             ProgressReporter = new Progress<double>(p => UpdateProgress(p));
