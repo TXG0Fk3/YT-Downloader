@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using YT_Downloader.Enums;
+using YT_Downloader.Messages;
 using YT_Downloader.Models;
 using YT_Downloader.Models.Info;
 using YT_Downloader.Services;
@@ -16,6 +18,8 @@ namespace YT_Downloader.ViewModels.Dialogs
     public partial class DetailsDialogViewModel : ObservableObject
     {
         private readonly YoutubeService _youtubeService;
+        private readonly SettingsService _settingsService;
+        private readonly IMessenger _messenger;
 
         private VideoInfo? _video;
         private PlaylistInfo? _playlist;
@@ -52,8 +56,12 @@ namespace YT_Downloader.ViewModels.Dialogs
         public bool IsContentVisible => IsContentLoading || IsContentLoaded;
         public bool IsDownloadEnabled => IsContentLoaded;
 
-        public DetailsDialogViewModel(YoutubeService youtubeService) =>
+        public DetailsDialogViewModel(YoutubeService youtubeService, SettingsService settingsService, IMessenger messenger)
+        {
             _youtubeService = youtubeService;
+            _settingsService = settingsService;
+            _messenger = messenger;
+        }
 
         public IDownloadable GetDownloadInfo() =>
             throw new NotImplementedException();
@@ -151,6 +159,21 @@ namespace YT_Downloader.ViewModels.Dialogs
                     ? $"{(_videoStreamOption.SizeMB + _audioStreamOption.SizeMB):F1} MB"
                     : $"{_audioStreamOption.SizeMB:F1} MB";
             }
+        }
+
+        private async Task<string?> GetFolderPathAsync()
+        {
+            if (!_settingsService.Current.AlwaysAskWhereSave)
+                return _settingsService.Current.DefaultDownloadsPath;
+
+            var tcs = new TaskCompletionSource<string?>();
+            _messenger.Send(new FolderPickerRequestMessage(tcs));
+
+            var path = await tcs.Task;
+            if (!string.IsNullOrEmpty(path))
+                return path;
+
+            return null;
         }
 
         partial void OnSelectedFormatChanged(MediaFormat? value)
