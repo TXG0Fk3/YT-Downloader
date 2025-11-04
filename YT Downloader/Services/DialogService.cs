@@ -15,15 +15,15 @@ namespace YT_Downloader.Services
         public void Initialize(XamlRoot root) =>
             _xamlRoot = root;
 
-        public async Task<IDownloadable?> ShowDetailsDialogAsync(DetailsDialogViewModel viewModel)
+        public async Task ShowDetailsDialogAsync()
         {
-            var dialog = new DetailsDialog(viewModel)
+            var dialog = new DetailsDialog()
             {
                 XamlRoot = _xamlRoot,
             };
 
-            if (await dialog.ShowAsync() == ContentDialogResult.Primary)
-                return viewModel.GetDownloadInfo();
+            await dialog.ShowAsync();
+        }
 
             return null;
         }
