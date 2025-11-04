@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using YT_Downloader.Enums;
 using YT_Downloader.Helpers;
+using YT_Downloader.Helpers.Builders;
 using YT_Downloader.Messages;
 using YT_Downloader.Models;
 using YT_Downloader.Models.Info;
@@ -64,8 +65,37 @@ namespace YT_Downloader.ViewModels.Dialogs
             _messenger = messenger;
         }
 
-        public IDownloadable GetDownloadInfo() =>
-            throw new NotImplementedException();
+        [RelayCommand]
+        private async Task OnDownloadAsync()
+        {
+            IDownloadable? downloadable = null;
+
+            var outputDirectory = await GetFolderPathAsync();
+            if (outputDirectory == null) return;
+
+            var fileName = !string.IsNullOrEmpty(UserFileName)
+                ? FileNameHelper.SanitizeFileName(UserFileName)
+                : DefaultFileName;
+
+            if (!IsPlaylist && _video != null)
+            {
+                var builder = new DownloadItemBuilder().FromVideoInfo(_video)
+                    .WithOutputPath(Path.Combine(outputDirectory, fileName));
+
+                downloadable = SelectedFormat == MediaFormat.Mp4
+                    ? builder.AsVideo(SelectedQuality, _videoStreamOption, _audioStreamOption).Build()
+                    : builder.AsAudio(_audioStreamOption).Build();
+            }
+            else if (IsPlaylist && _playlist != null)
+            {
+                downloadable = new DownloadGroupBuilder().FromPlaylistInfo(_playlist)
+                    .WithOutputPath(outputDirectory)
+                    .WithFormat(SelectedFormat == MediaFormat.Mp4 ? DownloadType.Video : DownloadType.Audio, SelectedQuality)
+                    .Build();
+            }
+
+            if (downloadable != null) _messenger.Send(new DownloadRequestMessage(downloadable));
+        }
 
         [RelayCommand]
         private async Task LoadContentInfo()
