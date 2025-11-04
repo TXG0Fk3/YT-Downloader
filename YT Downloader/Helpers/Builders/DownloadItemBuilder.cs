@@ -45,6 +45,12 @@ namespace YT_Downloader.Helpers.Builders
             return this;
         }
 
+        public DownloadItemBuilder WithGroupCancellation(CancellationToken groupToken)
+        {
+            _item.CTS = CancellationTokenSource.CreateLinkedTokenSource(groupToken);
+            return this;
+        }
+
         public DownloadItem Build() => _item;
     }
 }
