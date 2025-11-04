@@ -25,7 +25,15 @@ namespace YT_Downloader.Services
             await dialog.ShowAsync();
         }
 
-            return null;
+        public async Task<string?> OpenFolderPickerAsync()
+        {
+            var folderPicker = new FolderPicker(_xamlRoot.ContentIslandEnvironment.AppWindowId)
+            {
+                SuggestedStartLocation = PickerLocationId.Desktop
+            };
+
+            var folder = await folderPicker.PickSingleFolderAsync();
+            return folder?.Path;
         }
     }
 }
