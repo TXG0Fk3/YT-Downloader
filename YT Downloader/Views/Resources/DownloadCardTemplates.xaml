@@ -40,11 +40,9 @@
                         NavigateUri="{Binding Url}"
                         ToolTipService.ToolTip="Open Video in Browser" />
 
-                    <Grid ColumnDefinitions="*, Auto">
+                    <Grid Margin="6,0,0,0" ColumnDefinitions="*, Auto">
                         <StackPanel
                             Grid.Column="0"
-                            Width="182"
-                            Margin="6,0,0,0"
                             HorizontalAlignment="Left"
                             Orientation="Vertical"
                             Spacing="1">
@@ -124,11 +122,9 @@
                         HorizontalAlignment="Left"
                         ToolTipService.ToolTip="Open Video in Browser" />
 
-                    <Grid ColumnDefinitions="*, Auto">
+                    <Grid Margin="6,0,0,0" ColumnDefinitions="*, Auto">
                         <StackPanel
                             Grid.Column="0"
-                            Width="240"
-                            Margin="6,0,0,0"
                             HorizontalAlignment="Left"
                             Orientation="Vertical"
                             Spacing="1">
