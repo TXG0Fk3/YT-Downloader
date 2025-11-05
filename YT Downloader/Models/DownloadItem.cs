@@ -38,12 +38,12 @@ namespace YT_Downloader.Models
                 ? VideoStreamOption.SizeMB + AudioStreamOption.SizeMB
                 : AudioStreamOption.SizeMB;
 
-        public TimeSpan? RemainingTime
+        public TimeSpan RemainingTime
         {
             get
             {
                 if (!_startTime.HasValue || Progress <= 0)
-                    return null;
+                    return TimeSpan.Zero;
 
                 var elapsedTime = DateTime.Now - _startTime.Value;
                 var totalSeconds = elapsedTime.TotalSeconds / Progress;
