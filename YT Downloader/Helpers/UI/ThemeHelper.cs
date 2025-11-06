@@ -2,16 +2,17 @@ using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Windows.UI;
+using YT_Downloader.Enums;
 
 namespace YT_Downloader.Helpers.UI
 {
     public static class ThemeHelper
     {
-        public static ElementTheme ConvertStringToElementTheme(string elementTheme) =>
+        public static ElementTheme ConvertThemeOptionToElementTheme(ThemeOption elementTheme) =>
             elementTheme switch
             {
-                "Light" => ElementTheme.Light,
-                "Dark" => ElementTheme.Dark,
+                ThemeOption.Light => ElementTheme.Light,
+                ThemeOption.Dark => ElementTheme.Dark,
                 _ => ElementTheme.Default
             };
 

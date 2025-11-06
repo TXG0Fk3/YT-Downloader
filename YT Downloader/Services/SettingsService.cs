@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text.Json;
+using YT_Downloader.Enums;
 using YT_Downloader.Models;
 
 namespace YT_Downloader.Services
@@ -26,18 +27,28 @@ namespace YT_Downloader.Services
 
         private AppSettings Load()
         {
-            if (!File.Exists(_filePath))
-            {
-                return new AppSettings(
-                    Theme: "Default",
-                    DefaultDownloadsPath: Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads"),
-                    AlwaysAskWhereSave: true
-                );
-            }
+            var defaultSettings = new AppSettings(
+                Theme: ThemeOption.System,
+                DefaultDownloadsPath: Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads"),
+                AlwaysAskWhereSave: true
+            );
 
-            var json = File.ReadAllText(_filePath);
-            return JsonSerializer.Deserialize<AppSettings>(json)!;
+            if (!File.Exists(_filePath))
+                return defaultSettings;
+
+            try
+            {
+                var json = File.ReadAllText(_filePath);
+                var settings = JsonSerializer.Deserialize<AppSettings>(json);
+
+                return settings ?? defaultSettings;
+            }
+            catch
+            {
+                return defaultSettings;
+            }
         }
+
 
         public void Save(AppSettings settings)
         {
