@@ -13,7 +13,8 @@ namespace YT_Downloader.ViewModels
 {
     public partial class MainPageViewModel : ObservableObject,
         IRecipient<FolderPickerRequestMessage>, IRecipient<DownloadRequestMessage>,
-        IRecipient<RetryDownloadRequestMessage>, IRecipient<RemoveDownloadRequestMessage>
+        IRecipient<RetryDownloadRequestMessage>, IRecipient<RemoveDownloadRequestMessage>,
+        IRecipient<ErrorDialogRequestMessage>
     {
         private readonly DownloadsService _downloadsService;
         private readonly DialogService _dialogService;
@@ -46,6 +47,9 @@ namespace YT_Downloader.ViewModels
         public void Receive(RemoveDownloadRequestMessage message) =>
             OnRemoveDownload(message.DownloadableViewModel);
 
+        public void Receive(ErrorDialogRequestMessage message) =>
+            _ = OnError(message.ErrorMessage);
+
         [RelayCommand]
         private async Task OnAddDownloadAsync() =>
             await _dialogService.ShowDetailsDialogAsync();
@@ -55,6 +59,8 @@ namespace YT_Downloader.ViewModels
 
         [RelayCommand]
         private async Task OnSettings() => throw new NotImplementedException();
+
+        private async Task OnError(string errorMessage) => await _dialogService.ShowErrorDialogAsync(errorMessage);
 
         private void OnEnqueueDownload(IDownloadable downloadable)
         {
