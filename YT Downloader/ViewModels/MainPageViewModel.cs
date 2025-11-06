@@ -67,7 +67,7 @@ namespace YT_Downloader.ViewModels
             if (downloadable is DownloadItem item)
                 Downloads.Add(new DownloadItemViewModel(item, _messenger));
             else if (downloadable is DownloadGroup group)
-                Downloads.Add(new DownloadGroupViewModel(group));
+                Downloads.Add(new DownloadGroupViewModel(group, _messenger));
 
             _ = _downloadsService.EnqueueDownloadable(downloadable);
         }
