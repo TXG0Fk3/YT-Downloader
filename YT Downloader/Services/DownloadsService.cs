@@ -62,28 +62,21 @@ namespace YT_Downloader.Services
 
         private async Task ProcessQueueAsync()
         {
-            try
+            while (true)
             {
-                while (true)
+                if (_downloadQueue.TryDequeue(out var item))
                 {
-                    if (_downloadQueue.TryDequeue(out var item))
+                    _ = DownloadAsync(item);
+                }
+                else
+                {
+                    await Task.Delay(200);
+                    if (_downloadQueue.IsEmpty)
                     {
-                        _ = DownloadAsync(item);
-                    }
-                    else
-                    {
-                        await Task.Delay(200);
-                        if (_downloadQueue.IsEmpty)
-                        {
-                            _processing = false;
-                            return;
-                        }
+                        _processing = false;
+                        return;
                     }
                 }
-            }
-            catch (OperationCanceledException)
-            {
-                _processing = false;
             }
         }
 
