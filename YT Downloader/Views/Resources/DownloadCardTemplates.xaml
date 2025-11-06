@@ -138,6 +138,8 @@
                     <HyperlinkButton
                         Padding="4"
                         HorizontalAlignment="Left"
+                        Content="{Binding Title}"
+                        NavigateUri="{Binding Url}"
                         ToolTipService.ToolTip="Open Video in Browser" />
 
                     <Grid Margin="6,0,0,0" ColumnDefinitions="*, Auto">
@@ -146,8 +148,8 @@
                             HorizontalAlignment="Left"
                             Orientation="Vertical"
                             Spacing="1">
-                            <TextBlock Foreground="DarkGray" />
-                            <TextBlock Foreground="DarkGray" />
+                            <TextBlock Foreground="DarkGray" Text="{Binding Author}" />
+                            <TextBlock Foreground="DarkGray" Text="{Binding Quality}" />
                         </StackPanel>
 
                         <StackPanel
@@ -158,12 +160,14 @@
                                 Width="40"
                                 Height="40"
                                 Padding="0"
+                                Command="{Binding OpenLocalCommand}"
                                 Content="{ui:FontIcon Glyph=&#xE8DA;}"
                                 ToolTipService.ToolTip="Open Folder" />
                             <Button
                                 Width="40"
                                 Height="40"
                                 Padding="0"
+                                Command="{Binding DeleteCommand}"
                                 Content="{ui:FontIcon Glyph=&#xE74D;}"
                                 ToolTipService.ToolTip="Delete All &amp; Close PlaylistCard" />
                         </StackPanel>
@@ -175,11 +179,14 @@
                     Grid.Row="1"
                     Margin="6,0,6,6"
                     ColumnDefinitions="*, 38">
-                    <ProgressBar Grid.Column="0" Maximum="1" />
+                    <ProgressBar
+                        Grid.Column="0"
+                        Maximum="1"
+                        Value="{Binding Progress}" />
                     <TextBlock
                         Grid.Column="1"
                         HorizontalAlignment="Right"
-                        Text="00%" />
+                        Text="{Binding FormattedProgress}" />
                 </Grid>
             </Grid>
 
@@ -206,7 +213,7 @@
                         BorderThickness="1"
                         CornerRadius="8"
                         RowDefinitions="Auto, Auto"
-                        Visibility="Visible">
+                        Visibility="{Binding IsLoadingCardVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <TextBlock
                             Grid.Row="0"
                             Margin="8"
@@ -223,14 +230,17 @@
                         IsClosable="False"
                         IsOpen="True"
                         Severity="Error"
-                        Visibility="Collapsed">
+                        Visibility="{Binding IsErrorVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <InfoBar.ActionButton>
-                            <Button HorizontalAlignment="Right" Content="See log" />
+                            <Button
+                                HorizontalAlignment="Right"
+                                Command="{Binding SeeLogCommand}"
+                                Content="See log" />
                         </InfoBar.ActionButton>
                     </InfoBar>
 
                     <!--  Downloads List  -->
-                    <ItemsControl ItemTemplate="{StaticResource ItemTemplate}">
+                    <ItemsControl ItemTemplate="{StaticResource ItemTemplate}" ItemsSource="{Binding Items}">
                         <ItemsControl.ItemContainerTransitions>
                             <EntranceThemeTransition FromVerticalOffset="50" />
                             <RepositionThemeTransition IsStaggeringEnabled="False" />
