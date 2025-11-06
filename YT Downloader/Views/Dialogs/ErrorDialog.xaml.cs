@@ -7,7 +7,7 @@ namespace YT_Downloader.Views.Dialogs
         public ErrorDialog(string errorMessage)
         {
             InitializeComponent();
-            ErrorTextBox.Text = errorMessage;
+            ErrorTextBlock.Text = errorMessage;
         }
     }
 }

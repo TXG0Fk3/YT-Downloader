@@ -16,11 +16,12 @@
         MaxHeight="430"
         Spacing="6">
         <ScrollViewer>
-            <TextBox
-                x:Name="ErrorTextBox"
-                IsReadOnly="True"
+            <TextBlock
+                x:Name="ErrorTextBlock"
+                IsTextSelectionEnabled="True"
+                TextAlignment="Justify"
                 TextWrapping="Wrap" />
         </ScrollViewer>
-        <HyperlinkButton Content="Send FeedBack" NavigateUri="https://github.com/TXG0Fk3/YT-Downloader/issues" />
+        <HyperlinkButton Content="Report Error" NavigateUri="https://github.com/TXG0Fk3/YT-Downloader/issues" />
     </StackPanel>
 </ContentDialog>
