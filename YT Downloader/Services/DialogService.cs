@@ -23,6 +23,16 @@ namespace YT_Downloader.Services
             await dialog.ShowAsync();
         }
 
+        public async Task ShowErrorDialogAsync(string message)
+        {
+            var dialog = new ErrorDialog(message)
+            {
+                XamlRoot = _xamlRoot
+            };
+
+            await dialog.ShowAsync();
+        }
+
         public async Task<string?> OpenFolderPickerAsync()
         {
             var folderPicker = new FolderPicker(_xamlRoot.ContentIslandEnvironment.AppWindowId)
