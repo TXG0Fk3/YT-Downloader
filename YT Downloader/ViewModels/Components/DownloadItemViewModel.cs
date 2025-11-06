@@ -81,13 +81,13 @@ namespace YT_Downloader.ViewModels.Components
         {
             _downloadItem.MarkAsCancelled();
             _downloadItem.PropertyChanged -= OnDownloadItemPropertyChanged;
-            _messenger.Send(new RemoveDownloadRequestMessage(this));
+            _messenger.Send(new RemoveDownloadRequestMessage(this, _downloadItem));
         }
 
         private void OnDelete()
         {
             FileHelper.DeleteFile(_downloadItem.OutputPath);
-            _messenger.Send(new RemoveDownloadRequestMessage(this));
+            _messenger.Send(new RemoveDownloadRequestMessage(this, _downloadItem));
         }
 
         private void OnOpenLocal() =>
