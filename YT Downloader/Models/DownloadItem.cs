@@ -85,8 +85,11 @@ namespace YT_Downloader.Models
             Status = DownloadStatus.Completed;
         }
 
-        public void MarkAsCancelled() =>
+        public void MarkAsCancelled()
+        {
+            CTS.Cancel();
             Status = DownloadStatus.Cancelled;
+        }
 
         public void MarkAsError(Exception ex)
         {
