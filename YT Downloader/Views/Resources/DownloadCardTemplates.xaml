@@ -112,7 +112,10 @@
                 Severity="Error"
                 Visibility="{Binding IsErrorVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <InfoBar.ActionButton>
-                    <Button HorizontalAlignment="Right" Content="See log" />
+                    <Button
+                        HorizontalAlignment="Right"
+                        Command="{Binding SeeLogCommand}"
+                        Content="See log" />
                 </InfoBar.ActionButton>
             </InfoBar>
         </Grid>
