@@ -80,13 +80,14 @@ namespace YT_Downloader.ViewModels.Components
         private void OnCancel()
         {
             _downloadItem.MarkAsCancelled();
-            _downloadItem.PropertyChanged -= OnDownloadItemPropertyChanged;
+            Cleanup();
             _messenger.Send(new RemoveDownloadRequestMessage(this, _downloadItem));
         }
 
         private void OnDelete()
         {
             FileHelper.DeleteFile(_downloadItem.OutputPath);
+            Cleanup();
             _messenger.Send(new RemoveDownloadRequestMessage(this, _downloadItem));
         }
 
@@ -95,6 +96,9 @@ namespace YT_Downloader.ViewModels.Components
 
         private void OnRetry() =>
             _messenger.Send(new RetryDownloadRequestMessage(_downloadItem));
+
+        private void Cleanup() =>
+            _downloadItem.PropertyChanged -= OnDownloadItemPropertyChanged;
 
         private void OnDownloadItemPropertyChanged(object? s, PropertyChangedEventArgs e)
         {
