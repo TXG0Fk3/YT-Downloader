@@ -62,7 +62,7 @@
                                 Height="40"
                                 Padding="0"
                                 Command="{Binding FirstButtonCommand}"
-                                ToolTipService.ToolTip="A">
+                                ToolTipService.ToolTip="Open Local / Retry">
                                 <FontIcon Glyph="{Binding FirstButtonIcon}" />
                             </Button>
                             <Button
@@ -70,7 +70,7 @@
                                 Height="40"
                                 Padding="0"
                                 Command="{Binding SecondButtonCommand}"
-                                ToolTipService.ToolTip="A">
+                                ToolTipService.ToolTip="Cancel / Delete">
                                 <FontIcon Glyph="{Binding SecondButtonIcon}" />
                             </Button>
                         </StackPanel>
