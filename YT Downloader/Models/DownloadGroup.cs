@@ -22,8 +22,8 @@ namespace YT_Downloader.Models
 
         public double Progress => Items.Count == 0 ? 0 : Items.Average(i => i.Progress);
 
-        public DownloadStatus Status =>
-            Items.All(i => i.Status == DownloadStatus.Completed)
+        public DownloadStatus Status => Items.Where(i => i.Status is not DownloadStatus.Error and not DownloadStatus.Cancelled)
+            .All(i => i.Status == DownloadStatus.Completed)
                 ? DownloadStatus.Completed
                 : Items.Any(i => i.Status == DownloadStatus.Downloading)
                     ? DownloadStatus.Downloading
