@@ -2,7 +2,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using System;
+using System.ComponentModel;
 using YT_Downloader.Enums;
+using YT_Downloader.Helpers;
 using YT_Downloader.Messages;
 using YT_Downloader.Models;
 
@@ -48,7 +50,7 @@ namespace YT_Downloader.ViewModels.Components
             _messenger = messenger;
 
             _downloadItem.PropertyChanged += OnDownloadItemPropertyChanged;
-                }
+        }
 
         [RelayCommand(CanExecute = nameof(CanFirstButton))]
         private void OnFirstButton()
@@ -71,11 +73,28 @@ namespace YT_Downloader.ViewModels.Components
                 OnCancel();
         }
 
-        private void OnCancel() { }
-        private void OnDelete() { }
-        private void OnOpenLocal() { }
-        private void OnRetry() { }
-        private void OnSeeLog() { }
+        [RelayCommand]
+        private void OnSeeLog() =>
+            _messenger.Send(new ErrorDialogRequestMessage(Error?.Message ?? "No Log"));
+
+        private void OnCancel()
+        {
+            _downloadItem.MarkAsCancelled();
+            _downloadItem.PropertyChanged -= OnDownloadItemPropertyChanged;
+            _messenger.Send(new RemoveDownloadRequestMessage(this));
+        }
+
+        private void OnDelete()
+        {
+            FileHelper.DeleteFile(_downloadItem.OutputPath);
+            _messenger.Send(new RemoveDownloadRequestMessage(this));
+        }
+
+        private void OnOpenLocal() =>
+            FileHelper.OpenFolder(_downloadItem.OutputPath);
+
+        private void OnRetry() =>
+            _messenger.Send(new RetryDownloadRequestMessage(_downloadItem));
 
         private void OnDownloadItemPropertyChanged(object? s, PropertyChangedEventArgs e)
         {
