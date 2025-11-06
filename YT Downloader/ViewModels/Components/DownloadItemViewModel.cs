@@ -1,7 +1,9 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using System;
 using YT_Downloader.Enums;
+using YT_Downloader.Messages;
 using YT_Downloader.Models;
 
 namespace YT_Downloader.ViewModels.Components
@@ -9,6 +11,7 @@ namespace YT_Downloader.ViewModels.Components
     public partial class DownloadItemViewModel : ObservableObject, IDownloadableViewModel
     {
         private readonly DownloadItem _downloadItem;
+        private readonly IMessenger _messenger;
 
         public string Title => _downloadItem.Title;
         public string Author => _downloadItem.Author;
@@ -39,9 +42,10 @@ namespace YT_Downloader.ViewModels.Components
         public string FirstButtonIcon => Status != DownloadStatus.Error ? "\uE8DA" : "\uE72C";
         public string SecondButtonIcon => Status == DownloadStatus.Completed ? "\uE74D" : "\uF78A";
 
-        public DownloadItemViewModel(DownloadItem downloadItem)
+        public DownloadItemViewModel(DownloadItem downloadItem, IMessenger messenger)
         {
             _downloadItem = downloadItem;
+            _messenger = messenger;
 
             _downloadItem.PropertyChanged += (s, e) =>
             {
