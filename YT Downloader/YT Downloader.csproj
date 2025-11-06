@@ -47,6 +47,7 @@
 		<None Remove="Controls\DownloadCard.xaml" />
 		<None Remove="Controls\PlaylistDownloadCard.xaml" />
 		<None Remove="MusicPage.xaml" />
+		<None Remove="Views\Dialogs\ErrorDialog.xaml" />
 		<None Remove="Views\ErrorPage.xaml" />
 		<None Remove="Views\HelpPage.xaml" />
 		<None Remove="Views\MainPage.xaml" />
@@ -105,6 +106,12 @@
 
 	<ItemGroup>
 	  <Folder Include="Assets\Help\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Page Update="Views\Dialogs\ErrorDialog.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </Page>
 	</ItemGroup>
 
 	<ItemGroup>
