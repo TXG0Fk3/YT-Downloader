@@ -47,26 +47,8 @@ namespace YT_Downloader.ViewModels.Components
             _downloadItem = downloadItem;
             _messenger = messenger;
 
-            _downloadItem.PropertyChanged += (s, e) =>
-            {
-                if (e.PropertyName == nameof(DownloadItem.Progress))
-                {
-                    OnPropertyChanged(nameof(Progress));
-                    OnPropertyChanged(nameof(FormattedProgress));
-                    OnPropertyChanged(nameof(ProgressInfo));
+            _downloadItem.PropertyChanged += OnDownloadItemPropertyChanged;
                 }
-
-                if (e.PropertyName == nameof(DownloadItem.Status))
-                {
-                    OnPropertyChanged(nameof(Status));
-                    OnPropertyChanged(nameof(IsProgressInfoVisible));
-                    OnPropertyChanged(nameof(IsErrorVisible));
-                    OnPropertyChanged(nameof(FirstButtonIcon));
-                    OnPropertyChanged(nameof(SecondButtonIcon));
-                    FirstButtonCommand.NotifyCanExecuteChanged();
-                }
-            };
-        }
 
         [RelayCommand(CanExecute = nameof(CanFirstButton))]
         private void OnFirstButton()
@@ -94,5 +76,25 @@ namespace YT_Downloader.ViewModels.Components
         private void OnOpenLocal() { }
         private void OnRetry() { }
         private void OnSeeLog() { }
+
+        private void OnDownloadItemPropertyChanged(object? s, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(DownloadItem.Progress))
+            {
+                OnPropertyChanged(nameof(Progress));
+                OnPropertyChanged(nameof(FormattedProgress));
+                OnPropertyChanged(nameof(ProgressInfo));
+            }
+
+            if (e.PropertyName == nameof(DownloadItem.Status))
+            {
+                OnPropertyChanged(nameof(Status));
+                OnPropertyChanged(nameof(IsProgressInfoVisible));
+                OnPropertyChanged(nameof(IsErrorVisible));
+                OnPropertyChanged(nameof(FirstButtonIcon));
+                OnPropertyChanged(nameof(SecondButtonIcon));
+                FirstButtonCommand.NotifyCanExecuteChanged();
+            }
+        }
     }
 }
