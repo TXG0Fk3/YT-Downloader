@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -8,7 +9,7 @@ using YT_Downloader.Enums;
 
 namespace YT_Downloader.Models
 {
-    public class DownloadGroup : ObservableObject, IDownloadable
+    public partial class DownloadGroup : ObservableObject, IDownloadable
     {
         public string PlaylistId { get; set; }
         public string Url { get; set; }
@@ -19,6 +20,7 @@ namespace YT_Downloader.Models
         public string OutputPath { get; set; }
         public ObservableCollection<DownloadItem> Items { get; } = new();
         public CancellationTokenSource CTS { get; private set; } = new();
+        [ObservableProperty] private Exception? _error;
 
         public double Progress => Items.Count == 0 ? 0 : Items.Average(i => i.Progress);
 
