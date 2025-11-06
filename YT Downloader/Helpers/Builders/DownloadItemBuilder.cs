@@ -18,6 +18,7 @@ namespace YT_Downloader.Helpers.Builders
             _item.Author = video.Author;
             _item.ThumbnailUrl = video.ThumbnailUrl;
             _item.Manifest = video.Manifest;
+            _item.CTS = new();
             return this;
         }
 
