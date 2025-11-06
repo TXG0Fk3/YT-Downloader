@@ -46,7 +46,7 @@ namespace YT_Downloader.Services
             foreach (var videoInfo in groupVideoInfos)
             {
                 var builder = new DownloadItemBuilder().FromVideoInfo(videoInfo)
-                    .WithOutputPath(Path.Combine(group.OutputPath, FileNameHelper.SanitizeFileName(videoInfo.Title)))
+                    .WithOutputPath(Path.Combine(group.OutputPath, FileHelper.SanitizeFileName(videoInfo.Title)))
                     .WithGroupCancellation(group.CTS.Token);
 
                 var item = group.Type == DownloadType.Video

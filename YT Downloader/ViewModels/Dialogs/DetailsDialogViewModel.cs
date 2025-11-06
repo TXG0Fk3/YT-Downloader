@@ -74,7 +74,7 @@ namespace YT_Downloader.ViewModels.Dialogs
             if (outputDirectory == null) return;
 
             var fileName = !string.IsNullOrEmpty(UserFileName)
-                ? FileNameHelper.SanitizeFileName(UserFileName)
+                ? FileHelper.SanitizeFileName(UserFileName)
                 : DefaultFileName;
 
             if (!IsPlaylist && _video != null)
@@ -143,7 +143,7 @@ namespace YT_Downloader.ViewModels.Dialogs
 
             Title = _video.Title;
             ThumbnailUrl = _video.ThumbnailUrl;
-            DefaultFileName = FileNameHelper.SanitizeFileName(_video.Title);
+            DefaultFileName = FileHelper.SanitizeFileName(_video.Title);
         }
 
         private async Task LoadPlaylistInfoAsync()
