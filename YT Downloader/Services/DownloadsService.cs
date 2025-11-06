@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -41,22 +42,30 @@ namespace YT_Downloader.Services
 
         public async Task EnqueuePlaylist(DownloadGroup group)
         {
-            var groupVideoInfos = await _youtubeService.GetPlaylistVideosAsync(group.PlaylistId, group.CTS.Token);
-            
-            foreach (var videoInfo in groupVideoInfos)
+            try
             {
-                var builder = new DownloadItemBuilder().FromVideoInfo(videoInfo)
-                    .WithOutputPath(Path.Combine(group.OutputPath, FileHelper.SanitizeFileName(videoInfo.Title)))
-                    .WithGroupCancellation(group.CTS.Token);
+                var groupVideoInfos = await _youtubeService.GetPlaylistVideosAsync(group.PlaylistId, group.CTS.Token);
+                group.CTS.Token.ThrowIfCancellationRequested();
 
-                var item = group.Type == DownloadType.Video
-                    ? builder.AsVideo(group.Quality,
-                        _youtubeService.GetClosestMp4StreamOption(videoInfo.Streams, group.Quality),
-                        _youtubeService.GetBestMp3StreamOption(videoInfo.Streams)).Build()
-                    : builder.AsAudio(_youtubeService.GetBestMp3StreamOption(videoInfo.Streams)).Build();
+                foreach (var videoInfo in groupVideoInfos)
+                {
+                    var builder = new DownloadItemBuilder().FromVideoInfo(videoInfo)
+                        .WithOutputPath(Path.Combine(group.OutputPath, FileHelper.SanitizeFileName(videoInfo.Title)))
+                        .WithGroupCancellation(group.CTS.Token);
 
-                group.Items.Add(item);
-                _downloadQueue.Enqueue(item);
+                    var item = group.Type == DownloadType.Video
+                        ? builder.AsVideo(group.Quality,
+                            _youtubeService.GetClosestMp4StreamOption(videoInfo.Streams, group.Quality),
+                            _youtubeService.GetBestMp3StreamOption(videoInfo.Streams)).Build()
+                        : builder.AsAudio(_youtubeService.GetBestMp3StreamOption(videoInfo.Streams)).Build();
+
+                    group.Items.Add(item);
+                    _downloadQueue.Enqueue(item);
+                }
+            }
+            catch (Exception ex)
+            {
+                group.Error = ex;
             }
         }
 
