@@ -75,7 +75,6 @@ namespace YT_Downloader.Models
         {
             if (!_startTime.HasValue)
                 _startTime = DateTime.Now;
-            CTS = new();
             Status = DownloadStatus.Downloading;
         }
 
