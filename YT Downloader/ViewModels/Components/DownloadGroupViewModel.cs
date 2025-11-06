@@ -66,6 +66,10 @@ namespace YT_Downloader.ViewModels.Components
             _messenger.Send(new RemoveDownloadRequestMessage(this));
         }
 
+        [RelayCommand]
+        private void OnSeeLog() =>
+            _messenger.Send(new ErrorDialogRequestMessage(Error?.Message ?? "No Log"));
+
         private void OnRemoveItemRequested(DownloadItemViewModel itemViewModel, DownloadItem? item)
         {
             Items.Remove(itemViewModel);
