@@ -1,4 +1,5 @@
 using Microsoft.UI.Xaml.Controls;
+using YT_Downloader.ViewModels.Dialogs;
 
 namespace YT_Downloader.Views.Dialogs
 {
@@ -7,6 +8,7 @@ namespace YT_Downloader.Views.Dialogs
         public SettingsDialog()
         {
             InitializeComponent();
+            DataContext = App.GetService<SettingsDialogViewModel>();
         }
     }
 }
