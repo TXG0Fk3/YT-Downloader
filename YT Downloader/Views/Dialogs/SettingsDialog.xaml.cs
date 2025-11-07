@@ -1,5 +1,4 @@
 using Microsoft.UI.Xaml.Controls;
-using YT_Downloader.Enums;
 using YT_Downloader.Helpers.UI;
 using YT_Downloader.ViewModels.Dialogs;
 
