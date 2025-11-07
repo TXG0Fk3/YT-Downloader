@@ -20,12 +20,11 @@ namespace YT_Downloader
         private Window _mainWindow;
 
         private readonly IServiceProvider _services;
-        private readonly IMessenger _messenger = WeakReferenceMessenger.Default;
+        private readonly IMessenger _messenger;
 
         public App()
         {
             InitializeComponent();
-            _messenger.RegisterAll(this);
 
             var services = new ServiceCollection();
             services.AddTransient<MainPageViewModel>();
@@ -36,8 +35,11 @@ namespace YT_Downloader
             services.AddSingleton<DownloadsService>();
             services.AddSingleton<SettingsService>();
             services.AddSingleton<DialogService>();
-            services.AddSingleton(_messenger);
+            services.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
             _services = services.BuildServiceProvider();
+
+            _messenger = GetService<IMessenger>();
+            _messenger.RegisterAll(this);
         }
 
         public static T GetService<T>() where T : class => ((App)Current)._services.GetRequiredService<T>();
