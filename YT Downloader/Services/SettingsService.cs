@@ -41,7 +41,16 @@ namespace YT_Downloader.Services
                 var json = File.ReadAllText(_filePath);
                 var settings = JsonSerializer.Deserialize<AppSettings>(json);
 
-                return settings ?? defaultSettings;
+                if (settings is null)
+                    return defaultSettings;
+
+                if (string.IsNullOrWhiteSpace(settings.DefaultDownloadsPath) ||
+                    !Directory.Exists(settings.DefaultDownloadsPath))
+                {
+                    return settings with { DefaultDownloadsPath = defaultSettings.DefaultDownloadsPath };
+                }
+
+                return settings;
             }
             catch
             {
