@@ -3,13 +3,18 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.Storage.Pickers;
 using System;
 using System.Threading.Tasks;
+using YT_Downloader.Helpers.UI;
 using YT_Downloader.Views.Dialogs;
 
 namespace YT_Downloader.Services
 {
     public class DialogService
     {
+        private readonly SettingsService _settingsService;
         private XamlRoot _xamlRoot;
+
+        public DialogService(SettingsService settingsService) =>
+            _settingsService = settingsService;
 
         public void Initialize(XamlRoot root) =>
             _xamlRoot = root;
@@ -35,6 +40,8 @@ namespace YT_Downloader.Services
             if (_xamlRoot != null)
             {
                 dialog.XamlRoot = _xamlRoot;
+                dialog.RequestedTheme = ThemeHelper.ConvertThemeOptionToElementTheme(_settingsService.Current.Theme);
+
                 await dialog.ShowAsync();
             }
         }
