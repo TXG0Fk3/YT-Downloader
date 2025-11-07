@@ -89,7 +89,7 @@ namespace YT_Downloader.ViewModels.Dialogs
             else if (IsPlaylist && _playlist != null)
             {
                 downloadable = new DownloadGroupBuilder().FromPlaylistInfo(_playlist)
-                    .WithOutputPath(Path.Combine(outputDirectory, fileName))
+                    .WithOutputPath(Path.Combine(outputDirectory, FileHelper.SanitizeFileName(Title)))
                     .WithFormat(SelectedFormat == MediaFormat.Mp4 ? DownloadType.Video : DownloadType.Audio, SelectedQuality)
                     .Build();
             }
