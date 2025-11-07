@@ -23,7 +23,9 @@
 		<HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
 		<Authors>TXG0Fk3</Authors>
 		<Company>TXG0fk3</Company>
-		<Version>2.1</Version>
+		<AssemblyVersion>2.4.0</AssemblyVersion>
+		<FileVersion>2.4.0</FileVersion>
+		<Version>2.4.0</Version>
 		<Title>YT Downloader</Title>
 	</PropertyGroup>
 
