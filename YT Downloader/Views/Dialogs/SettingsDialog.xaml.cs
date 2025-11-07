@@ -10,5 +10,17 @@ namespace YT_Downloader.Views.Dialogs
             InitializeComponent();
             DataContext = App.GetService<SettingsDialogViewModel>();
         }
+
+        private void RadioButtons_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (DataContext is SettingsDialogViewModel VM)
+                VM.SelectThemeCommand.Execute(null);
+        }
+
+        private void ToggleSwitch_Toggled(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        {
+            if (DataContext is SettingsDialogViewModel VM)
+                VM.AlwaysAskWhereSaveCommand.Execute(null);
+        }
     }
 }

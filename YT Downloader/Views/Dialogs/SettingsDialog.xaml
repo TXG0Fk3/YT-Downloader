@@ -47,7 +47,10 @@
                     HeaderIcon="{ui:FontIcon Glyph=}">
                     <toolkit:SettingsExpander.Items>
                         <toolkit:SettingsCard>
-                            <RadioButtons ItemsSource="{Binding ThemeOptions}" SelectedItem="{Binding SelectedThemeOption}" />
+                            <RadioButtons
+                                ItemsSource="{Binding ThemeOptions}"
+                                SelectedItem="{Binding SelectedThemeOption, Mode=TwoWay}"
+                                SelectionChanged="RadioButtons_SelectionChanged" />
                         </toolkit:SettingsCard>
                     </toolkit:SettingsExpander.Items>
                 </toolkit:SettingsExpander>
@@ -65,19 +68,20 @@
                     Header="Downloads"
                     HeaderIcon="{ui:FontIcon Glyph=}">
                     <toolkit:SettingsExpander.Items>
-                        <toolkit:SettingsCard Header="Default Downloads Folder">
+                        <toolkit:SettingsCard Description="{Binding DefaultDownloadsPath}" Header="Default Downloads Folder">
                             <Button
                                 Grid.Column="1"
-                                Command="{Binding DefaultDownloadsPath}"
+                                Command="{Binding SelectDefaultDownloadsFolderCommand}"
                                 Content="Select Folder" />
                         </toolkit:SettingsCard>
                         <toolkit:SettingsCard Description="The program will always ask where to save the downloaded files" Header="Always ask where to save files">
                             <ToggleSwitch
                                 Grid.Row="1"
                                 Grid.Column="1"
-                                IsOn="{Binding IsAlwaysAskWhereSaveOn}"
+                                IsOn="{Binding IsAlwaysAskWhereSaveOn, Mode=TwoWay}"
                                 OffContent="Off"
-                                OnContent="On" />
+                                OnContent="On"
+                                Toggled="ToggleSwitch_Toggled" />
                         </toolkit:SettingsCard>
                     </toolkit:SettingsExpander.Items>
                 </toolkit:SettingsExpander>

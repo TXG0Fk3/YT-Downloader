@@ -33,6 +33,10 @@ namespace YT_Downloader.ViewModels.Dialogs
         }
 
         [RelayCommand]
+        private void OnSelectTheme() =>
+            SaveSettings();
+
+        [RelayCommand]
         private async Task OnSelectDefaultDownloadsFolder()
         {
             var tcs = new TaskCompletionSource<string?>();
@@ -46,6 +50,10 @@ namespace YT_Downloader.ViewModels.Dialogs
             }
         }
 
+        [RelayCommand]
+        private void OnAlwaysAskWhereSave() =>
+            SaveSettings();
+
         private void SaveSettings()
         {
             var newSettings = new AppSettings(
@@ -57,8 +65,5 @@ namespace YT_Downloader.ViewModels.Dialogs
             _settingsService.Save(newSettings);
             _messenger.Send(new ChangeThemeRequestMessage(SelectedThemeOption));
         }
-
-        partial void OnSelectedThemeOptionChanged(ThemeOption value) => SaveSettings();
-        partial void OnIsAlwaysAskWhereSaveOnChanged(bool value) => SaveSettings();
     }
 }
