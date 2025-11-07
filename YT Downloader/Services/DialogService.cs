@@ -1,7 +1,8 @@
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.Windows.Storage.Pickers;
 using System;
 using System.Threading.Tasks;
-using Microsoft.Windows.Storage.Pickers;
 using YT_Downloader.Views.Dialogs;
 
 namespace YT_Downloader.Services
@@ -13,25 +14,10 @@ namespace YT_Downloader.Services
         public void Initialize(XamlRoot root) =>
             _xamlRoot = root;
 
-        public async Task ShowDetailsDialogAsync()
-        {
-            var dialog = new DetailsDialog()
-            {
-                XamlRoot = _xamlRoot,
-            };
-
-            await dialog.ShowAsync();
-        }
-
-        public async Task ShowErrorDialogAsync(string message)
-        {
-            var dialog = new ErrorDialog(message)
-            {
-                XamlRoot = _xamlRoot
-            };
-
-            await dialog.ShowAsync();
-        }
+        public async Task ShowDetailsDialogAsync() => await ShowDialogAsync(new DetailsDialog());
+        public async Task ShowHelpDialogAsync() => await ShowDialogAsync(new HelpDialog());
+        public async Task ShowSettingsDialogAsync() => await ShowDialogAsync(new SettingsDialog());
+        public async Task ShowErrorDialogAsync(string message) => await ShowDialogAsync(new ErrorDialog(message));
 
         public async Task<string?> OpenFolderPickerAsync()
         {
@@ -42,6 +28,15 @@ namespace YT_Downloader.Services
 
             var folder = await folderPicker.PickSingleFolderAsync();
             return folder?.Path;
+        }
+
+        private async Task ShowDialogAsync(ContentDialog dialog)
+        {
+            if (_xamlRoot != null)
+            {
+                dialog.XamlRoot = _xamlRoot;
+                await dialog.ShowAsync();
+            }
         }
     }
 }
