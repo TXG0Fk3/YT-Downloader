@@ -55,10 +55,12 @@ namespace YT_Downloader.ViewModels
             await _dialogService.ShowDetailsDialogAsync();
 
         [RelayCommand]
-        private async Task OnHelp() => throw new NotImplementedException();
+        private async Task OnHelp() =>
+            await _dialogService.ShowHelpDialogAsync();
 
         [RelayCommand]
-        private async Task OnSettings() => throw new NotImplementedException();
+        private async Task OnSettings() =>
+            await _dialogService.ShowSettingsDialogAsync();
 
         private async Task OnError(string errorMessage) => await _dialogService.ShowErrorDialogAsync(errorMessage);
 
