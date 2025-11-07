@@ -30,6 +30,7 @@ namespace YT_Downloader
             var services = new ServiceCollection();
             services.AddTransient<MainPageViewModel>();
             services.AddTransient<DetailsDialogViewModel>();
+            services.AddTransient<SettingsDialogViewModel>();
 
             services.AddSingleton<YoutubeService>();
             services.AddSingleton<DownloadsService>();
