@@ -63,6 +63,7 @@ namespace YT_Downloader.ViewModels.Components
             _downloadGroup.PropertyChanged -= OnGroupPropertyChanged;
             _downloadGroup.Items.CollectionChanged -= OnItemsChanged;
 
+            FileHelper.DeleteFolder(_downloadGroup.OutputPath);
             _messenger.Send(new RemoveDownloadRequestMessage(this));
         }
 
