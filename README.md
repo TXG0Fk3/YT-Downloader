@@ -14,7 +14,7 @@
 <div align="center">
     <h2>📖 Overview</h2>
 
-This repository contains the implementation of YT Downloader. This software is a downloader for videos, music, and playlists from YouTube, using C# and YouTubeExplode. The interface is built using WinUI 3.
+This repository contains the implementation of YT Downloader. This software is a downloader for videos, music, and playlists from YouTube, using C# and [YouTubeExplode](https://github.com/Tyrrrz/YoutubeExplode). The interface is built using WinUI 3.
 
 
 
