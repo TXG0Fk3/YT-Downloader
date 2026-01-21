@@ -13,6 +13,7 @@ namespace YT_Downloader.ViewModels.Dialogs
     public partial class SettingsDialogViewModel : ObservableObject
     {
         private readonly SettingsService _settingsService;
+        private readonly DialogService _dialogService;
         private readonly IMessenger _messenger;
 
         public IReadOnlyList<ThemeOption> ThemeOptions { get; } =
@@ -22,9 +23,10 @@ namespace YT_Downloader.ViewModels.Dialogs
         [ObservableProperty] private string _defaultDownloadsPath;
         [ObservableProperty] private bool _isAlwaysAskWhereSaveOn;
 
-        public SettingsDialogViewModel(SettingsService settingsService, IMessenger messenger)
+        public SettingsDialogViewModel(SettingsService settingsService, DialogService dialogService, IMessenger messenger)
         {
             _settingsService = settingsService;
+            _dialogService = dialogService;
             _messenger = messenger;
 
             SelectedThemeOption = _settingsService.Current.Theme;
@@ -39,10 +41,7 @@ namespace YT_Downloader.ViewModels.Dialogs
         [RelayCommand]
         private async Task OnSelectDefaultDownloadsFolder()
         {
-            var tcs = new TaskCompletionSource<string?>();
-            _messenger.Send(new FolderPickerRequestMessage(tcs));
-
-            var path = await tcs.Task;
+            var path = await _dialogService.OpenFolderPickerAsync();
             if (!string.IsNullOrEmpty(path))
             {
                 DefaultDownloadsPath = path;

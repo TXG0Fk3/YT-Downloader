@@ -21,6 +21,7 @@ namespace YT_Downloader.ViewModels.Dialogs
     {
         private readonly YoutubeService _youtubeService;
         private readonly SettingsService _settingsService;
+        private readonly DialogService _dialogService;
         private readonly IMessenger _messenger;
 
         private VideoInfo? _video;
@@ -58,10 +59,12 @@ namespace YT_Downloader.ViewModels.Dialogs
         public bool IsContentVisible => IsContentLoading || IsContentLoaded;
         public bool IsDownloadEnabled => IsContentLoaded;
 
-        public DetailsDialogViewModel(YoutubeService youtubeService, SettingsService settingsService, IMessenger messenger)
+        public DetailsDialogViewModel(
+            YoutubeService youtubeService, SettingsService settingsService, DialogService dialogService, IMessenger messenger)
         {
             _youtubeService = youtubeService;
             _settingsService = settingsService;
+            _dialogService = dialogService;
             _messenger = messenger;
         }
 
@@ -197,10 +200,7 @@ namespace YT_Downloader.ViewModels.Dialogs
             if (!_settingsService.Current.AlwaysAskWhereSave)
                 return _settingsService.Current.DefaultDownloadsPath;
 
-            var tcs = new TaskCompletionSource<string?>();
-            _messenger.Send(new FolderPickerRequestMessage(tcs));
-
-            var path = await tcs.Task;
+            var path = await _dialogService.OpenFolderPickerAsync();
             if (!string.IsNullOrEmpty(path))
                 return path;
 

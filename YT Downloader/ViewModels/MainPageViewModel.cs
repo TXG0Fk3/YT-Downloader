@@ -11,9 +11,8 @@ using YT_Downloader.ViewModels.Components;
 namespace YT_Downloader.ViewModels
 {
     public partial class MainPageViewModel : ObservableObject,
-        IRecipient<FolderPickerRequestMessage>, IRecipient<DownloadRequestMessage>,
-        IRecipient<RetryDownloadRequestMessage>, IRecipient<RemoveDownloadRequestMessage>,
-        IRecipient<ErrorDialogRequestMessage>
+        IRecipient<DownloadRequestMessage>, IRecipient<RetryDownloadRequestMessage>,
+        IRecipient<RemoveDownloadRequestMessage>, IRecipient<ErrorDialogRequestMessage>
     {
         private readonly DownloadsService _downloadsService;
         private readonly DialogService _dialogService;
@@ -33,9 +32,6 @@ namespace YT_Downloader.ViewModels
 
             Downloads.CollectionChanged += (s, e) => OnPropertyChanged(nameof(IsDownloadItemsEmpty));
         }
-
-        public async void Receive(FolderPickerRequestMessage message) =>
-            message.Tcs.SetResult(await OnOpenFolderPickerAsync());
 
         public void Receive(DownloadRequestMessage message) =>
             OnEnqueueDownload(message.DownloadInfo);
@@ -78,8 +74,5 @@ namespace YT_Downloader.ViewModels
 
         private void OnRemoveDownload(IDownloadableViewModel vm) =>
             Downloads.Remove(vm);
-
-        public async Task<string?> OnOpenFolderPickerAsync() =>
-            await _dialogService.OpenFolderPickerAsync();
     }
 }
