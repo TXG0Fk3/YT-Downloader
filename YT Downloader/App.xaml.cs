@@ -1,8 +1,11 @@
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Animation;
 using System;
+using System.Threading.Tasks;
 using Windows.Graphics;
 using YT_Downloader.Enums;
 using YT_Downloader.Helpers.UI;
@@ -17,7 +20,7 @@ namespace YT_Downloader
     public partial class App : Application,
         IRecipient<ChangeThemeRequestMessage>
     {
-        private Window _mainWindow;
+        private static Window? MainWindow;
 
         private readonly IServiceProvider _services;
         private readonly IMessenger _messenger;
@@ -47,30 +50,49 @@ namespace YT_Downloader
         public void Receive(ChangeThemeRequestMessage message) =>
             ApplyTheme(message.Theme);
 
-        protected override void OnLaunched(LaunchActivatedEventArgs args)
+        protected override async void OnLaunched(LaunchActivatedEventArgs args)
         {
-            _mainWindow = new Window
+            var rootFrame = new Frame { Content = new SplashPage() };
+            MainWindow = new Window
             {
-                SystemBackdrop = new MicaBackdrop(),
                 ExtendsContentIntoTitleBar = true,
                 Title = "YT Downloader",
-                Content = new MainPage()
+                Content = rootFrame
             };
 
-            _mainWindow.AppWindow.SetIcon("Assets/AppIcon.ico");
+            ConfigureWindow(MainWindow);
 
-            var win32WindowService = new Win32WindowService(_mainWindow);
-            win32WindowService.SetWindowMinMaxSize(new Win32WindowService.POINT() { x = 430, y = 680 });
+            await Task.Delay(50);
+            MainWindow.Activate();
 
-            var scaleFactor = win32WindowService.GetSystemDPI() / 96.0;
-            _mainWindow.AppWindow.Resize(new SizeInt32((int)(430 * scaleFactor), (int)(680 * scaleFactor)));
+            await InitializeAppAsync();
 
+            MainWindow.SystemBackdrop = new MicaBackdrop();
             ApplyTheme(GetService<SettingsService>().Current.Theme);
 
-            _mainWindow.Activate();
+            rootFrame.Navigate(typeof(MainPage), null, new DrillInNavigationTransitionInfo());
         }
 
         private void ApplyTheme(ThemeOption theme) =>
-            ThemeHelper.ApplyTheme(_mainWindow, ThemeHelper.ConvertThemeOptionToElementTheme(theme));
+            ThemeHelper.ApplyTheme(MainWindow!, ThemeHelper.ConvertThemeOptionToElementTheme(theme));
+
+        private void ConfigureWindow(Window window)
+        {
+            window.AppWindow.SetIcon("Assets/AppIcon.ico");
+
+            var win32Service = new Win32WindowService(window);
+            win32Service.SetWindowMinMaxSize(new Win32WindowService.POINT() { x = 430, y = 680 });
+
+            var scaleFactor = win32Service.GetSystemDPI() / 96.0;
+            window.AppWindow.Resize(new SizeInt32((int)(430 * scaleFactor), (int)(680 * scaleFactor)));
+        }
+
+        private async Task InitializeAppAsync()
+        {
+            // We keep this method separate for organizational purposes.
+            // Today it's purely aesthetic. Tomorrow, if we need to load anything
+            // large during app startup, we can simply change it here without altering OnLaunched.
+            await Task.Delay(400);
+        }
     }
 }

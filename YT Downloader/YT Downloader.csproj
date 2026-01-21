@@ -53,6 +53,7 @@
 		<None Remove="Views\Picture\NextPicturePage.xaml" />
 		<None Remove="Views\Resources\DownloadCardTemplates.xaml" />
 		<None Remove="VideoPage.xaml" />
+		<None Remove="Views\SplashPage.xaml" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -97,6 +98,12 @@
 
 	<ItemGroup>
 	  <Folder Include="Assets\Help\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Page Update="Views\SplashPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </Page>
 	</ItemGroup>
 
 	<ItemGroup>
