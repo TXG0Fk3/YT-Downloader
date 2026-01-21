@@ -30,29 +30,32 @@ namespace YT_Downloader.ViewModels.Dialogs
         private StreamOption? _audioStreamOption;
         private CancellationTokenSource? _cts;
 
-        [ObservableProperty] private string _urlBoxText = string.Empty;
-        [ObservableProperty] private string _title = string.Empty;
-        [ObservableProperty] private string _contentUrl = string.Empty;
-        [ObservableProperty] private string _thumbnailUrl = string.Empty;
-        [ObservableProperty] private string _defaultFileName = string.Empty;
-        [ObservableProperty] private string _userFileName = string.Empty;
-        [ObservableProperty] private string _sizeMB = string.Empty;
+        [ObservableProperty] public partial string UrlBoxText { get; set; } = string.Empty;
+        [ObservableProperty] public partial string Title { get; set; } = string.Empty;
+        [ObservableProperty] public partial string ContentUrl { get; set; } = string.Empty;
+        [ObservableProperty] public partial string ThumbnailUrl { get; set; } = string.Empty;
+        [ObservableProperty] public partial string DefaultFileName { get; set; } = string.Empty;
+        [ObservableProperty] public partial string UserFileName { get; set; } = string.Empty;
+        [ObservableProperty] public partial string SizeMB { get; set; } = string.Empty;
 
-        [ObservableProperty] private IReadOnlyList<MediaFormat> _availableFormats = [MediaFormat.Mp4, MediaFormat.Mp3];
-        [ObservableProperty] private IReadOnlySet<string> _availableQualities = new HashSet<string>();
+        [ObservableProperty] public partial IReadOnlyList<MediaFormat> AvailableFormats { get; set; } = [MediaFormat.Mp4, MediaFormat.Mp3];
+        [ObservableProperty] public partial IReadOnlySet<string> AvailableQualities { get; set; } = new HashSet<string>();
 
         [ObservableProperty, NotifyPropertyChangedFor(nameof(IsQualitySelectionEnabled))]
-        private MediaFormat? _selectedFormat;
-        [ObservableProperty] private string? _selectedQuality;
+        public partial MediaFormat? SelectedFormat { get; set; }
+        [ObservableProperty] public partial string? SelectedQuality { get; set; }
 
-        [ObservableProperty] private bool _isPlaylist;
-        [ObservableProperty, NotifyPropertyChangedFor(nameof(IsQualitySelectionEnabled), nameof(IsContentVisible), nameof(IsDownloadEnabled))]
-        private bool _isContentLoading;
-        [ObservableProperty, NotifyPropertyChangedFor(nameof(IsFileNameBoxEnabled), nameof(IsContentVisible), nameof(IsDownloadEnabled))]
-        private bool _isContentLoaded;
+        [ObservableProperty] public partial bool IsPlaylist { get; set; }
 
-        [ObservableProperty] private string _errorMessage = string.Empty;
-        [ObservableProperty] private bool _isErrorVisible;
+        [ObservableProperty,
+            NotifyPropertyChangedFor(nameof(IsQualitySelectionEnabled), nameof(IsContentVisible), nameof(IsDownloadEnabled))]
+        public partial bool IsContentLoading { get; set; }
+        [ObservableProperty,
+            NotifyPropertyChangedFor(nameof(IsFileNameBoxEnabled), nameof(IsContentVisible), nameof(IsDownloadEnabled))]
+        public partial bool IsContentLoaded { get; set; }
+
+        [ObservableProperty] public partial string ErrorMessage { get; set; } = string.Empty;
+        [ObservableProperty] public partial bool IsErrorVisible { get; set; }
 
         public bool IsQualitySelectionEnabled => SelectedFormat == MediaFormat.Mp4 && IsContentLoaded;
         public bool IsFileNameBoxEnabled => !IsPlaylist && IsContentLoaded;

@@ -19,9 +19,9 @@ namespace YT_Downloader.ViewModels.Dialogs
         public IReadOnlyList<ThemeOption> ThemeOptions { get; } =
             new List<ThemeOption>() {ThemeOption.Light, ThemeOption.Dark, ThemeOption.System};
 
-        [ObservableProperty] private ThemeOption _selectedThemeOption;
-        [ObservableProperty] private string _defaultDownloadsPath;
-        [ObservableProperty] private bool _isAlwaysAskWhereSaveOn;
+        [ObservableProperty] public partial ThemeOption SelectedThemeOption { get; set; }
+        [ObservableProperty] public partial string DefaultDownloadsPath { get; set; }
+        [ObservableProperty] public partial bool IsAlwaysAskWhereSaveOn { get; set; }
 
         public SettingsDialogViewModel(SettingsService settingsService, DialogService dialogService, IMessenger messenger)
         {
