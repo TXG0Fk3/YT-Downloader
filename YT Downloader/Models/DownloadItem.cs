@@ -23,9 +23,9 @@ namespace YT_Downloader.Models
         public StreamOption AudioStreamOption { get; set; }
         public string OutputPath { get; set; }
 
-        [ObservableProperty] private double _progress = 0.0;
-        [ObservableProperty] private DownloadStatus _status = DownloadStatus.Pending;
-        [ObservableProperty] private Exception? _error;
+        [ObservableProperty] public partial double Progress { get; set; } = 0.0;
+        [ObservableProperty] public partial DownloadStatus Status { get; set; } = DownloadStatus.Pending;
+        [ObservableProperty] public partial Exception? Error { get; set; }
 
         public IProgress<double> ProgressReporter { get; }
         public CancellationTokenSource CTS { get; set; } = new();

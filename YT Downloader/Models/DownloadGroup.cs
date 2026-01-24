@@ -20,7 +20,7 @@ namespace YT_Downloader.Models
         public string OutputPath { get; set; }
         public ObservableCollection<DownloadItem> Items { get; } = new();
         public CancellationTokenSource CTS { get; private set; } = new();
-        [ObservableProperty] private Exception? _error;
+        [ObservableProperty] public partial Exception? Error { get; set; }
 
         public double Progress => Items.Count == 0 ? 0 : Items.Average(i => i.Progress);
 
