@@ -10,7 +10,7 @@ namespace YT_Downloader.Helpers.Builders
 
         public DownloadGroupBuilder FromPlaylistInfo(PlaylistInfo playlist)
         {
-            _group.PlaylistId = playlist.Id;
+            _group.Id = playlist.Id;
             _group.Url = playlist.Url;
             _group.Title = playlist.Title;
             _group.Author = playlist.Author;

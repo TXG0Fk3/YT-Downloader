@@ -12,7 +12,7 @@ namespace YT_Downloader.Helpers.Builders
 
         public DownloadItemBuilder FromVideoInfo(VideoInfo video)
         {
-            _item.VideoId = video.Id;
+            _item.Id = video.Id;
             _item.Url = video.Url;
             _item.Title = video.Title;
             _item.Author = video.Author;

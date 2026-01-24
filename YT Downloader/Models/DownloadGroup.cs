@@ -11,7 +11,7 @@ namespace YT_Downloader.Models
 {
     public partial class DownloadGroup : ObservableObject, IDownloadable
     {
-        public string PlaylistId { get; set; }
+        public string Id { get; set; }
         public string Url { get; set; }
         public string Title { get; set; }
         public string Author { get; set; }

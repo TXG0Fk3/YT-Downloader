@@ -38,7 +38,7 @@ namespace YT_Downloader.Services
         {
             try
             {
-                var groupVideoInfos = await _youtubeService.GetPlaylistVideosAsync(group.PlaylistId, group.CTS.Token);
+                var groupVideoInfos = await _youtubeService.GetPlaylistVideosAsync(group.Id, group.CTS.Token);
                 group.CTS.Token.ThrowIfCancellationRequested();
 
                 FileHelper.CreateFolder(group.OutputPath);
