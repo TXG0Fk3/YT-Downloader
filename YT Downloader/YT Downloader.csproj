@@ -57,7 +57,6 @@
 		<PackageReference Include="Microsoft.WindowsAppSDK" Version="2.0.250930001-experimental1" />
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.7463" />
 		<PackageReference Include="YoutubeExplode" Version="6.5.6" />
-		<PackageReference Include="YoutubeExplode.Converter" Version="6.5.6" />
 		<Manifest Include="$(ApplicationManifest)" />
 	</ItemGroup>
 
