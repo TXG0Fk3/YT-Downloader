@@ -76,6 +76,8 @@ namespace YT_Downloader.Services
             await _semaphore.WaitAsync();
             try
             {
+                item.CTS.Token.ThrowIfCancellationRequested();
+
                 item.MarkAsDownloading();
 
                 if (item.Type == DownloadType.Video)
