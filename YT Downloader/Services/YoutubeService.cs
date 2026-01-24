@@ -21,19 +21,16 @@ namespace YT_Downloader.Services
             var video = await _youtubeClient.Videos.GetAsync(videoUrl, token);
             var streamManifest = await GetStreamManifestAsync(video.Id, token);
 
-            List<StreamOption> streamOptions = new();
-
-            streamOptions.AddRange(
-                streamManifest
-                    .GetVideoOnlyStreams()
-                    .Where(s => s.Container == Container.Mp4)
-                    .Select(s => new StreamOption
-                    {
-                        Quality = s.VideoQuality.Label,
-                        Format = MediaFormat.Mp4,
-                        SizeMB = s.Size.MegaBytes
-                    })
-            );
+            var streamOptions = streamManifest
+                .GetVideoOnlyStreams()
+                .Where(s => s.Container == Container.Mp4)
+                .Select(s => new StreamOption
+                {
+                    Quality = s.VideoQuality.Label,
+                    Format = MediaFormat.Mp4,
+                    SizeMB = s.Size.MegaBytes
+                })
+                .ToList();
 
             var bestAudio = GetBestAudioOnlyStreamInfo(streamManifest);
             if (bestAudio != null)
@@ -52,7 +49,7 @@ namespace YT_Downloader.Services
                 Url = video.Url,
                 Title = video.Title,
                 Author = video.Author.ToString(),
-                ThumbnailUrl = $"https://img.youtube.com/vi/{video.Id}/mqdefault.jpg",
+                ThumbnailUrl = video.Thumbnails.GetWithHighestResolution().Url,
                 Streams = streamOptions,
                 Manifest = streamManifest
             };
@@ -162,7 +159,7 @@ namespace YT_Downloader.Services
             streamManifest.GetVideoOnlyStreams().FirstOrDefault(s => s.Container == Container.Mp4 && s.VideoQuality.Label == quality);
 
         private AudioOnlyStreamInfo? GetBestAudioOnlyStreamInfo(StreamManifest streamManifest) =>
-            (AudioOnlyStreamInfo)streamManifest.GetAudioOnlyStreams().Where(s => s.Container == Container.Mp4).GetWithHighestBitrate();
+            streamManifest.GetAudioOnlyStreams().GetWithHighestBitrate() as AudioOnlyStreamInfo;
 
         private static int Score(StreamOption stream, int targetResolution, int targetFps)
         {
@@ -172,7 +169,7 @@ namespace YT_Downloader.Services
             return Math.Abs(res - targetResolution) + Math.Abs(fps - targetFps);
         }
 
-        private static int ParseResolution(string text) => int.Parse(text.Split('p')[0]);
+        private static int ParseResolution(string text) => int.TryParse(text.Split('p')[0], out var res) ? res : 0;
         private static int ParseFps(string text) => text.Split(' ')[0].EndsWith("60") ? 60 : 30;
     }
 }
