@@ -70,7 +70,7 @@ namespace YT_Downloader.Services
 
         public async Task<IReadOnlyList<VideoInfo>> GetPlaylistVideosAsync(string playlistId, CancellationToken token)
         {
-            var semaphore = new SemaphoreSlim(16);
+            var semaphore = new SemaphoreSlim(12);
 
             return await Task.WhenAll(
                 (await _youtubeClient.Playlists.GetVideosAsync(playlistId, token))
