@@ -49,7 +49,7 @@ namespace YT_Downloader.Services
                 Url = video.Url,
                 Title = video.Title,
                 Author = video.Author.ToString(),
-                ThumbnailUrl = video.Thumbnails.GetWithHighestResolution().Url,
+                ThumbnailUrl = $"https://img.youtube.com/vi/{video.Id}/mqdefault.jpg",
                 Streams = streamOptions,
                 Manifest = streamManifest
             };
