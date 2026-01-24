@@ -32,7 +32,7 @@ namespace YT_Downloader.Services
                 })
                 .ToList();
 
-            var bestAudio = GetBestAudioOnlyStreamInfo(streamManifest);
+            var bestAudio = GetBestAudioOnlyMp4StreamInfo(streamManifest);
             if (bestAudio != null)
             {
                 streamOptions.Add(new StreamOption
@@ -110,8 +110,8 @@ namespace YT_Downloader.Services
         {
             var videoStreamInfo = GetVideoOnlyStreamInfo(streamManifest, videoStreamOption.Quality) ??
                 throw new InvalidOperationException("Invalid VideoStreamInfo");
-            var audioStreamInfo = GetBestAudioOnlyStreamInfo(streamManifest) ??
-                throw new InvalidOperationException("Invalid AudioStreamInfo");
+            var audioStreamInfo = GetBestAudioOnlyMp4StreamInfo(streamManifest) ??
+                throw new InvalidOperationException("Unable to find a compatible MP4 audio stream.");
 
             string videoPath = Path.Combine(outputDirectory,
                 $"temp_v_{Guid.NewGuid().ToString().Substring(0, 8)}.{videoStreamInfo.Container.Name}");
@@ -160,6 +160,9 @@ namespace YT_Downloader.Services
 
         private AudioOnlyStreamInfo? GetBestAudioOnlyStreamInfo(StreamManifest streamManifest) =>
             streamManifest.GetAudioOnlyStreams().GetWithHighestBitrate() as AudioOnlyStreamInfo;
+
+        private AudioOnlyStreamInfo? GetBestAudioOnlyMp4StreamInfo(StreamManifest streamManifest) =>
+            streamManifest.GetAudioOnlyStreams().Where(s => s.Container == Container.Mp4).GetWithHighestBitrate() as AudioOnlyStreamInfo;
 
         private static int Score(StreamOption stream, int targetResolution, int targetFps)
         {
