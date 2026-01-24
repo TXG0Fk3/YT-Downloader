@@ -65,6 +65,7 @@ namespace YT_Downloader.ViewModels.Components
 
             FileHelper.DeleteFolder(_downloadGroup.OutputPath);
             _messenger.Send(new RemoveDownloadRequestMessage(this));
+            _messenger.UnregisterAll(this);
         }
 
         [RelayCommand]

@@ -82,6 +82,7 @@ namespace YT_Downloader.ViewModels.Components
             _downloadItem.MarkAsCancelled();
             Cleanup();
             _messenger.Send(new RemoveDownloadRequestMessage(this, _downloadItem));
+            _messenger.UnregisterAll(this);
         }
 
         private void OnDelete()
@@ -89,6 +90,7 @@ namespace YT_Downloader.ViewModels.Components
             FileHelper.DeleteFile(_downloadItem.OutputPath);
             Cleanup();
             _messenger.Send(new RemoveDownloadRequestMessage(this, _downloadItem));
+            _messenger.UnregisterAll(this);
         }
 
         private void OnOpenLocal() =>
