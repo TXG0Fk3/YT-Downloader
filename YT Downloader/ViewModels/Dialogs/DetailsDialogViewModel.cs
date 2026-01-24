@@ -47,11 +47,12 @@ namespace YT_Downloader.ViewModels.Dialogs
 
         [ObservableProperty] public partial bool IsPlaylist { get; set; }
 
-        [ObservableProperty,
-            NotifyPropertyChangedFor(nameof(IsQualitySelectionEnabled), nameof(IsContentVisible), nameof(IsDownloadEnabled))]
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(IsQualitySelectionEnabled), nameof(IsContentVisible), nameof(IsDownloadEnabled))]
         public partial bool IsContentLoading { get; set; }
-        [ObservableProperty,
-            NotifyPropertyChangedFor(nameof(IsFileNameBoxEnabled), nameof(IsContentVisible), nameof(IsDownloadEnabled))]
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(IsFileNameBoxEnabled), nameof(IsContentVisible), nameof(IsPlaylistIconVisible), nameof(IsDownloadEnabled))]
         public partial bool IsContentLoaded { get; set; }
 
         [ObservableProperty] public partial string ErrorMessage { get; set; } = string.Empty;
@@ -60,6 +61,7 @@ namespace YT_Downloader.ViewModels.Dialogs
         public bool IsQualitySelectionEnabled => SelectedFormat == MediaFormat.Mp4 && IsContentLoaded;
         public bool IsFileNameBoxEnabled => !IsPlaylist && IsContentLoaded;
         public bool IsContentVisible => IsContentLoading || IsContentLoaded;
+        public bool IsPlaylistIconVisible => IsContentLoaded && IsPlaylist;
         public bool IsDownloadEnabled => IsContentLoaded;
 
         public DetailsDialogViewModel(

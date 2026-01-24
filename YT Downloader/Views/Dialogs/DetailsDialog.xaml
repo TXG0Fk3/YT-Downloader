@@ -87,8 +87,8 @@
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         FontSize="32"
-                        Glyph="&#xE733;"
-                        Visibility="{Binding IsPlaylist, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        Glyph="&#xEA69;"
+                        Visibility="{Binding IsPlaylistIconVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 </Grid>
 
                 <Grid
