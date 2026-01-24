@@ -67,7 +67,7 @@ namespace YT_Downloader.Models
 
         public void UpdateProgress(double value)
         {
-            if (Math.Abs(value % 0.01) < 0.0001 || value == 1.0)
+            if (Math.Abs(value % 0.01) < 0.0004 || value == 1.0)
                 Progress = Math.Clamp(value, 0.0, 1.0);
         }
 

@@ -20,16 +20,10 @@ namespace YT_Downloader.Models
         public string OutputPath { get; set; }
         public ObservableCollection<DownloadItem> Items { get; } = new();
         public CancellationTokenSource CTS { get; private set; } = new();
+
+        [ObservableProperty] public partial double Progress { get; set; } = 0.0;
+        [ObservableProperty] public partial DownloadStatus Status { get; set; } = DownloadStatus.Pending;
         [ObservableProperty] public partial Exception? Error { get; set; }
-
-        public double Progress => Items.Count == 0 ? 0 : Items.Average(i => i.Progress);
-
-        public DownloadStatus Status => Items.Where(i => i.Status is not DownloadStatus.Error and not DownloadStatus.Cancelled)
-            .All(i => i.Status == DownloadStatus.Completed)
-                ? DownloadStatus.Completed
-                : Items.Any(i => i.Status is DownloadStatus.Downloading or DownloadStatus.Converting)
-                    ? DownloadStatus.Downloading
-                    : DownloadStatus.Pending;
 
         public DownloadGroup() =>
             Items.CollectionChanged += OnItemsChanged;
@@ -43,18 +37,29 @@ namespace YT_Downloader.Models
             if (e.OldItems != null)
                 foreach (DownloadItem item in e.OldItems)
                     item.PropertyChanged -= OnItemPropertyChanged;
-
-            OnPropertyChanged(nameof(Progress));
-            OnPropertyChanged(nameof(Status));
         }
 
         private void OnItemPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(DownloadItem.Progress))
-                OnPropertyChanged(nameof(Progress));
+                Progress = Items.Count == 0 ? 0 : Items.Average(i => i.Progress);
 
             if (e.PropertyName == nameof(DownloadItem.Status))
-                OnPropertyChanged(nameof(Status));
+                UpdateGroupStatus();
+        }
+
+        private void UpdateGroupStatus()
+        {
+            var statuses = Items.Select(i => i.Status);
+
+            if (statuses.All(s => s == DownloadStatus.Completed))
+                Status = DownloadStatus.Completed;
+            else if (statuses.Any(s => s is DownloadStatus.Downloading or DownloadStatus.Converting))
+                Status = DownloadStatus.Downloading;
+            else if (statuses.Any(s => s == DownloadStatus.Error))
+                Status = DownloadStatus.Error;
+            else
+                Status = DownloadStatus.Pending;
         }
     }
 }
