@@ -23,17 +23,25 @@ namespace YT_Downloader.ViewModels.Components
         public string Url => _downloadGroup.Url;
         public string Quality => _downloadGroup.Quality;
 
-        public DownloadStatus Status => _downloadGroup.Status;
-        public double Progress => _downloadGroup.Progress;
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(FormattedProgress))]
+        public partial double Progress { get; set; }
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(SecondButtonIcon))]
+        public partial DownloadStatus Status { get; set; }
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(IsLoadingCardVisible), nameof(IsErrorVisible))]
+        public partial Exception? Error { get; set; }
+
         public string FormattedProgress => $"{Progress * 100:00}%";
+        public string SecondButtonIcon => Status == DownloadStatus.Completed ? "\uE74D" : "\uF78A";
 
-        public ObservableCollection<DownloadItemViewModel> Items { get; } = new();
         public bool IsLoadingCardVisible => Items.Count == 0 && !IsErrorVisible;
-
-        public Exception? Error => _downloadGroup.Error;
         public bool IsErrorVisible => Error != null;
 
-        public string SecondButtonIcon => Status == DownloadStatus.Completed ? "\uE74D" : "\uF78A";
+        public ObservableCollection<DownloadItemViewModel> Items { get; } = new();
 
         public DownloadGroupViewModel(DownloadGroup downloadGroup, IMessenger messenger)
         {
@@ -41,6 +49,10 @@ namespace YT_Downloader.ViewModels.Components
             _messenger = messenger;
 
             _messenger.RegisterAll(this);
+
+            Progress = _downloadGroup.Progress;
+            Status = _downloadGroup.Status;
+            Error = _downloadGroup.Error;
 
             _downloadGroup.PropertyChanged += OnGroupPropertyChanged;
             _downloadGroup.Items.CollectionChanged += OnItemsChanged;
@@ -53,19 +65,15 @@ namespace YT_Downloader.ViewModels.Components
         }
 
         [RelayCommand]
-        private void OnOpenLocal() =>
-            FileHelper.OpenFolder(_downloadGroup.OutputPath);
+        private void OnOpenLocal() => FileHelper.OpenFolder(_downloadGroup.OutputPath);
 
         [RelayCommand]
         private void OnDelete()
         {
             _downloadGroup.CTS.Cancel();
-            _downloadGroup.PropertyChanged -= OnGroupPropertyChanged;
-            _downloadGroup.Items.CollectionChanged -= OnItemsChanged;
 
             FileHelper.DeleteFolder(_downloadGroup.OutputPath);
             _messenger.Send(new RemoveDownloadRequestMessage(this));
-            _messenger.UnregisterAll(this);
         }
 
         [RelayCommand]
@@ -75,32 +83,29 @@ namespace YT_Downloader.ViewModels.Components
         private void OnRemoveItemRequested(DownloadItemViewModel itemViewModel, DownloadItem? item)
         {
             Items.Remove(itemViewModel);
+            itemViewModel.Dispose();
 
             if (item != null)
                 _downloadGroup.Items.Remove(item);
 
             if (Items.Count == 0) OnDelete();
+
+            OnPropertyChanged(nameof(IsLoadingCardVisible));
         }
 
         private void OnGroupPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(DownloadGroup.Progress))
+            switch (e.PropertyName)
             {
-                OnPropertyChanged(nameof(Progress));
-                OnPropertyChanged(nameof(FormattedProgress));
-            }
-
-            if (e.PropertyName == nameof(DownloadGroup.Status))
-            {
-                OnPropertyChanged(nameof(Status));
-                OnPropertyChanged(nameof(IsLoadingCardVisible));
-                OnPropertyChanged(nameof(SecondButtonIcon));
-            }
-
-            if (e.PropertyName == nameof(DownloadGroup.Error))
-            {
-                OnPropertyChanged(nameof(IsLoadingCardVisible));
-                OnPropertyChanged(nameof(IsErrorVisible));
+                case nameof(DownloadGroup.Progress):
+                    Progress = _downloadGroup.Progress;
+                    break;
+                case nameof(DownloadGroup.Status):
+                    Status = _downloadGroup.Status;
+                    break;
+                case nameof(DownloadGroup.Error):
+                    Error = _downloadGroup.Error;
+                    break;
             }
         }
 
@@ -111,6 +116,15 @@ namespace YT_Downloader.ViewModels.Components
                     Items.Add(new DownloadItemViewModel(item, _messenger));
 
             OnPropertyChanged(nameof(IsLoadingCardVisible));
+        }
+
+        public void Dispose()
+        {
+            _downloadGroup.PropertyChanged -= OnGroupPropertyChanged;
+            _downloadGroup.Items.CollectionChanged -= OnItemsChanged;
+            _messenger.UnregisterAll(this);
+
+            foreach (var item in Items) item.Dispose();
         }
     }
 }

@@ -14,15 +14,28 @@ namespace YT_Downloader.ViewModels.Components
     {
         private readonly DownloadItem _downloadItem;
         private readonly IMessenger _messenger;
-
+        
         public string Title => _downloadItem.Title;
         public string Author => _downloadItem.Author;
         public string Url => _downloadItem.Url;
         public string QualityAndSize => $"{_downloadItem.Quality} {_downloadItem.FileSizeMB:F1}MB";
         public string ThumbnailPath => _downloadItem.ThumbnailUrl;
+        public Exception? Error => _downloadItem.Error;
 
-        public DownloadStatus Status => _downloadItem.Status;
-        public double Progress => _downloadItem.Progress;
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(IsDownloading),
+            nameof(IsConverting), nameof(IsErrorVisible),
+            nameof(FirstButtonIcon), nameof(SecondButtonIcon))]
+        public partial DownloadStatus Status { get; set; }
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(FormattedProgress), nameof(ProgressInfo))]
+        public partial double Progress { get; set; }        
+
+        public bool IsDownloading => Status == DownloadStatus.Downloading;
+        public bool IsConverting => Status == DownloadStatus.Converting;
+        public bool IsErrorVisible => Status == DownloadStatus.Error;
+
         public string FormattedProgress => $"{Progress * 100:00}%";
         public string ProgressInfo
         {
@@ -36,11 +49,6 @@ namespace YT_Downloader.ViewModels.Components
                        $"{s * Progress:F1}MB / {s:F1}MB";
             }
         }
-        public bool IsDownloading => Status == DownloadStatus.Downloading;
-        public bool IsConverting => Status == DownloadStatus.Converting;
-
-        public Exception? Error => _downloadItem.Error;
-        public bool IsErrorVisible => Status == DownloadStatus.Error;
 
         public string FirstButtonIcon => Status != DownloadStatus.Error ? "\uE8DA" : "\uE72C";
         public string SecondButtonIcon => Status == DownloadStatus.Completed ? "\uE74D" : "\uF78A";
@@ -50,8 +58,13 @@ namespace YT_Downloader.ViewModels.Components
             _downloadItem = downloadItem;
             _messenger = messenger;
 
-            _downloadItem.PropertyChanged += OnDownloadItemPropertyChanged;
+            Progress = _downloadItem.Progress;
+            Status = _downloadItem.Status;
+
+            _downloadItem.PropertyChanged += OnModelPropertyChanged;
         }
+
+        private bool CanFirstButton() => Status is DownloadStatus.Completed or DownloadStatus.Error;
 
         [RelayCommand(CanExecute = nameof(CanFirstButton))]
         private void OnFirstButton()
@@ -61,9 +74,6 @@ namespace YT_Downloader.ViewModels.Components
             else if (Status == DownloadStatus.Completed)
                 OnOpenLocal();
         }
-
-        private bool CanFirstButton() =>
-            Status is DownloadStatus.Completed or DownloadStatus.Error;
 
         [RelayCommand]
         private void OnSecondButton()
@@ -81,47 +91,39 @@ namespace YT_Downloader.ViewModels.Components
         private void OnCancel()
         {
             _downloadItem.MarkAsCancelled();
-            Cleanup();
             _messenger.Send(new RemoveDownloadRequestMessage(this, _downloadItem));
-            _messenger.UnregisterAll(this);
         }
 
         private void OnDelete()
         {
             FileHelper.DeleteFile(_downloadItem.OutputPath);
-            Cleanup();
             _messenger.Send(new RemoveDownloadRequestMessage(this, _downloadItem));
-            _messenger.UnregisterAll(this);
         }
 
-        private void OnOpenLocal() =>
-            FileHelper.OpenFolder(_downloadItem.OutputPath);
+        private void OnOpenLocal() => FileHelper.OpenFolder(_downloadItem.OutputPath);
 
         private void OnRetry() =>
             _messenger.Send(new RetryDownloadRequestMessage(_downloadItem));
 
-        private void Cleanup() =>
-            _downloadItem.PropertyChanged -= OnDownloadItemPropertyChanged;
-
-        private void OnDownloadItemPropertyChanged(object? s, PropertyChangedEventArgs e)
+        private void OnModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(DownloadItem.Progress))
+            switch (e.PropertyName)
             {
-                OnPropertyChanged(nameof(Progress));
-                OnPropertyChanged(nameof(FormattedProgress));
-                OnPropertyChanged(nameof(ProgressInfo));
+                case nameof(DownloadItem.Progress):
+                    Progress = _downloadItem.Progress;
+                    break;
+                case nameof(DownloadItem.Status):
+                    Status = _downloadItem.Status;
+                    OnPropertyChanged(nameof(Error));
+                    FirstButtonCommand.NotifyCanExecuteChanged();
+                    break;
             }
+        }
 
-            if (e.PropertyName == nameof(DownloadItem.Status))
-            {
-                OnPropertyChanged(nameof(Status));
-                OnPropertyChanged(nameof(IsDownloading));
-                OnPropertyChanged(nameof(IsConverting));
-                OnPropertyChanged(nameof(IsErrorVisible));
-                OnPropertyChanged(nameof(FirstButtonIcon));
-                OnPropertyChanged(nameof(SecondButtonIcon));
-                FirstButtonCommand.NotifyCanExecuteChanged();
-            }
+        public void Dispose()
+        {
+            _downloadItem.PropertyChanged -= OnModelPropertyChanged;
+            _messenger.UnregisterAll(this);
         }
     }
 }
