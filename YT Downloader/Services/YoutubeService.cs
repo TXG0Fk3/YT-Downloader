@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using YoutubeExplode;
 using YoutubeExplode.Common;
-using YoutubeExplode.Converter;
 using YoutubeExplode.Videos.Streams;
 using YT_Downloader.Enums;
 using YT_Downloader.Models.Info;
@@ -106,29 +106,53 @@ namespace YT_Downloader.Services
         public StreamOption? GetBestMp3StreamOption(IEnumerable<StreamOption> streams) =>
             streams.FirstOrDefault(s => s.Format == MediaFormat.Mp3);
 
-        public async Task DownloadVideoAsync(
+        public async Task<(string VideoPath, string AudioPath)> DownloadVideoAsync(
             StreamManifest streamManifest, StreamOption videoStreamOption,
-            string outputPath, IProgress<double> progress,  
+            string outputDirectory, IProgress<double> progress,  
             CancellationToken token)
         {
-            var videoStreamInfo = GetVideoOnlyStreamInfo(streamManifest, videoStreamOption.Quality);
-            var audioStreamInfo = GetBestAudioOnlyStreamInfo(streamManifest);
+            var videoStreamInfo = GetVideoOnlyStreamInfo(streamManifest, videoStreamOption.Quality) ??
+                throw new InvalidOperationException("Invalid VideoStreamInfo");
+            var audioStreamInfo = GetBestAudioOnlyStreamInfo(streamManifest) ??
+                throw new InvalidOperationException("Invalid AudioStreamInfo");
 
-            if (videoStreamInfo != null && audioStreamInfo != null)
-                await _youtubeClient.Videos.DownloadAsync(new IStreamInfo[] { videoStreamInfo, audioStreamInfo },
-                    new ConversionRequestBuilder(outputPath).Build(), progress, token);
+            string videoPath = Path.Combine(outputDirectory,
+                $"temp_v_{Guid.NewGuid().ToString().Substring(0, 8)}.{videoStreamInfo.Container.Name}");
+            string audioPath = Path.Combine(outputDirectory,
+                $"temp_a_{Guid.NewGuid().ToString().Substring(0, 8)}.{audioStreamInfo.Container.Name}");
+
+            double videoSize = videoStreamInfo.Size.Bytes;
+            double audioSize = audioStreamInfo.Size.Bytes;
+            double totalBytes = videoSize + audioSize;
+
+            void ReportProgress(double bytesFromCurrentStream, double bytesAlreadyCompleted)
+            {
+                double currentTotal = bytesAlreadyCompleted + bytesFromCurrentStream;
+                progress.Report(currentTotal / totalBytes);
+            }
+
+            var vProgress = new Progress<double>(p => ReportProgress(p * videoSize, 0));
+            await _youtubeClient.Videos.Streams.DownloadAsync(videoStreamInfo, videoPath, vProgress, token);
+
+            var aProgress = new Progress<double>(p => ReportProgress(p * audioSize, videoSize));
+            await _youtubeClient.Videos.Streams.DownloadAsync(audioStreamInfo, audioPath, aProgress, token);
+
+            return (videoPath, audioPath);
         }
 
-        public async Task DownloadAudioAsync(
+        public async Task<string> DownloadAudioAsync(
             StreamManifest streamManifest,
-            string outputPath, IProgress<double> progress,
+            string outputDirectory, IProgress<double> progress,
             CancellationToken token)
         {
-            var audioStreamInfo = GetBestAudioOnlyStreamInfo(streamManifest);
+            var audioStreamInfo = GetBestAudioOnlyStreamInfo(streamManifest) ?? 
+                throw new InvalidOperationException("Invalid AudioStreamInfo");
 
-            if (audioStreamInfo != null)
-                await _youtubeClient.Videos.DownloadAsync(new IStreamInfo[] { audioStreamInfo },
-                    new ConversionRequestBuilder(outputPath).SetContainer("mp3").Build(), progress, token);
+            string audioPath = Path.Combine(outputDirectory,
+                $"temp_a_{Guid.NewGuid().ToString().Substring(0, 8)}.{audioStreamInfo.Container.Name}");
+
+            await _youtubeClient.Videos.Streams.DownloadAsync(audioStreamInfo, audioPath, progress, token);
+            return audioPath;
         }
 
         private async Task<StreamManifest> GetStreamManifestAsync(string videoId, CancellationToken token) =>
