@@ -36,7 +36,8 @@ namespace YT_Downloader.ViewModels.Components
                        $"{s * Progress:F1}MB / {s:F1}MB";
             }
         }
-        public bool IsProgressInfoVisible => Status == DownloadStatus.Downloading;
+        public bool IsDownloading => Status == DownloadStatus.Downloading;
+        public bool IsConverting => Status == DownloadStatus.Converting;
 
         public Exception? Error => _downloadItem.Error;
         public bool IsErrorVisible => Status == DownloadStatus.Error;
@@ -114,7 +115,8 @@ namespace YT_Downloader.ViewModels.Components
             if (e.PropertyName == nameof(DownloadItem.Status))
             {
                 OnPropertyChanged(nameof(Status));
-                OnPropertyChanged(nameof(IsProgressInfoVisible));
+                OnPropertyChanged(nameof(IsDownloading));
+                OnPropertyChanged(nameof(IsConverting));
                 OnPropertyChanged(nameof(IsErrorVisible));
                 OnPropertyChanged(nameof(FirstButtonIcon));
                 OnPropertyChanged(nameof(SecondButtonIcon));

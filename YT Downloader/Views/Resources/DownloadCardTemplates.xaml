@@ -81,16 +81,22 @@
             <!--  Progress Bar  -->
             <Grid
                 Grid.Row="1"
-                Margin="0,6,0,0"
-                ColumnDefinitions="*, 38">
+                Height="20"
+                Margin="0,4,0,0"
+                ColumnDefinitions="*, Auto">
                 <ProgressBar
                     Grid.Column="0"
+                    VerticalAlignment="Center"
+                    IsIndeterminate="{Binding IsConverting}"
                     Maximum="1"
                     Value="{Binding Progress}" />
                 <TextBlock
                     Grid.Column="1"
+                    Margin="4,0,0,0"
                     HorizontalAlignment="Right"
-                    Text="{Binding FormattedProgress}" />
+                    VerticalAlignment="Center"
+                    Text="{Binding FormattedProgress}"
+                    Visibility="{Binding IsConverting, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Invert}" />
             </Grid>
 
             <!--  Progress Info  -->
@@ -100,7 +106,14 @@
                 FontSize="10"
                 Foreground="DarkGray"
                 Text="{Binding ProgressInfo}"
-                Visibility="{Binding IsProgressInfoVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                Visibility="{Binding IsDownloading, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            <TextBlock
+                Grid.Row="2"
+                HorizontalAlignment="Center"
+                FontSize="10"
+                Foreground="DarkGray"
+                Text="Processing..."
+                Visibility="{Binding IsConverting, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
             <!--  Error InfoBar  -->
             <InfoBar
@@ -178,13 +191,14 @@
                 <Grid
                     Grid.Row="1"
                     Margin="6,0,6,6"
-                    ColumnDefinitions="*, 38">
+                    ColumnDefinitions="*, Auto">
                     <ProgressBar
                         Grid.Column="0"
                         Maximum="1"
                         Value="{Binding Progress}" />
                     <TextBlock
                         Grid.Column="1"
+                        Margin="4,0,0,0"
                         HorizontalAlignment="Right"
                         Text="{Binding FormattedProgress}" />
                 </Grid>
