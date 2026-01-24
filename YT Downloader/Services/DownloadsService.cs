@@ -1,7 +1,7 @@
 using System;
-using System.Collections.Concurrent;
 using System.IO;
 using System.Threading;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using YT_Downloader.Enums;
 using YT_Downloader.Helpers;
@@ -15,28 +15,23 @@ namespace YT_Downloader.Services
         private readonly YoutubeService _youtubeService;
         private readonly SemaphoreSlim _semaphore;
 
-        private ConcurrentQueue<DownloadItem> _downloadQueue = new();
-        private bool _processing = false;
+        private readonly Channel<DownloadItem> _downloadQueue;
 
         public DownloadsService(YoutubeService youtubeService, int maxParallelDownloads = 3)
         {
             _youtubeService = youtubeService;
             _semaphore = new SemaphoreSlim(maxParallelDownloads);
+
+            _downloadQueue = Channel.CreateUnbounded<DownloadItem>();
+            _ = ConsumeQueueAsync();
         }
 
         public async Task EnqueueDownloadable(IDownloadable downloadable)
         {
-            if (downloadable is DownloadItem downloadItem)
-                _downloadQueue.Enqueue(downloadItem);
-            else if (downloadable is DownloadGroup downloadGroup)
-                await EnqueuePlaylist(downloadGroup);
-            else return;
-
-            if (!_processing)
-            {
-                _processing = true;
-                _ = ProcessQueueAsync();
-            }
+            if (downloadable is DownloadItem item)
+                await _downloadQueue.Writer.WriteAsync(item);
+            else if (downloadable is DownloadGroup group)
+                await EnqueuePlaylist(group);
         }
 
         public async Task EnqueuePlaylist(DownloadGroup group)
@@ -61,7 +56,7 @@ namespace YT_Downloader.Services
                         : builder.AsAudio(_youtubeService.GetBestMp3StreamOption(videoInfo.Streams)).Build();
 
                     group.Items.Add(item);
-                    _downloadQueue.Enqueue(item);
+                    await _downloadQueue.Writer.WriteAsync(item);
                 }
             }
             catch (Exception ex)
@@ -70,24 +65,10 @@ namespace YT_Downloader.Services
             }
         }
 
-        private async Task ProcessQueueAsync()
+        private async Task ConsumeQueueAsync()
         {
-            while (true)
-            {
-                if (_downloadQueue.TryDequeue(out var item))
-                {
-                    _ = DownloadAsync(item);
-                }
-                else
-                {
-                    await Task.Delay(200);
-                    if (_downloadQueue.IsEmpty)
-                    {
-                        _processing = false;
-                        return;
-                    }
-                }
-            }
+            await foreach (var item in _downloadQueue.Reader.ReadAllAsync())
+                _ = DownloadAsync(item);
         }
 
         private async Task DownloadAsync(DownloadItem item)
