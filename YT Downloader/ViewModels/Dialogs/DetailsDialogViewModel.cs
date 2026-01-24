@@ -106,30 +106,27 @@ namespace YT_Downloader.ViewModels.Dialogs
         [RelayCommand]
         private async Task LoadContentInfo()
         {
-            IsContentLoaded = false;
-            IsErrorVisible = false;
+            _cts?.Cancel();
+            _cts?.Dispose();
+            _cts = new CancellationTokenSource();
+            var token = _cts.Token;
 
-            SelectedFormat = MediaFormat.Mp4;
-            Title = "Loading...";
-            ThumbnailUrl = string.Empty;
-            DefaultFileName = "Loading...";
-            UserFileName = string.Empty;
-            SizeMB = "Loading...";
-            ContentUrl = UrlBoxText;
-
+            ResetState();
             IsContentLoading = true;
+
             try
             {
-                _cts = new CancellationTokenSource();
-
                 if (UrlBoxText.Contains("playlist?list="))
-                    await LoadPlaylistInfoAsync();
+                    await LoadPlaylistInfoAsync(token);
                 else
-                    await LoadVideoInfoAsync();
+                    await LoadVideoInfoAsync(token);
+
+                token.ThrowIfCancellationRequested();
 
                 UpdateAvailableQualities();
                 IsContentLoaded = true;
             }
+            catch (OperationCanceledException) { }
             catch (Exception ex)
             {
                 ErrorMessage = ex.Message;
@@ -137,26 +134,38 @@ namespace YT_Downloader.ViewModels.Dialogs
             }
             finally
             {
-                IsContentLoading = false;
+                if (!token.IsCancellationRequested)
+                    IsContentLoading = false;
             }
         }
 
-        private async Task LoadVideoInfoAsync()
+        private void ResetState()
+        {
+            IsContentLoaded = false;
+            IsErrorVisible = false;
+            SelectedFormat = MediaFormat.Mp4;
+            Title = "Loading...";
+            ThumbnailUrl = string.Empty;
+            DefaultFileName = "Loading...";
+            UserFileName = string.Empty;
+            SizeMB = "Loading...";
+            ContentUrl = UrlBoxText;
+        }
+
+        private async Task LoadVideoInfoAsync(CancellationToken token)
         {
             IsPlaylist = false;
-
-            _video = await _youtubeService.GetVideoAsync(UrlBoxText, _cts.Token);
+            _video = await _youtubeService.GetVideoAsync(UrlBoxText, token);
 
             Title = _video.Title;
             ThumbnailUrl = _video.ThumbnailUrl;
             DefaultFileName = FileHelper.SanitizeFileName(_video.Title);
         }
 
-        private async Task LoadPlaylistInfoAsync()
+        private async Task LoadPlaylistInfoAsync(CancellationToken token)
         {
             IsPlaylist = true;
-
-            _playlist = await _youtubeService.GetPlaylistAsync(UrlBoxText, _cts.Token);
+            _playlist = await _youtubeService.GetPlaylistAsync(UrlBoxText, token);
 
             Title = _playlist.Title;
             DefaultFileName = "Custom File Name not available for Playlists.";
@@ -174,8 +183,7 @@ namespace YT_Downloader.ViewModels.Dialogs
                 {
                     if (_video != null)
                     {
-                        AvailableQualities = _video
-                            .Streams
+                        AvailableQualities = _video.Streams
                             .Where(s => s.Format == MediaFormat.Mp4)
                             .Select(s => s.Quality)
                             .ToHashSet();
@@ -212,28 +220,22 @@ namespace YT_Downloader.ViewModels.Dialogs
 
         partial void OnSelectedFormatChanged(MediaFormat? value)
         {
-            if (value != null)
-                UpdateAvailableQualities();
+            if (value != null) UpdateAvailableQualities();
         }
 
         partial void OnSelectedQualityChanged(string? value)
-        {   
-            if (value != null)
+        {
+            if (value == null) return;
+
+            if (!IsPlaylist && _video != null)
             {
-                if (!IsPlaylist && _video != null)
-                {
-                    if (SelectedFormat == MediaFormat.Mp4)
-                        _videoStreamOption = _video.Streams
-                            .Where(s => s.Quality == value)
-                            .FirstOrDefault();
+                if (SelectedFormat == MediaFormat.Mp4)
+                    _videoStreamOption = _video.Streams.FirstOrDefault(s => s.Quality == value && s.Format == MediaFormat.Mp4);
 
-                    _audioStreamOption = _video.Streams
-                        .Where(s => s.Format == MediaFormat.Mp3)
-                        .FirstOrDefault();
-                }
+                _audioStreamOption = _audioStreamOption = _video.Streams.FirstOrDefault(s => s.Format == MediaFormat.Mp3);
+            }
 
-                UpdateSize();
-            } 
+            UpdateSize();
         }
     } 
 }
