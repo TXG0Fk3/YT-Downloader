@@ -4,6 +4,7 @@ namespace YT_Downloader.Enums
     {
         Pending,
         Downloading,
+        Converting,
         Completed,
         Error,
         Cancelled
