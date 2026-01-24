@@ -72,7 +72,10 @@ namespace YT_Downloader.ViewModels
         private void OnRetryDownload(DownloadItem item) =>
             _ = _downloadsService.EnqueueDownloadable(item);
 
-        private void OnRemoveDownload(IDownloadableViewModel vm) =>
+        private void OnRemoveDownload(IDownloadableViewModel vm)
+        {
             Downloads.Remove(vm);
+            vm.Dispose();
+        }
     }
 }
