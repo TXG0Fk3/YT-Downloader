@@ -105,7 +105,7 @@ namespace YT_Downloader.Services
                     ffmpegArgs = $"-i \"{tempAudio}\" -vn -ab 192k -y \"{item.OutputPath}\"";
                 }
 
-                // TO-DO: set status as converting
+                item.MarkAsConverting();
                 await RunFFmpegCommandAsync(ffmpegArgs, item.CTS.Token);
 
                 item.MarkAsCompleted();

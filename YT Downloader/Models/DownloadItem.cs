@@ -78,6 +78,11 @@ namespace YT_Downloader.Models
             Status = DownloadStatus.Downloading;
         }
 
+        public void MarkAsConverting()
+        {
+            Status = DownloadStatus.Converting;
+        }
+
         public void MarkAsCompleted()
         {
             Progress = 1.0;

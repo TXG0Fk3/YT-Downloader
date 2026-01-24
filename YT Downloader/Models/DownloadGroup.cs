@@ -27,7 +27,7 @@ namespace YT_Downloader.Models
         public DownloadStatus Status => Items.Where(i => i.Status is not DownloadStatus.Error and not DownloadStatus.Cancelled)
             .All(i => i.Status == DownloadStatus.Completed)
                 ? DownloadStatus.Completed
-                : Items.Any(i => i.Status == DownloadStatus.Downloading)
+                : Items.Any(i => i.Status is DownloadStatus.Downloading or DownloadStatus.Converting)
                     ? DownloadStatus.Downloading
                     : DownloadStatus.Pending;
 
