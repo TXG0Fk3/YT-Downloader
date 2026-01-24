@@ -76,8 +76,8 @@ namespace YT_Downloader.Services
         {
             await _semaphore.WaitAsync();
 
-            string tempVideo;
-            string tempAudio;
+            string tempVideo = null;
+            string tempAudio = null;
 
             string tempDirectory = Path.GetTempPath();
             string ffmpegArgs = string.Empty;
@@ -113,6 +113,7 @@ namespace YT_Downloader.Services
             catch (OperationCanceledException)
             {
                 item.MarkAsCancelled();
+                FileHelper.DeleteFile(item.OutputPath);
             }
             catch (Exception ex)
             {
@@ -120,6 +121,8 @@ namespace YT_Downloader.Services
             }
             finally
             {
+                FileHelper.DeleteFile(tempVideo);
+                FileHelper.DeleteFile(tempAudio);
                 _semaphore.Release();
             }
         }
