@@ -31,10 +31,10 @@ namespace YT_Downloader.Services
             if (downloadable is DownloadItem item)
                 await _downloadQueue.Writer.WriteAsync(item);
             else if (downloadable is DownloadGroup group)
-                await EnqueuePlaylist(group);
+                _ = EnqueueGroupAsync(group);
         }
 
-        public async Task EnqueuePlaylist(DownloadGroup group)
+        public async Task EnqueueGroupAsync(DownloadGroup group)
         {
             try
             {
