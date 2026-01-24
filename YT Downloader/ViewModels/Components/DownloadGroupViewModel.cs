@@ -82,7 +82,7 @@ namespace YT_Downloader.ViewModels.Components
 
         private void OnRemoveItemRequested(DownloadItemViewModel itemViewModel, DownloadItem? item)
         {
-            Items.Remove(itemViewModel);
+            if (!Items.Remove(itemViewModel)) return;
             itemViewModel.Dispose();
 
             if (item != null)
