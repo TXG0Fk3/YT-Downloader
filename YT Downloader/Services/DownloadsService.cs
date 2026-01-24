@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Channels;
@@ -74,21 +75,38 @@ namespace YT_Downloader.Services
         private async Task DownloadAsync(DownloadItem item)
         {
             await _semaphore.WaitAsync();
+
+            string tempVideo;
+            string tempAudio;
+
+            string tempDirectory = Path.GetTempPath();
+            string ffmpegArgs = string.Empty;
+
             try
             {
                 item.CTS.Token.ThrowIfCancellationRequested();
-
                 item.MarkAsDownloading();
 
                 if (item.Type == DownloadType.Video)
-                    await _youtubeService.DownloadVideoAsync(
+                {
+                    (tempVideo, tempAudio) = await _youtubeService.DownloadVideoAsync(
                         item.Manifest, item.VideoStreamOption,
-                        item.OutputPath, item.ProgressReporter, item.CTS.Token
+                        tempDirectory, item.ProgressReporter, item.CTS.Token
                     );
+
+                    ffmpegArgs = $"-i \"{tempVideo}\" -i \"{tempAudio}\" -c copy -y \"{item.OutputPath}\"";
+                }
                 else
-                    await _youtubeService.DownloadAudioAsync(
-                        item.Manifest, item.OutputPath, item.ProgressReporter, item.CTS.Token
+                {
+                    tempAudio = await _youtubeService.DownloadAudioAsync(
+                        item.Manifest, tempDirectory, item.ProgressReporter, item.CTS.Token
                     );
+
+                    ffmpegArgs = $"-i \"{tempAudio}\" -vn -ab 192k -y \"{item.OutputPath}\"";
+                }
+
+                // TO-DO: set status as converting
+                await RunFFmpegCommandAsync(ffmpegArgs, item.CTS.Token);
 
                 item.MarkAsCompleted();
             }
@@ -104,6 +122,37 @@ namespace YT_Downloader.Services
             {
                 _semaphore.Release();
             }
+        }
+
+        private async Task RunFFmpegCommandAsync(string arguments, CancellationToken token)
+        {
+            var ffmpegPath = FFmpegLocator.GetFFmpegPath();
+
+            var psi = new ProcessStartInfo
+            {
+                FileName = ffmpegPath,
+                Arguments = arguments,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            using var process = new Process { StartInfo = psi };
+            process.Start();
+
+            var errorReadTask = process.StandardError.ReadToEndAsync();
+
+            using var registration = token.Register(() =>
+            {
+                try { if (!process.HasExited) process.Kill(true); }
+                catch { }
+            });
+
+            await process.WaitForExitAsync(token);
+            var fullLog = await errorReadTask;
+
+            if (process.ExitCode != 0)
+                throw new Exception($"FFmpeg failed with code {process.ExitCode}: {fullLog}");
         }
     }
 }
