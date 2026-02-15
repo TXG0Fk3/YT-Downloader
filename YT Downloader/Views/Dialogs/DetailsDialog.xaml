@@ -32,12 +32,14 @@
         </Grid.ChildrenTransitions>
 
         <!--  URL Section  -->
-        <Grid Grid.Row="0" ColumnDefinitions="*, 40">
+        <Grid Grid.Row="0" ColumnDefinitions="*, 38">
             <TextBox
                 Grid.Column="0"
                 Height="62"
                 Header="Enter your YT video/playlist URL:"
+                IsSpellCheckEnabled="False"
                 KeyDown="UrlTextBox_KeyDown"
+                ToolTipService.ToolTip="Type your YT video/playlist URL and press Enter button"
                 Text="{Binding UrlBoxText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             <Button
                 Grid.Column="1"
@@ -47,8 +49,9 @@
                 HorizontalAlignment="Right"
                 VerticalAlignment="Bottom"
                 Command="{Binding LoadContentInfoCommand}"
-                ToolTipService.ToolTip="Load Video">
-                <FontIcon Glyph="&#xED0E;" />
+                Style="{StaticResource AccentButtonStyle}"
+                ToolTipService.ToolTip="Load Video Info">
+                <FontIcon Glyph="&#xE8FB;" />
             </Button>
         </Grid>
 

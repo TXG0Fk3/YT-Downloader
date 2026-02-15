@@ -30,7 +30,9 @@ namespace YT_Downloader.ViewModels.Dialogs
         private StreamOption? _audioStreamOption;
         private CancellationTokenSource? _cts;
 
-        [ObservableProperty] public partial string UrlBoxText { get; set; } = string.Empty;
+        [ObservableProperty, NotifyCanExecuteChangedFor(nameof(LoadContentInfoCommand))]
+        public partial string UrlBoxText { get; set; } = string.Empty;
+
         [ObservableProperty] public partial string Title { get; set; } = string.Empty;
         [ObservableProperty] public partial string ContentUrl { get; set; } = string.Empty;
         [ObservableProperty] public partial string ThumbnailUrl { get; set; } = string.Empty;
@@ -105,7 +107,11 @@ namespace YT_Downloader.ViewModels.Dialogs
             if (downloadable != null) _messenger.Send(new DownloadRequestMessage(downloadable));
         }
 
-        [RelayCommand]
+        private bool CanLoadContentInfo() => Uri.IsWellFormedUriString(UrlBoxText, UriKind.RelativeOrAbsolute)
+            && (UrlBoxText.Contains("youtube.com/watch?v=") || UrlBoxText.Contains("youtube.com/playlist?list="))
+            && (UrlBoxText != ContentUrl);
+
+        [RelayCommand(CanExecute = nameof(CanLoadContentInfo))]
         private async Task LoadContentInfo()
         {
             _cts?.Cancel();
