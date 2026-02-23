@@ -17,7 +17,9 @@ namespace YT_Downloader.Views.Dialogs
             if (DataContext is SettingsDialogViewModel VM)
             {
                 VM.SelectThemeCommand.Execute(null);
-                RequestedTheme = ThemeHelper.ConvertThemeOptionToElementTheme(VM.SelectedThemeOption);
+                RequestedTheme = ThemeHelper.ConvertThemeOptionToElementTheme(
+                    VM.SelectedThemeOption
+                );
             }
         }
 

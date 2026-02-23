@@ -1,11 +1,11 @@
+using System;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
-using System;
-using System.Threading.Tasks;
 using Windows.Graphics;
 using YT_Downloader.Enums;
 using YT_Downloader.Helpers.UI;
@@ -17,8 +17,7 @@ using YT_Downloader.Views;
 
 namespace YT_Downloader
 {
-    public partial class App : Application,
-        IRecipient<ChangeThemeRequestMessage>
+    public partial class App : Application, IRecipient<ChangeThemeRequestMessage>
     {
         private static Window? MainWindow;
 
@@ -45,10 +44,10 @@ namespace YT_Downloader
             _messenger.RegisterAll(this);
         }
 
-        public static T GetService<T>() where T : class => ((App)Current)._services.GetRequiredService<T>();
+        public static T GetService<T>()
+            where T : class => ((App)Current)._services.GetRequiredService<T>();
 
-        public void Receive(ChangeThemeRequestMessage message) =>
-            ApplyTheme(message.Theme);
+        public void Receive(ChangeThemeRequestMessage message) => ApplyTheme(message.Theme);
 
         protected override async void OnLaunched(LaunchActivatedEventArgs args)
         {
@@ -57,7 +56,7 @@ namespace YT_Downloader
             {
                 ExtendsContentIntoTitleBar = true,
                 Title = "YT Downloader",
-                Content = rootFrame
+                Content = rootFrame,
             };
 
             ConfigureWindow(MainWindow);
@@ -74,7 +73,10 @@ namespace YT_Downloader
         }
 
         private void ApplyTheme(ThemeOption theme) =>
-            ThemeHelper.ApplyTheme(MainWindow!, ThemeHelper.ConvertThemeOptionToElementTheme(theme));
+            ThemeHelper.ApplyTheme(
+                MainWindow!,
+                ThemeHelper.ConvertThemeOptionToElementTheme(theme)
+            );
 
         private void ConfigureWindow(Window window)
         {
@@ -84,7 +86,9 @@ namespace YT_Downloader
             win32Service.SetWindowMinMaxSize(new Win32WindowService.POINT() { x = 430, y = 680 });
 
             var scaleFactor = win32Service.GetSystemDPI() / 96.0;
-            window.AppWindow.Resize(new SizeInt32((int)(430 * scaleFactor), (int)(680 * scaleFactor)));
+            window.AppWindow.Resize(
+                new SizeInt32((int)(430 * scaleFactor), (int)(680 * scaleFactor))
+            );
         }
 
         private async Task InitializeAppAsync()

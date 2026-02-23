@@ -9,7 +9,8 @@ namespace YT_Downloader.Helpers
     {
         public static void OpenFolder(string filePath)
         {
-            if (string.IsNullOrWhiteSpace(filePath)) return;
+            if (string.IsNullOrWhiteSpace(filePath))
+                return;
 
             var directory = Path.GetDirectoryName(filePath);
             if (Directory.Exists(directory))
@@ -26,7 +27,8 @@ namespace YT_Downloader.Helpers
 
         public static void DeleteFile(string filePath)
         {
-            if (string.IsNullOrWhiteSpace(filePath)) return;
+            if (string.IsNullOrWhiteSpace(filePath))
+                return;
 
             try
             {
@@ -53,7 +55,8 @@ namespace YT_Downloader.Helpers
 
         public static string SanitizeFileName(string name)
         {
-            if (string.IsNullOrWhiteSpace(name)) return "unnamed_file";
+            if (string.IsNullOrWhiteSpace(name))
+                return "unnamed_file";
 
             var invalidChars = Path.GetInvalidFileNameChars();
             return string.Concat(name.Where(c => !invalidChars.Contains(c)));

@@ -7,6 +7,6 @@ namespace YT_Downloader.Enums
         Converting,
         Completed,
         Error,
-        Cancelled
+        Cancelled,
     }
 }

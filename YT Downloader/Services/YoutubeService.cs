@@ -28,19 +28,21 @@ namespace YT_Downloader.Services
                 {
                     Quality = s.VideoQuality.Label,
                     Format = MediaFormat.Mp4,
-                    SizeMB = s.Size.MegaBytes
+                    SizeMB = s.Size.MegaBytes,
                 })
                 .ToList();
 
             var bestAudio = GetBestAudioOnlyMp4StreamInfo(streamManifest);
             if (bestAudio != null)
             {
-                streamOptions.Add(new StreamOption
-                {
-                    Quality = "Best",
-                    Format = MediaFormat.Mp3,
-                    SizeMB = bestAudio.Size.MegaBytes
-                });
+                streamOptions.Add(
+                    new StreamOption
+                    {
+                        Quality = "Best",
+                        Format = MediaFormat.Mp3,
+                        SizeMB = bestAudio.Size.MegaBytes,
+                    }
+                );
             }
 
             return new VideoInfo
@@ -51,11 +53,14 @@ namespace YT_Downloader.Services
                 Author = video.Author.ToString(),
                 ThumbnailUrl = $"https://img.youtube.com/vi/{video.Id}/mqdefault.jpg",
                 Streams = streamOptions,
-                Manifest = streamManifest
+                Manifest = streamManifest,
             };
         }
 
-        public async Task<PlaylistInfo> GetPlaylistAsync(string playlistUrl, CancellationToken token)
+        public async Task<PlaylistInfo> GetPlaylistAsync(
+            string playlistUrl,
+            CancellationToken token
+        )
         {
             var playlist = await _youtubeClient.Playlists.GetAsync(playlistUrl, token);
 
@@ -64,17 +69,19 @@ namespace YT_Downloader.Services
                 Id = playlist.Id,
                 Url = playlist.Url,
                 Title = playlist.Title,
-                Author = playlist.Author?.ToString() ?? "Unknown Author"
+                Author = playlist.Author?.ToString() ?? "Unknown Author",
             };
         }
 
-        public async Task<IReadOnlyList<VideoInfo>> GetPlaylistVideosAsync(string playlistId, CancellationToken token)
+        public async Task<IReadOnlyList<VideoInfo>> GetPlaylistVideosAsync(
+            string playlistId,
+            CancellationToken token
+        )
         {
             var semaphore = new SemaphoreSlim(12);
 
             return await Task.WhenAll(
-                (await _youtubeClient.Playlists.GetVideosAsync(playlistId, token))
-                .Select(async v =>
+                (await _youtubeClient.Playlists.GetVideosAsync(playlistId, token)).Select(async v =>
                 {
                     await semaphore.WaitAsync(token);
                     try
@@ -89,7 +96,10 @@ namespace YT_Downloader.Services
             );
         }
 
-        public StreamOption? GetClosestMp4StreamOption(IEnumerable<StreamOption> streams, string quality)
+        public StreamOption? GetClosestMp4StreamOption(
+            IEnumerable<StreamOption> streams,
+            string quality
+        )
         {
             var targetResolution = ParseResolution(quality);
             var targetFps = ParseFps(quality);
@@ -104,19 +114,30 @@ namespace YT_Downloader.Services
             streams.FirstOrDefault(s => s.Format == MediaFormat.Mp3);
 
         public async Task<(string VideoPath, string AudioPath)> DownloadVideoAsync(
-            StreamManifest streamManifest, StreamOption videoStreamOption,
-            string outputDirectory, IProgress<double> progress,  
-            CancellationToken token)
+            StreamManifest streamManifest,
+            StreamOption videoStreamOption,
+            string outputDirectory,
+            IProgress<double> progress,
+            CancellationToken token
+        )
         {
-            var videoStreamInfo = GetVideoOnlyStreamInfo(streamManifest, videoStreamOption.Quality) ??
-                throw new InvalidOperationException("Invalid VideoStreamInfo");
-            var audioStreamInfo = GetBestAudioOnlyMp4StreamInfo(streamManifest) ??
-                throw new InvalidOperationException("Unable to find a compatible MP4 audio stream.");
+            var videoStreamInfo =
+                GetVideoOnlyStreamInfo(streamManifest, videoStreamOption.Quality)
+                ?? throw new InvalidOperationException("Invalid VideoStreamInfo");
+            var audioStreamInfo =
+                GetBestAudioOnlyMp4StreamInfo(streamManifest)
+                ?? throw new InvalidOperationException(
+                    "Unable to find a compatible MP4 audio stream."
+                );
 
-            string videoPath = Path.Combine(outputDirectory,
-                $"temp_v_{Guid.NewGuid().ToString().Substring(0, 8)}.{videoStreamInfo.Container.Name}");
-            string audioPath = Path.Combine(outputDirectory,
-                $"temp_a_{Guid.NewGuid().ToString().Substring(0, 8)}.{audioStreamInfo.Container.Name}");
+            string videoPath = Path.Combine(
+                outputDirectory,
+                $"temp_v_{Guid.NewGuid().ToString().Substring(0, 8)}.{videoStreamInfo.Container.Name}"
+            );
+            string audioPath = Path.Combine(
+                outputDirectory,
+                $"temp_a_{Guid.NewGuid().ToString().Substring(0, 8)}.{audioStreamInfo.Container.Name}"
+            );
 
             double videoSize = videoStreamInfo.Size.Bytes;
             double audioSize = audioStreamInfo.Size.Bytes;
@@ -129,40 +150,72 @@ namespace YT_Downloader.Services
             }
 
             var vProgress = new Progress<double>(p => ReportProgress(p * videoSize, 0));
-            await _youtubeClient.Videos.Streams.DownloadAsync(videoStreamInfo, videoPath, vProgress, token);
+            await _youtubeClient.Videos.Streams.DownloadAsync(
+                videoStreamInfo,
+                videoPath,
+                vProgress,
+                token
+            );
 
             var aProgress = new Progress<double>(p => ReportProgress(p * audioSize, videoSize));
-            await _youtubeClient.Videos.Streams.DownloadAsync(audioStreamInfo, audioPath, aProgress, token);
+            await _youtubeClient.Videos.Streams.DownloadAsync(
+                audioStreamInfo,
+                audioPath,
+                aProgress,
+                token
+            );
 
             return (videoPath, audioPath);
         }
 
         public async Task<string> DownloadAudioAsync(
             StreamManifest streamManifest,
-            string outputDirectory, IProgress<double> progress,
-            CancellationToken token)
+            string outputDirectory,
+            IProgress<double> progress,
+            CancellationToken token
+        )
         {
-            var audioStreamInfo = GetBestAudioOnlyStreamInfo(streamManifest) ?? 
-                throw new InvalidOperationException("Invalid AudioStreamInfo");
+            var audioStreamInfo =
+                GetBestAudioOnlyStreamInfo(streamManifest)
+                ?? throw new InvalidOperationException("Invalid AudioStreamInfo");
 
-            string audioPath = Path.Combine(outputDirectory,
-                $"temp_a_{Guid.NewGuid().ToString().Substring(0, 8)}.{audioStreamInfo.Container.Name}");
+            string audioPath = Path.Combine(
+                outputDirectory,
+                $"temp_a_{Guid.NewGuid().ToString().Substring(0, 8)}.{audioStreamInfo.Container.Name}"
+            );
 
-            await _youtubeClient.Videos.Streams.DownloadAsync(audioStreamInfo, audioPath, progress, token);
+            await _youtubeClient.Videos.Streams.DownloadAsync(
+                audioStreamInfo,
+                audioPath,
+                progress,
+                token
+            );
             return audioPath;
         }
 
-        private async Task<StreamManifest> GetStreamManifestAsync(string videoId, CancellationToken token) =>
-            await _youtubeClient.Videos.Streams.GetManifestAsync(videoId, token);
+        private async Task<StreamManifest> GetStreamManifestAsync(
+            string videoId,
+            CancellationToken token
+        ) => await _youtubeClient.Videos.Streams.GetManifestAsync(videoId, token);
 
-        private VideoOnlyStreamInfo? GetVideoOnlyStreamInfo(StreamManifest streamManifest, string quality) =>
-            streamManifest.GetVideoOnlyStreams().FirstOrDefault(s => s.Container == Container.Mp4 && s.VideoQuality.Label == quality);
+        private VideoOnlyStreamInfo? GetVideoOnlyStreamInfo(
+            StreamManifest streamManifest,
+            string quality
+        ) =>
+            streamManifest
+                .GetVideoOnlyStreams()
+                .FirstOrDefault(s =>
+                    s.Container == Container.Mp4 && s.VideoQuality.Label == quality
+                );
 
         private AudioOnlyStreamInfo? GetBestAudioOnlyStreamInfo(StreamManifest streamManifest) =>
             streamManifest.GetAudioOnlyStreams().GetWithHighestBitrate() as AudioOnlyStreamInfo;
 
         private AudioOnlyStreamInfo? GetBestAudioOnlyMp4StreamInfo(StreamManifest streamManifest) =>
-            streamManifest.GetAudioOnlyStreams().Where(s => s.Container == Container.Mp4).GetWithHighestBitrate() as AudioOnlyStreamInfo;
+            streamManifest
+                .GetAudioOnlyStreams()
+                .Where(s => s.Container == Container.Mp4)
+                .GetWithHighestBitrate() as AudioOnlyStreamInfo;
 
         private static int Score(StreamOption stream, int targetResolution, int targetFps)
         {
@@ -172,7 +225,9 @@ namespace YT_Downloader.Services
             return Math.Abs(res - targetResolution) + Math.Abs(fps - targetFps);
         }
 
-        private static int ParseResolution(string text) => int.TryParse(text.Split('p')[0], out var res) ? res : 0;
+        private static int ParseResolution(string text) =>
+            int.TryParse(text.Split('p')[0], out var res) ? res : 0;
+
         private static int ParseFps(string text) => text.Split(' ')[0].EndsWith("60") ? 60 : 30;
     }
 }

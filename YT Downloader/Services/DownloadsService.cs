@@ -39,22 +39,41 @@ namespace YT_Downloader.Services
         {
             try
             {
-                var groupVideoInfos = await _youtubeService.GetPlaylistVideosAsync(group.Id, group.CTS.Token);
+                var groupVideoInfos = await _youtubeService.GetPlaylistVideosAsync(
+                    group.Id,
+                    group.CTS.Token
+                );
                 group.CTS.Token.ThrowIfCancellationRequested();
 
                 FileHelper.CreateFolder(group.OutputPath);
 
                 foreach (var videoInfo in groupVideoInfos)
                 {
-                    var builder = new DownloadItemBuilder().FromVideoInfo(videoInfo)
-                        .WithOutputPath(Path.Combine(group.OutputPath, FileHelper.SanitizeFileName(videoInfo.Title)))
+                    var builder = new DownloadItemBuilder()
+                        .FromVideoInfo(videoInfo)
+                        .WithOutputPath(
+                            Path.Combine(
+                                group.OutputPath,
+                                FileHelper.SanitizeFileName(videoInfo.Title)
+                            )
+                        )
                         .WithGroupCancellation(group.CTS.Token);
 
-                    var item = group.Type == DownloadType.Video
-                        ? builder.AsVideo(group.Quality,
-                            _youtubeService.GetClosestMp4StreamOption(videoInfo.Streams, group.Quality),
-                            _youtubeService.GetBestMp3StreamOption(videoInfo.Streams)).Build()
-                        : builder.AsAudio(_youtubeService.GetBestMp3StreamOption(videoInfo.Streams)).Build();
+                    var item =
+                        group.Type == DownloadType.Video
+                            ? builder
+                                .AsVideo(
+                                    group.Quality,
+                                    _youtubeService.GetClosestMp4StreamOption(
+                                        videoInfo.Streams,
+                                        group.Quality
+                                    ),
+                                    _youtubeService.GetBestMp3StreamOption(videoInfo.Streams)
+                                )
+                                .Build()
+                            : builder
+                                .AsAudio(_youtubeService.GetBestMp3StreamOption(videoInfo.Streams))
+                                .Build();
 
                     group.Items.Add(item);
                     await _downloadQueue.Writer.WriteAsync(item);
@@ -90,16 +109,23 @@ namespace YT_Downloader.Services
                 if (item.Type == DownloadType.Video)
                 {
                     (tempVideo, tempAudio) = await _youtubeService.DownloadVideoAsync(
-                        item.Manifest, item.VideoStreamOption,
-                        tempDirectory, item.ProgressReporter, item.CTS.Token
+                        item.Manifest,
+                        item.VideoStreamOption,
+                        tempDirectory,
+                        item.ProgressReporter,
+                        item.CTS.Token
                     );
 
-                    ffmpegArgs = $"-i \"{tempVideo}\" -i \"{tempAudio}\" -c copy -y \"{item.OutputPath}\"";
+                    ffmpegArgs =
+                        $"-i \"{tempVideo}\" -i \"{tempAudio}\" -c copy -y \"{item.OutputPath}\"";
                 }
                 else
                 {
                     tempAudio = await _youtubeService.DownloadAudioAsync(
-                        item.Manifest, tempDirectory, item.ProgressReporter, item.CTS.Token
+                        item.Manifest,
+                        tempDirectory,
+                        item.ProgressReporter,
+                        item.CTS.Token
                     );
 
                     ffmpegArgs = $"-i \"{tempAudio}\" -vn -ab 192k -y \"{item.OutputPath}\"";
@@ -137,7 +163,7 @@ namespace YT_Downloader.Services
                 Arguments = arguments,
                 RedirectStandardError = true,
                 UseShellExecute = false,
-                CreateNoWindow = true
+                CreateNoWindow = true,
             };
 
             using var process = new Process { StartInfo = psi };
@@ -147,7 +173,11 @@ namespace YT_Downloader.Services
 
             using var registration = token.Register(() =>
             {
-                try { if (!process.HasExited) process.Kill(true); }
+                try
+                {
+                    if (!process.HasExited)
+                        process.Kill(true);
+                }
                 catch { }
             });
 

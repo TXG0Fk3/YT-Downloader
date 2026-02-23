@@ -1,10 +1,10 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.Mvvm.Messaging;
 using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using YT_Downloader.Enums;
 using YT_Downloader.Helpers;
 using YT_Downloader.Messages;
@@ -12,8 +12,10 @@ using YT_Downloader.Models;
 
 namespace YT_Downloader.ViewModels.Components
 {
-    public partial class DownloadGroupViewModel : ObservableObject, IDownloadableViewModel,
-        IRecipient<RemoveDownloadRequestMessage>
+    public partial class DownloadGroupViewModel
+        : ObservableObject,
+            IDownloadableViewModel,
+            IRecipient<RemoveDownloadRequestMessage>
     {
         private readonly DownloadGroup _downloadGroup;
         private readonly IMessenger _messenger;
@@ -82,13 +84,15 @@ namespace YT_Downloader.ViewModels.Components
 
         private void OnRemoveItemRequested(DownloadItemViewModel itemViewModel, DownloadItem? item)
         {
-            if (!Items.Remove(itemViewModel)) return;
+            if (!Items.Remove(itemViewModel))
+                return;
             itemViewModel.Dispose();
 
             if (item != null)
                 _downloadGroup.Items.Remove(item);
 
-            if (Items.Count == 0) OnDelete();
+            if (Items.Count == 0)
+                OnDelete();
 
             OnPropertyChanged(nameof(IsLoadingCardVisible));
         }
@@ -124,7 +128,8 @@ namespace YT_Downloader.ViewModels.Components
             _downloadGroup.Items.CollectionChanged -= OnItemsChanged;
             _messenger.UnregisterAll(this);
 
-            foreach (var item in Items) item.Dispose();
+            foreach (var item in Items)
+                item.Dispose();
         }
     }
 }

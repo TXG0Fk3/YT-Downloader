@@ -1,12 +1,12 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.Mvvm.Messaging;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using YT_Downloader.Enums;
 using YT_Downloader.Helpers;
 using YT_Downloader.Helpers.Builders;
@@ -33,41 +33,77 @@ namespace YT_Downloader.ViewModels.Dialogs
         [ObservableProperty, NotifyCanExecuteChangedFor(nameof(LoadContentInfoCommand))]
         public partial string UrlBoxText { get; set; } = string.Empty;
 
-        [ObservableProperty] public partial string Title { get; set; } = string.Empty;
-        [ObservableProperty] public partial string ContentUrl { get; set; } = string.Empty;
-        [ObservableProperty] public partial string ThumbnailUrl { get; set; } = string.Empty;
-        [ObservableProperty] public partial string DefaultFileName { get; set; } = string.Empty;
-        [ObservableProperty] public partial string UserFileName { get; set; } = string.Empty;
-        [ObservableProperty] public partial string SizeMB { get; set; } = string.Empty;
+        [ObservableProperty]
+        public partial string Title { get; set; } = string.Empty;
 
-        [ObservableProperty] public partial IReadOnlyList<MediaFormat> AvailableFormats { get; set; } = [MediaFormat.Mp4, MediaFormat.Mp3];
-        [ObservableProperty] public partial IReadOnlySet<string> AvailableQualities { get; set; } = new HashSet<string>();
+        [ObservableProperty]
+        public partial string ContentUrl { get; set; } = string.Empty;
+
+        [ObservableProperty]
+        public partial string ThumbnailUrl { get; set; } = string.Empty;
+
+        [ObservableProperty]
+        public partial string DefaultFileName { get; set; } = string.Empty;
+
+        [ObservableProperty]
+        public partial string UserFileName { get; set; } = string.Empty;
+
+        [ObservableProperty]
+        public partial string SizeMB { get; set; } = string.Empty;
+
+        [ObservableProperty]
+        public partial IReadOnlyList<MediaFormat> AvailableFormats { get; set; } =
+        [MediaFormat.Mp4, MediaFormat.Mp3];
+
+        [ObservableProperty]
+        public partial IReadOnlySet<string> AvailableQualities { get; set; } =
+            new HashSet<string>();
 
         [ObservableProperty, NotifyPropertyChangedFor(nameof(IsQualitySelectionEnabled))]
         public partial MediaFormat? SelectedFormat { get; set; }
-        [ObservableProperty] public partial string? SelectedQuality { get; set; }
-
-        [ObservableProperty] public partial bool IsPlaylist { get; set; }
 
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(IsQualitySelectionEnabled), nameof(IsContentVisible), nameof(IsDownloadEnabled))]
+        public partial string? SelectedQuality { get; set; }
+
+        [ObservableProperty]
+        public partial bool IsPlaylist { get; set; }
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(
+            nameof(IsQualitySelectionEnabled),
+            nameof(IsContentVisible),
+            nameof(IsDownloadEnabled)
+        )]
         public partial bool IsContentLoading { get; set; }
 
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(IsFileNameBoxEnabled), nameof(IsContentVisible), nameof(IsPlaylistIconVisible), nameof(IsDownloadEnabled))]
+        [NotifyPropertyChangedFor(
+            nameof(IsFileNameBoxEnabled),
+            nameof(IsContentVisible),
+            nameof(IsPlaylistIconVisible),
+            nameof(IsDownloadEnabled)
+        )]
         public partial bool IsContentLoaded { get; set; }
 
-        [ObservableProperty] public partial string ErrorMessage { get; set; } = string.Empty;
-        [ObservableProperty] public partial bool IsErrorVisible { get; set; }
+        [ObservableProperty]
+        public partial string ErrorMessage { get; set; } = string.Empty;
 
-        public bool IsQualitySelectionEnabled => SelectedFormat == MediaFormat.Mp4 && IsContentLoaded;
+        [ObservableProperty]
+        public partial bool IsErrorVisible { get; set; }
+
+        public bool IsQualitySelectionEnabled =>
+            SelectedFormat == MediaFormat.Mp4 && IsContentLoaded;
         public bool IsFileNameBoxEnabled => !IsPlaylist && IsContentLoaded;
         public bool IsContentVisible => IsContentLoading || IsContentLoaded;
         public bool IsPlaylistIconVisible => IsContentLoaded && IsPlaylist;
         public bool IsDownloadEnabled => IsContentLoaded;
 
         public DetailsDialogViewModel(
-            YoutubeService youtubeService, SettingsService settingsService, DialogService dialogService, IMessenger messenger)
+            YoutubeService youtubeService,
+            SettingsService settingsService,
+            DialogService dialogService,
+            IMessenger messenger
+        )
         {
             _youtubeService = youtubeService;
             _settingsService = settingsService;
@@ -81,7 +117,8 @@ namespace YT_Downloader.ViewModels.Dialogs
             IDownloadable? downloadable = null;
 
             var outputDirectory = await GetFolderPathAsync();
-            if (outputDirectory == null) return;
+            if (outputDirectory == null)
+                return;
 
             var fileName = !string.IsNullOrEmpty(UserFileName)
                 ? FileHelper.SanitizeFileName(UserFileName)
@@ -89,26 +126,41 @@ namespace YT_Downloader.ViewModels.Dialogs
 
             if (!IsPlaylist && _video != null)
             {
-                var builder = new DownloadItemBuilder().FromVideoInfo(_video)
+                var builder = new DownloadItemBuilder()
+                    .FromVideoInfo(_video)
                     .WithOutputPath(Path.Combine(outputDirectory, fileName));
 
-                downloadable = SelectedFormat == MediaFormat.Mp4
-                    ? builder.AsVideo(SelectedQuality, _videoStreamOption, _audioStreamOption).Build()
-                    : builder.AsAudio(_audioStreamOption).Build();
+                downloadable =
+                    SelectedFormat == MediaFormat.Mp4
+                        ? builder
+                            .AsVideo(SelectedQuality, _videoStreamOption, _audioStreamOption)
+                            .Build()
+                        : builder.AsAudio(_audioStreamOption).Build();
             }
             else if (IsPlaylist && _playlist != null)
             {
-                downloadable = new DownloadGroupBuilder().FromPlaylistInfo(_playlist)
-                    .WithOutputPath(Path.Combine(outputDirectory, FileHelper.SanitizeFileName(Title)))
-                    .WithFormat(SelectedFormat == MediaFormat.Mp4 ? DownloadType.Video : DownloadType.Audio, SelectedQuality)
+                downloadable = new DownloadGroupBuilder()
+                    .FromPlaylistInfo(_playlist)
+                    .WithOutputPath(
+                        Path.Combine(outputDirectory, FileHelper.SanitizeFileName(Title))
+                    )
+                    .WithFormat(
+                        SelectedFormat == MediaFormat.Mp4 ? DownloadType.Video : DownloadType.Audio,
+                        SelectedQuality
+                    )
                     .Build();
             }
 
-            if (downloadable != null) _messenger.Send(new DownloadRequestMessage(downloadable));
+            if (downloadable != null)
+                _messenger.Send(new DownloadRequestMessage(downloadable));
         }
 
-        private bool CanLoadContentInfo() => Uri.IsWellFormedUriString(UrlBoxText, UriKind.RelativeOrAbsolute)
-            && (UrlBoxText.Contains("youtube.com/watch?v=") || UrlBoxText.Contains("youtube.com/playlist?list="))
+        private bool CanLoadContentInfo() =>
+            Uri.IsWellFormedUriString(UrlBoxText, UriKind.RelativeOrAbsolute)
+            && (
+                UrlBoxText.Contains("youtube.com/watch?v=")
+                || UrlBoxText.Contains("youtube.com/playlist?list=")
+            )
             && (UrlBoxText != ContentUrl);
 
         [RelayCommand(CanExecute = nameof(CanLoadContentInfo))]
@@ -191,26 +243,29 @@ namespace YT_Downloader.ViewModels.Dialogs
                 {
                     if (_video != null)
                     {
-                        AvailableQualities = _video.Streams
-                            .Where(s => s.Format == MediaFormat.Mp4)
+                        AvailableQualities = _video
+                            .Streams.Where(s => s.Format == MediaFormat.Mp4)
                             .Select(s => s.Quality)
                             .ToHashSet();
                     }
                 }
             }
-            else AvailableQualities = new HashSet<string>() {"Best"};
+            else
+                AvailableQualities = new HashSet<string>() { "Best" };
 
             SelectedQuality = AvailableQualities.FirstOrDefault();
         }
 
         private void UpdateSize()
         {
-            if (IsPlaylist) SizeMB = "Undetermined";
+            if (IsPlaylist)
+                SizeMB = "Undetermined";
             else if (_videoStreamOption != null && _audioStreamOption != null)
             {
-                SizeMB = SelectedFormat == MediaFormat.Mp4
-                    ? $"{(_videoStreamOption.SizeMB + _audioStreamOption.SizeMB):F1} MB"
-                    : $"{_audioStreamOption.SizeMB:F1} MB";
+                SizeMB =
+                    SelectedFormat == MediaFormat.Mp4
+                        ? $"{(_videoStreamOption.SizeMB + _audioStreamOption.SizeMB):F1} MB"
+                        : $"{_audioStreamOption.SizeMB:F1} MB";
             }
         }
 
@@ -228,22 +283,28 @@ namespace YT_Downloader.ViewModels.Dialogs
 
         partial void OnSelectedFormatChanged(MediaFormat? value)
         {
-            if (value != null) UpdateAvailableQualities();
+            if (value != null)
+                UpdateAvailableQualities();
         }
 
         partial void OnSelectedQualityChanged(string? value)
         {
-            if (value == null) return;
+            if (value == null)
+                return;
 
             if (!IsPlaylist && _video != null)
             {
                 if (SelectedFormat == MediaFormat.Mp4)
-                    _videoStreamOption = _video.Streams.FirstOrDefault(s => s.Quality == value && s.Format == MediaFormat.Mp4);
+                    _videoStreamOption = _video.Streams.FirstOrDefault(s =>
+                        s.Quality == value && s.Format == MediaFormat.Mp4
+                    );
 
-                _audioStreamOption = _audioStreamOption = _video.Streams.FirstOrDefault(s => s.Format == MediaFormat.Mp3);
+                _audioStreamOption = _audioStreamOption = _video.Streams.FirstOrDefault(s =>
+                    s.Format == MediaFormat.Mp3
+                );
             }
 
             UpdateSize();
         }
-    } 
+    }
 }

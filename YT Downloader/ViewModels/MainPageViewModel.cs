@@ -1,8 +1,8 @@
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 using YT_Downloader.Messages;
 using YT_Downloader.Models;
 using YT_Downloader.Services;
@@ -10,9 +10,12 @@ using YT_Downloader.ViewModels.Components;
 
 namespace YT_Downloader.ViewModels
 {
-    public partial class MainPageViewModel : ObservableObject,
-        IRecipient<DownloadRequestMessage>, IRecipient<RetryDownloadRequestMessage>,
-        IRecipient<RemoveDownloadRequestMessage>, IRecipient<ErrorDialogRequestMessage>
+    public partial class MainPageViewModel
+        : ObservableObject,
+            IRecipient<DownloadRequestMessage>,
+            IRecipient<RetryDownloadRequestMessage>,
+            IRecipient<RemoveDownloadRequestMessage>,
+            IRecipient<ErrorDialogRequestMessage>
     {
         private readonly DownloadsService _downloadsService;
         private readonly DialogService _dialogService;
@@ -22,7 +25,11 @@ namespace YT_Downloader.ViewModels
 
         public bool IsDownloadItemsEmpty => Downloads.Count == 0;
 
-        public MainPageViewModel(DownloadsService downloadsService, DialogService dialogService, IMessenger messenger)
+        public MainPageViewModel(
+            DownloadsService downloadsService,
+            DialogService dialogService,
+            IMessenger messenger
+        )
         {
             _downloadsService = downloadsService;
             _dialogService = dialogService;
@@ -30,34 +37,31 @@ namespace YT_Downloader.ViewModels
 
             _messenger.RegisterAll(this);
 
-            Downloads.CollectionChanged += (s, e) => OnPropertyChanged(nameof(IsDownloadItemsEmpty));
+            Downloads.CollectionChanged += (s, e) =>
+                OnPropertyChanged(nameof(IsDownloadItemsEmpty));
         }
 
         public void Receive(DownloadRequestMessage message) =>
             OnEnqueueDownload(message.DownloadInfo);
 
-        public void Receive(RetryDownloadRequestMessage message) =>
-            OnRetryDownload(message.Item);
+        public void Receive(RetryDownloadRequestMessage message) => OnRetryDownload(message.Item);
 
         public void Receive(RemoveDownloadRequestMessage message) =>
             OnRemoveDownload(message.DownloadableViewModel);
 
-        public void Receive(ErrorDialogRequestMessage message) =>
-            _ = OnError(message.ErrorMessage);
+        public void Receive(ErrorDialogRequestMessage message) => _ = OnError(message.ErrorMessage);
 
         [RelayCommand]
-        private async Task OnAddDownloadAsync() =>
-            await _dialogService.ShowDetailsDialogAsync();
+        private async Task OnAddDownloadAsync() => await _dialogService.ShowDetailsDialogAsync();
 
         [RelayCommand]
-        private async Task OnHelp() =>
-            await _dialogService.ShowHelpDialogAsync();
+        private async Task OnHelp() => await _dialogService.ShowHelpDialogAsync();
 
         [RelayCommand]
-        private async Task OnSettings() =>
-            await _dialogService.ShowSettingsDialogAsync();
+        private async Task OnSettings() => await _dialogService.ShowSettingsDialogAsync();
 
-        private async Task OnError(string errorMessage) => await _dialogService.ShowErrorDialogAsync(errorMessage);
+        private async Task OnError(string errorMessage) =>
+            await _dialogService.ShowErrorDialogAsync(errorMessage);
 
         private void OnEnqueueDownload(IDownloadable downloadable)
         {

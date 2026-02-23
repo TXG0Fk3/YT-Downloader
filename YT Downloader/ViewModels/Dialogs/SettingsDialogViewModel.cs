@@ -1,8 +1,8 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using YT_Downloader.Enums;
 using YT_Downloader.Messages;
 using YT_Downloader.Models;
@@ -17,13 +17,22 @@ namespace YT_Downloader.ViewModels.Dialogs
         private readonly IMessenger _messenger;
 
         public IReadOnlyList<ThemeOption> ThemeOptions { get; } =
-            new List<ThemeOption>() {ThemeOption.Light, ThemeOption.Dark, ThemeOption.System};
+            new List<ThemeOption>() { ThemeOption.Light, ThemeOption.Dark, ThemeOption.System };
 
-        [ObservableProperty] public partial ThemeOption SelectedThemeOption { get; set; }
-        [ObservableProperty] public partial string DefaultDownloadsPath { get; set; }
-        [ObservableProperty] public partial bool IsAlwaysAskWhereSaveOn { get; set; }
+        [ObservableProperty]
+        public partial ThemeOption SelectedThemeOption { get; set; }
 
-        public SettingsDialogViewModel(SettingsService settingsService, DialogService dialogService, IMessenger messenger)
+        [ObservableProperty]
+        public partial string DefaultDownloadsPath { get; set; }
+
+        [ObservableProperty]
+        public partial bool IsAlwaysAskWhereSaveOn { get; set; }
+
+        public SettingsDialogViewModel(
+            SettingsService settingsService,
+            DialogService dialogService,
+            IMessenger messenger
+        )
         {
             _settingsService = settingsService;
             _dialogService = dialogService;
@@ -35,8 +44,7 @@ namespace YT_Downloader.ViewModels.Dialogs
         }
 
         [RelayCommand]
-        private void OnSelectTheme() =>
-            SaveSettings();
+        private void OnSelectTheme() => SaveSettings();
 
         [RelayCommand]
         private async Task OnSelectDefaultDownloadsFolder()
@@ -50,16 +58,15 @@ namespace YT_Downloader.ViewModels.Dialogs
         }
 
         [RelayCommand]
-        private void OnAlwaysAskWhereSave() =>
-            SaveSettings();
+        private void OnAlwaysAskWhereSave() => SaveSettings();
 
         private void SaveSettings()
         {
             var newSettings = new AppSettings(
-                    Theme: SelectedThemeOption,
-                    DefaultDownloadsPath: DefaultDownloadsPath,
-                    AlwaysAskWhereSave: IsAlwaysAskWhereSaveOn
-                );
+                Theme: SelectedThemeOption,
+                DefaultDownloadsPath: DefaultDownloadsPath,
+                AlwaysAskWhereSave: IsAlwaysAskWhereSaveOn
+            );
 
             _settingsService.Save(newSettings);
             _messenger.Send(new ChangeThemeRequestMessage(SelectedThemeOption));

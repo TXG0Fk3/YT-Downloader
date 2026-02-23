@@ -1,10 +1,10 @@
-using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading;
+using CommunityToolkit.Mvvm.ComponentModel;
 using YT_Downloader.Enums;
 
 namespace YT_Downloader.Models
@@ -21,12 +21,16 @@ namespace YT_Downloader.Models
         public ObservableCollection<DownloadItem> Items { get; } = new();
         public CancellationTokenSource CTS { get; private set; } = new();
 
-        [ObservableProperty] public partial double Progress { get; set; } = 0.0;
-        [ObservableProperty] public partial DownloadStatus Status { get; set; } = DownloadStatus.Pending;
-        [ObservableProperty] public partial Exception? Error { get; set; }
+        [ObservableProperty]
+        public partial double Progress { get; set; } = 0.0;
 
-        public DownloadGroup() =>
-            Items.CollectionChanged += OnItemsChanged;
+        [ObservableProperty]
+        public partial DownloadStatus Status { get; set; } = DownloadStatus.Pending;
+
+        [ObservableProperty]
+        public partial Exception? Error { get; set; }
+
+        public DownloadGroup() => Items.CollectionChanged += OnItemsChanged;
 
         private void OnItemsChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
@@ -54,7 +58,9 @@ namespace YT_Downloader.Models
 
             if (statuses.All(s => s == DownloadStatus.Completed))
                 Status = DownloadStatus.Completed;
-            else if (statuses.Any(s => s is DownloadStatus.Downloading or DownloadStatus.Converting))
+            else if (
+                statuses.Any(s => s is DownloadStatus.Downloading or DownloadStatus.Converting)
+            )
                 Status = DownloadStatus.Downloading;
             else if (statuses.Any(s => s == DownloadStatus.Error))
                 Status = DownloadStatus.Error;

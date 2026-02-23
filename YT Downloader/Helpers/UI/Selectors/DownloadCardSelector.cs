@@ -9,7 +9,9 @@ namespace YT_Downloader.Helpers.UI.Selectors
         public DataTemplate ItemTemplate { get; set; }
         public DataTemplate GroupTemplate { get; set; }
 
-        protected override DataTemplate SelectTemplateCore(object item, DependencyObject container) =>
-            item is DownloadItemViewModel ? ItemTemplate : GroupTemplate;
+        protected override DataTemplate SelectTemplateCore(
+            object item,
+            DependencyObject container
+        ) => item is DownloadItemViewModel ? ItemTemplate : GroupTemplate;
     }
 }

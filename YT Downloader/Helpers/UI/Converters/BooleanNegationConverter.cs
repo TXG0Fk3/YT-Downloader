@@ -1,5 +1,5 @@
-using Microsoft.UI.Xaml.Data;
 using System;
+using Microsoft.UI.Xaml.Data;
 
 namespace YT_Downloader.Helpers.UI.Converters
 {
@@ -15,7 +15,11 @@ namespace YT_Downloader.Helpers.UI.Converters
             return value;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, string language) =>
-            throw new NotImplementedException();
+        public object ConvertBack(
+            object value,
+            Type targetType,
+            object parameter,
+            string language
+        ) => throw new NotImplementedException();
     }
 }

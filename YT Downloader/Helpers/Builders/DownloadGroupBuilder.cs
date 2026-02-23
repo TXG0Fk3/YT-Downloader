@@ -32,5 +32,4 @@ namespace YT_Downloader.Helpers.Builders
 
         public DownloadGroup Build() => _group;
     }
-
 }

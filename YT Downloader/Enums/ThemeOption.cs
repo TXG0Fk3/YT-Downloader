@@ -4,6 +4,6 @@ namespace YT_Downloader.Enums
     {
         Light,
         Dark,
-        System
+        System,
     }
 }

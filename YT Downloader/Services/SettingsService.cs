@@ -18,7 +18,8 @@ namespace YT_Downloader.Services
             _filePath = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 "YT Downloader",
-                FileName);
+                FileName
+            );
 
             Directory.CreateDirectory(Path.GetDirectoryName(_filePath)!);
 
@@ -29,7 +30,10 @@ namespace YT_Downloader.Services
         {
             var defaultSettings = new AppSettings(
                 Theme: ThemeOption.System,
-                DefaultDownloadsPath: Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads"),
+                DefaultDownloadsPath: Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                    "Downloads"
+                ),
                 AlwaysAskWhereSave: true
             );
 
@@ -44,10 +48,15 @@ namespace YT_Downloader.Services
                 if (settings is null)
                     return defaultSettings;
 
-                if (string.IsNullOrWhiteSpace(settings.DefaultDownloadsPath) ||
-                    !Directory.Exists(settings.DefaultDownloadsPath))
+                if (
+                    string.IsNullOrWhiteSpace(settings.DefaultDownloadsPath)
+                    || !Directory.Exists(settings.DefaultDownloadsPath)
+                )
                 {
-                    return settings with { DefaultDownloadsPath = defaultSettings.DefaultDownloadsPath };
+                    return settings with
+                    {
+                        DefaultDownloadsPath = defaultSettings.DefaultDownloadsPath,
+                    };
                 }
 
                 return settings;
@@ -58,11 +67,13 @@ namespace YT_Downloader.Services
             }
         }
 
-
         public void Save(AppSettings settings)
         {
             Current = settings;
-            var json = JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true });
+            var json = JsonSerializer.Serialize(
+                settings,
+                new JsonSerializerOptions { WriteIndented = true }
+            );
             File.WriteAllText(_filePath, json);
         }
     }

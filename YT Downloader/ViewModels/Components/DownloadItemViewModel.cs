@@ -1,8 +1,8 @@
+using System;
+using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
-using System;
-using System.ComponentModel;
 using YT_Downloader.Enums;
 using YT_Downloader.Helpers;
 using YT_Downloader.Messages;
@@ -14,7 +14,7 @@ namespace YT_Downloader.ViewModels.Components
     {
         private readonly DownloadItem _downloadItem;
         private readonly IMessenger _messenger;
-        
+
         public string Title => _downloadItem.Title;
         public string Author => _downloadItem.Author;
         public string Url => _downloadItem.Url;
@@ -23,14 +23,18 @@ namespace YT_Downloader.ViewModels.Components
         public Exception? Error => _downloadItem.Error;
 
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(IsDownloading),
-            nameof(IsConverting), nameof(IsErrorVisible),
-            nameof(FirstButtonIcon), nameof(SecondButtonIcon))]
+        [NotifyPropertyChangedFor(
+            nameof(IsDownloading),
+            nameof(IsConverting),
+            nameof(IsErrorVisible),
+            nameof(FirstButtonIcon),
+            nameof(SecondButtonIcon)
+        )]
         public partial DownloadStatus Status { get; set; }
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(FormattedProgress), nameof(ProgressInfo))]
-        public partial double Progress { get; set; }        
+        public partial double Progress { get; set; }
 
         public bool IsDownloading => Status == DownloadStatus.Downloading;
         public bool IsConverting => Status == DownloadStatus.Converting;
@@ -44,9 +48,9 @@ namespace YT_Downloader.ViewModels.Components
                 var t = _downloadItem.RemainingTime;
                 var s = _downloadItem.FileSizeMB;
 
-                return $"{_downloadItem.DownloadSpeedMBps:F1}MB/s | " +
-                       $"~{t.Hours:D2}:{t.Minutes:D2}:{t.Seconds:D2} remaining | " +
-                       $"{s * Progress:F1}MB / {s:F1}MB";
+                return $"{_downloadItem.DownloadSpeedMBps:F1}MB/s | "
+                    + $"~{t.Hours:D2}:{t.Minutes:D2}:{t.Seconds:D2} remaining | "
+                    + $"{s * Progress:F1}MB / {s:F1}MB";
             }
         }
 
@@ -102,8 +106,7 @@ namespace YT_Downloader.ViewModels.Components
 
         private void OnOpenLocal() => FileHelper.OpenFolder(_downloadItem.OutputPath);
 
-        private void OnRetry() =>
-            _messenger.Send(new RetryDownloadRequestMessage(_downloadItem));
+        private void OnRetry() => _messenger.Send(new RetryDownloadRequestMessage(_downloadItem));
 
         private void OnModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {

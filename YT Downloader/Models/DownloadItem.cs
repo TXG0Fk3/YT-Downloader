@@ -1,6 +1,6 @@
-using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.Threading;
+using CommunityToolkit.Mvvm.ComponentModel;
 using YoutubeExplode.Videos.Streams;
 using YT_Downloader.Enums;
 using YT_Downloader.Models.Info;
@@ -23,15 +23,19 @@ namespace YT_Downloader.Models
         public StreamOption AudioStreamOption { get; set; }
         public string OutputPath { get; set; }
 
-        [ObservableProperty] public partial double Progress { get; set; } = 0.0;
-        [ObservableProperty] public partial DownloadStatus Status { get; set; } = DownloadStatus.Pending;
-        [ObservableProperty] public partial Exception? Error { get; set; }
+        [ObservableProperty]
+        public partial double Progress { get; set; } = 0.0;
+
+        [ObservableProperty]
+        public partial DownloadStatus Status { get; set; } = DownloadStatus.Pending;
+
+        [ObservableProperty]
+        public partial Exception? Error { get; set; }
 
         public IProgress<double> ProgressReporter { get; }
         public CancellationTokenSource CTS { get; set; } = new();
 
-        public DownloadItem() =>
-            ProgressReporter = new Progress<double>(p => UpdateProgress(p));
+        public DownloadItem() => ProgressReporter = new Progress<double>(p => UpdateProgress(p));
 
         public double FileSizeMB =>
             Type == DownloadType.Video

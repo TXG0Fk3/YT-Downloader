@@ -1,6 +1,6 @@
-﻿using Microsoft.UI.Xaml;
 using System;
 using System.Runtime.InteropServices;
+using Microsoft.UI.Xaml;
 
 namespace YT_Downloader.Services
 {
@@ -75,7 +75,7 @@ namespace YT_Downloader.Services
         internal struct POINT
         {
             public int x;
-            public int y; 
+            public int y;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -92,15 +92,34 @@ namespace YT_Downloader.Services
         internal static extern int GetDpiForWindow(IntPtr hwnd);
 
         [DllImport("user32.dll", EntryPoint = "SetWindowLong")]
-        internal static extern int SetWindowLong32(IntPtr hWnd, WindowLongIndexFlags nIndex, WinProc newProc);
+        internal static extern int SetWindowLong32(
+            IntPtr hWnd,
+            WindowLongIndexFlags nIndex,
+            WinProc newProc
+        );
 
         [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr")]
-        internal static extern IntPtr SetWindowLongPtr64(IntPtr hWnd, WindowLongIndexFlags nIndex, WinProc newProc);
+        internal static extern IntPtr SetWindowLongPtr64(
+            IntPtr hWnd,
+            WindowLongIndexFlags nIndex,
+            WinProc newProc
+        );
 
         [DllImport("user32.dll")]
-        internal static extern IntPtr CallWindowProc(IntPtr lpPrevWndFunc, IntPtr hWnd, WindowMessage Msg, IntPtr wParam, IntPtr lParam);
+        internal static extern IntPtr CallWindowProc(
+            IntPtr lpPrevWndFunc,
+            IntPtr hWnd,
+            WindowMessage Msg,
+            IntPtr wParam,
+            IntPtr lParam
+        );
 
-        internal delegate IntPtr WinProc(IntPtr hWnd, WindowMessage Msg, IntPtr wParam, IntPtr lParam);
+        internal delegate IntPtr WinProc(
+            IntPtr hWnd,
+            WindowMessage Msg,
+            IntPtr wParam,
+            IntPtr lParam
+        );
 
         [Flags]
         internal enum WindowLongIndexFlags : int

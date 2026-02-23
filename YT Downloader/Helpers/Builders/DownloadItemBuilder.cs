@@ -28,7 +28,11 @@ namespace YT_Downloader.Helpers.Builders
             return this;
         }
 
-        public DownloadItemBuilder AsVideo(string quality, StreamOption videoStream, StreamOption audioStream)
+        public DownloadItemBuilder AsVideo(
+            string quality,
+            StreamOption videoStream,
+            StreamOption audioStream
+        )
         {
             _item.Type = DownloadType.Video;
             _item.Quality = quality;
