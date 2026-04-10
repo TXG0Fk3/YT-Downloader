@@ -7,13 +7,14 @@
       xmlns:local="using:YT_Downloader.Views"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:models="using:YT_Downloader.Models"
+      xmlns:resources="using:YT_Downloader.Views.Resources"
       xmlns:selectors="using:YT_Downloader.Helpers.UI.Selectors"
       xmlns:ui="using:CommunityToolkit.WinUI"
       mc:Ignorable="d">
     <Page.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="ms-appx:///Views/Resources/DownloadCardTemplates.xaml" />
+                <resources:DownloadCardTemplates />
             </ResourceDictionary.MergedDictionaries>
 
             <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
@@ -55,7 +56,7 @@
                           CornerRadius="8"
                           RowDefinitions="Auto, Auto"
                           RowSpacing="8"
-                          Visibility="{Binding IsDownloadItemsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}">
+                          Visibility="{x:Bind ViewModel.IsDownloadItemsEmpty, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
                         <TextBlock Grid.Row="0"
                                    Margin="0,5,0,0"
                                    HorizontalAlignment="Center"
@@ -65,7 +66,7 @@
                                 Height="35"
                                 Margin="0,0,0,12"
                                 HorizontalAlignment="Center"
-                                Command="{Binding AddDownloadCommand}">
+                                Command="{x:Bind ViewModel.AddDownloadCommand}">
                             <StackPanel Orientation="Horizontal" Spacing="6">
                                 <FontIcon Glyph="&#xE948;" />
                                 <TextBlock Text="New Download" />
@@ -74,7 +75,7 @@
                     </Grid>
 
                     <!--  Downloads List  -->
-                    <ItemsControl ItemTemplateSelector="{StaticResource DownloadCardSelector}" ItemsSource="{Binding Downloads}">
+                    <ItemsControl ItemTemplateSelector="{StaticResource DownloadCardSelector}" ItemsSource="{x:Bind ViewModel.Downloads, Mode=OneWay}">
                         <ItemsControl.ItemContainerTransitions>
                             <EntranceThemeTransition FromVerticalOffset="50" />
                             <RepositionThemeTransition IsStaggeringEnabled="False" />
@@ -100,7 +101,7 @@
                     Padding="0"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    Command="{Binding AddDownloadCommand}"
+                    Command="{x:Bind ViewModel.AddDownloadCommand}"
                     Content="{ui:FontIcon Glyph=&#xE948;}"
                     ToolTipService.ToolTip="Add New Download" />
 
@@ -111,7 +112,7 @@
                     Height="37"
                     Padding="0"
                     HorizontalAlignment="Center"
-                    Command="{Binding HelpCommand}"
+                    Command="{x:Bind ViewModel.HelpCommand}"
                     Content="{ui:FontIcon Glyph=&#xE897;}"
                     ToolTipService.ToolTip="Help" />
 
@@ -120,7 +121,7 @@
                     Height="37"
                     Padding="0"
                     HorizontalAlignment="Center"
-                    Command="{Binding SettingsCommand}"
+                    Command="{x:Bind ViewModel.SettingsCommand}"
                     Content="{ui:FontIcon Glyph=&#xE713;}"
                     ToolTipService.ToolTip="Settings" />
         </Grid>

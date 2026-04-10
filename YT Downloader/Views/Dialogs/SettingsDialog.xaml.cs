@@ -1,3 +1,4 @@
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using YT_Downloader.Helpers.UI;
 using YT_Downloader.ViewModels.Dialogs;
@@ -6,27 +7,25 @@ namespace YT_Downloader.Views.Dialogs
 {
     public sealed partial class SettingsDialog : ContentDialog
     {
+        public SettingsDialogViewModel ViewModel { get; set; }
+
         public SettingsDialog()
         {
             InitializeComponent();
-            DataContext = App.GetService<SettingsDialogViewModel>();
+
+            ViewModel = App.GetService<SettingsDialogViewModel>();
+            DataContext = ViewModel;
         }
 
         private void RadioButtons_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (DataContext is SettingsDialogViewModel VM)
-            {
-                VM.SelectThemeCommand.Execute(null);
-                RequestedTheme = ThemeHelper.ConvertThemeOptionToElementTheme(
-                    VM.SelectedThemeOption
-                );
-            }
+            ViewModel.SelectThemeCommand.Execute(null);
+            RequestedTheme = ThemeHelper.ConvertThemeOptionToElementTheme(
+                ViewModel.SelectedThemeOption
+            );
         }
 
-        private void ToggleSwitch_Toggled(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
-        {
-            if (DataContext is SettingsDialogViewModel VM)
-                VM.AlwaysAskWhereSaveCommand.Execute(null);
-        }
+        private void ToggleSwitch_Toggled(object sender, RoutedEventArgs e) =>
+            ViewModel.AlwaysAskWhereSaveCommand.Execute(null);
     }
 }

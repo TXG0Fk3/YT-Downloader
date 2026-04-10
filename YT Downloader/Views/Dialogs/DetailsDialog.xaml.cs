@@ -6,18 +6,21 @@ namespace YT_Downloader.Views.Dialogs
 {
     public sealed partial class DetailsDialog : ContentDialog
     {
+        private DetailsDialogViewModel ViewModel { get; set; }
+
         public DetailsDialog()
         {
             InitializeComponent();
-            DataContext = App.GetService<DetailsDialogViewModel>();
+
+            ViewModel = App.GetService<DetailsDialogViewModel>();
+            DataContext = ViewModel;
         }
 
         private void UrlTextBox_KeyDown(object sender, KeyRoutedEventArgs e)
         {
             if (e.Key == Windows.System.VirtualKey.Enter)
             {
-                if (DataContext is DetailsDialogViewModel viewModel)
-                    viewModel.LoadContentInfoCommand.Execute(null);
+                ViewModel.LoadContentInfoCommand.Execute(null);
             }
         }
     }

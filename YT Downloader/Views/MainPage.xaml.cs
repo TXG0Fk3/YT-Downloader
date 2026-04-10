@@ -6,11 +6,14 @@ namespace YT_Downloader.Views
 {
     public sealed partial class MainPage : Page
     {
+        public MainPageViewModel ViewModel { get; set; }
+
         public MainPage()
         {
             InitializeComponent();
-            DataContext = App.GetService<MainPageViewModel>();
 
+            ViewModel = App.GetService<MainPageViewModel>();
+            DataContext = ViewModel;
             Loaded += (_, __) => App.GetService<DialogService>().Initialize(XamlRoot);
         }
     }

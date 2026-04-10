@@ -9,8 +9,8 @@
                Title="Add New Download"
                CloseButtonText="Cancel"
                DefaultButton="Primary"
-               IsPrimaryButtonEnabled="{Binding IsDownloadEnabled}"
-               PrimaryButtonCommand="{Binding DownloadCommand}"
+               IsPrimaryButtonEnabled="{x:Bind ViewModel.IsDownloadEnabled, Mode=OneWay}"
+               PrimaryButtonCommand="{x:Bind ViewModel.DownloadCommand}"
                PrimaryButtonText="Download"
                Style="{StaticResource DefaultContentDialogStyle}"
                mc:Ignorable="d">
@@ -33,7 +33,7 @@
                      Header="Enter your YT video/playlist URL:"
                      IsSpellCheckEnabled="False"
                      KeyDown="UrlTextBox_KeyDown"
-                     Text="{Binding UrlBoxText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     Text="{x:Bind ViewModel.UrlBoxText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                      ToolTipService.ToolTip="Type your YT video/playlist URL and press Enter button" />
             <Button Grid.Column="1"
                     Width="35"
@@ -41,7 +41,7 @@
                     Padding="0"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Bottom"
-                    Command="{Binding LoadContentInfoCommand}"
+                    Command="{x:Bind ViewModel.LoadContentInfoCommand}"
                     Style="{StaticResource AccentButtonStyle}"
                     ToolTipService.ToolTip="Load Video Info">
                 <FontIcon Glyph="&#xE8FB;" />
@@ -52,38 +52,38 @@
         <Grid Grid.Row="1"
               RowDefinitions="Auto, Auto, Auto, Auto"
               RowSpacing="8"
-              Visibility="{Binding IsContentVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+              Visibility="{x:Bind ViewModel.IsContentVisible, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
             <HyperlinkButton Grid.Row="0"
                              Padding="4"
                              HorizontalAlignment="Center"
-                             Content="{Binding Title}"
-                             NavigateUri="{Binding ContentUrl}"
+                             Content="{x:Bind ViewModel.Title, Mode=OneWay}"
+                             NavigateUri="{Binding ContentUrl, Mode=OneWay}"
                              ToolTipService.ToolTip="Open Video in Browser" />
 
             <Grid Grid.Row="1" ColumnDefinitions="*, 104" ColumnSpacing="6">
                 <Grid Grid.Column="0" Background="{ThemeResource AcrylicBackgroundFillColorBaseBrush}" CornerRadius="6">
-                    <Image Source="{Binding ThumbnailUrl}" Stretch="Fill" Visibility="{Binding IsContentLoading, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Invert}" />
-                    <ProgressRing HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding IsContentLoading}" />
+                    <Image Source="{Binding ThumbnailUrl, Mode=OneWay}" Stretch="Fill" Visibility="{x:Bind ViewModel.IsContentLoading, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Invert, Mode=OneWay}" />
+                    <ProgressRing HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{x:Bind ViewModel.IsContentLoading, Mode=OneWay}" />
                     <FontIcon HorizontalAlignment="Center"
                               VerticalAlignment="Center"
                               FontSize="32"
                               Glyph="&#xEA69;"
-                              Visibility="{Binding IsPlaylistIconVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                              Visibility="{x:Bind ViewModel.IsPlaylistIconVisible, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" />
                 </Grid>
 
                 <Grid Grid.Column="1" RowDefinitions="Auto, Auto" RowSpacing="6">
                     <ComboBox Grid.Row="0"
                               HorizontalAlignment="Stretch"
                               Header="Format"
-                              IsEnabled="{Binding IsContentLoading, Converter={StaticResource BooleanNegationConverter}}"
-                              ItemsSource="{Binding AvailableFormats}"
-                              SelectedItem="{Binding SelectedFormat, Mode=TwoWay}" />
+                              IsEnabled="{x:Bind ViewModel.IsContentLoading, Converter={StaticResource BooleanNegationConverter}, Mode=OneWay}"
+                              ItemsSource="{x:Bind ViewModel.AvailableFormats, Mode=OneWay}"
+                              SelectedItem="{x:Bind ViewModel.SelectedFormat, Mode=TwoWay}" />
                     <ComboBox Grid.Row="1"
                               HorizontalAlignment="Stretch"
                               Header="Quality"
-                              IsEnabled="{Binding IsQualitySelectionEnabled}"
-                              ItemsSource="{Binding AvailableQualities}"
-                              SelectedValue="{Binding SelectedQuality, Mode=TwoWay}" />
+                              IsEnabled="{x:Bind ViewModel.IsQualitySelectionEnabled, Mode=OneWay}"
+                              ItemsSource="{x:Bind ViewModel.AvailableQualities, Mode=OneWay}"
+                              SelectedValue="{x:Bind ViewModel.SelectedQuality, Mode=TwoWay}" />
                 </Grid>
             </Grid>
 
@@ -91,14 +91,14 @@
                      Grid.Column="0"
                      Height="62"
                      Header="File Name:"
-                     IsEnabled="{Binding IsFileNameBoxEnabled}"
-                     PlaceholderText="{Binding DefaultFileName}"
-                     Text="{Binding UserFileName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                     IsEnabled="{x:Bind ViewModel.IsFileNameBoxEnabled, Mode=OneWay}"
+                     PlaceholderText="{x:Bind ViewModel.DefaultFileName, Mode=OneWay}"
+                     Text="{x:Bind ViewModel.UserFileName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
             <TextBlock Grid.Row="3">
                 <Run>File Size:</Run>
                 <LineBreak />
-                <Run Foreground="DarkGray" Text="{Binding SizeMB}" />
+                <Run Foreground="DarkGray" Text="{x:Bind ViewModel.SizeMB, Mode=OneWay}" />
             </TextBlock>
         </Grid>
 
@@ -107,8 +107,8 @@
                  Grid.Row="2"
                  IsClosable="false"
                  IsOpen="True"
-                 Message="{Binding ErrorMessage}"
+                 Message="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}"
                  Severity="Error"
-                 Visibility="{Binding IsErrorVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                 Visibility="{x:Bind ViewModel.IsErrorVisible, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" />
     </Grid>
 </ContentDialog>
