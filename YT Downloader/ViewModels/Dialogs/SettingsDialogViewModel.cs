@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using YT_Downloader.Enums;
+using YT_Downloader.Helpers;
 using YT_Downloader.Messages;
 using YT_Downloader.Models;
 using YT_Downloader.Services;
@@ -15,6 +16,8 @@ namespace YT_Downloader.ViewModels.Dialogs
         private readonly SettingsService _settingsService;
         private readonly DialogService _dialogService;
         private readonly IMessenger _messenger;
+
+        public string YTDownloaderVersion { get; } = AppInfoHelper.Version;
 
         public IReadOnlyList<ThemeOption> ThemeOptions { get; } =
             new List<ThemeOption>() { ThemeOption.Light, ThemeOption.Dark, ThemeOption.System };
