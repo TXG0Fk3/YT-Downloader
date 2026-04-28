@@ -25,10 +25,16 @@ jobs:
     - name: Create Minimal Zip
       shell: pwsh
       run: |
-        Compress-Archive -Path YTDownloader/bin/Release/net10.0-windows*/win-x64/publish/* -DestinationPath YTDownloader.Minimal.x64.zip
+        Compress-Archive -Path YTDownloader/bin/Release/net10.0-windows10.0.26100.0/win-x64/publish/* -DestinationPath YTDownloader.Minimal.x64.zip
 
     - name: Publish Full for Setup
       run: dotnet publish YTDownloader/YTDownloader.csproj -c Release -r win-x64 --self-contained true -p:PublishProfile=win-x64.pubxml
+
+    - name: Download FFmpeg
+      shell: pwsh
+      run: |
+        Invoke-WebRequest -Uri "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.7z" -OutFile ffmpeg.7z
+        7z e ffmpeg.7z "*/bin/ffmpeg.exe" -o"YTDownloader/bin/Release/net10.0-windows10.0.26100.0/win-x64/publish/" -r
 
     - name: Compile Inno Setup
       shell: pwsh
