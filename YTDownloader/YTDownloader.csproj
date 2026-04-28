@@ -2,9 +2,9 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
-    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
     <LangVersion>preview</LangVersion>
-    <RootNamespace>YT_Downloader</RootNamespace>
+    <RootNamespace>YTDownloader</RootNamespace>
     <ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
     <DefaultLanguage>en-US</DefaultLanguage>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -33,21 +33,37 @@
     <AssemblyCopyright>Copyright © TXG0Fk3. All rights reserved.</AssemblyCopyright>
   </PropertyGroup>
 
-  <Target Name="RemoveFoldersWithMuiFiles" AfterTargets="Build">
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+
+  <Target Name="CleanPublish" AfterTargets="Publish">
     <ItemGroup>
-      <RemovingFiles Include="$(OutDir)*\*.mui" Exclude="$(OutDir)en-us\*.mui" />
-      <RemovingFolders Include="@(RemovingFiles->'%(RootDir)%(Directory)')" />
+      <_AiFiles Include="$(PublishDir)Microsoft.Windows.AI.*" />
+      <_NpuDetectFolder Include="$(PublishDir)NpuDetect" />
     </ItemGroup>
-    <RemoveDir Directories="@(RemovingFolders)" />
+    <Delete Files="@(_AiFiles)" />
+    <RemoveDir Directories="@(_NpuDetectFolder)" />
+
+    <ItemGroup>
+      <_MuiFiles Include="$(PublishDir)**\*.mui" Exclude="$(PublishDir)en-us\*.mui" />
+      <_MuiFolders Include="@(_MuiFiles->'%(RootDir)%(Directory)')" />
+    </ItemGroup>
+    <RemoveDir Directories="@(_MuiFolders)" />
   </Target>
 
   <ItemGroup>
-    <Content Include="Assets\SplashScreen.scale-200.png" />
-    <Content Include="Assets\LockScreenLogo.scale-200.png" />
-    <Content Include="Assets\Square150x150Logo.scale-200.png" />
-    <Content Include="Assets\Square44x44Logo.scale-200.png" />
-    <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
-    <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+    <Content Include="Assets\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+
+    <None Include="$(TargetDir)$(TargetName).pri">
+      <Link>$(TargetName).pri</Link>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
