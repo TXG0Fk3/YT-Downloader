@@ -24,7 +24,7 @@
 
     <Grid RowDefinitions="32, *, 80">
         <!--  Header  -->
-        <Grid Grid.Row="0" ColumnDefinitions="Auto, Auto">
+        <Grid Grid.Row="0" ColumnDefinitions="Auto, Auto, Auto">
             <BitmapIcon Grid.Column="0"
                         Width="20"
                         Margin="14,0,0,0"
@@ -36,6 +36,20 @@
                        VerticalAlignment="Center"
                        Style="{StaticResource CaptionTextBlockStyle}"
                        Text="YT Downloader" />
+            <Border x:Name="DebugBadge"
+                    Grid.Column="2"
+                    Margin="8,0,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Background="{ThemeResource AccentFillColorDefaultBrush}"
+                    CornerRadius="2"
+                    Visibility="Collapsed">
+                <TextBlock Padding="4,2"
+                           FontSize="12"
+                           Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
+                           Style="{StaticResource BodyStrongTextBlockStyle}"
+                           Text="DEBUG" />
+            </Border>
         </Grid>
 
         <!--  Downloads  -->
